@@ -19,6 +19,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -74,8 +78,8 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
-
-    // Kotlin Extensions and Coroutines support for Room
     implementation(libs.androidx.room.ktx)
 
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.truth)
 }
