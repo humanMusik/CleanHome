@@ -16,6 +16,7 @@ import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @AndroidEntryPoint
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        val dao = CleanHomeDatabase.getDbInstance(this).dao
+        val dao = CleanHomeDatabase.getDbInstance(this).cleanHomeDao()
 
         val homeEntity = listOf(HomeEntity(name = "221b Baker St"))
 
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
                 ),
                 duration = 1000L,
                 frequency = Frequency.Weekly,
-                scheduledDate = OffsetDateTime.now(),
+                scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 allocatedTo = ResidentEntity(
                     id = 3,
@@ -94,7 +95,7 @@ class MainActivity : ComponentActivity() {
                 ),
                 duration = 1000L,
                 frequency = Frequency.Weekly,
-                scheduledDate = OffsetDateTime.now(),
+                scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 allocatedTo = ResidentEntity(
                     id = 2,
@@ -111,7 +112,7 @@ class MainActivity : ComponentActivity() {
                 ),
                 duration = 1000L,
                 frequency = Frequency.Weekly,
-                scheduledDate = OffsetDateTime.now(),
+                scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 allocatedTo = ResidentEntity(
                     id = 1,
@@ -128,7 +129,7 @@ class MainActivity : ComponentActivity() {
                 ),
                 duration = 1000L,
                 frequency = Frequency.Weekly,
-                scheduledDate = OffsetDateTime.now(),
+                scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 allocatedTo = ResidentEntity(
                     id = 2,

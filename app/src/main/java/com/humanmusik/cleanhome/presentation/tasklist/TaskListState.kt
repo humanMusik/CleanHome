@@ -5,6 +5,7 @@ import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Urgency
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 data class TaskListState(
@@ -12,12 +13,12 @@ data class TaskListState(
         Task(
             id = 1,
             name = "me",
-            room = Room(1, "My Room"),
+            room = Room(1, "My Room", 1),
             duration = 1000L,
             frequency = Frequency.Weekly,
-            scheduledDate = OffsetDateTime.now(),
+            scheduledDate = LocalDate.now(),
             urgency = Urgency.Urgent,
-            assignedTo = Resident(1, "me")
+            assignedTo = Resident(1, "me", 1)
         ),
     ),
     val isLoading: Boolean = false,

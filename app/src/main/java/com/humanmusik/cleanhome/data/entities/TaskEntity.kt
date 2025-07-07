@@ -4,12 +4,12 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.humanmusik.cleanhome.data.OffsetDateTimeTypeConverter
+import com.humanmusik.cleanhome.data.LocalDateTypeConverter
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Urgency
-import java.time.OffsetDateTime
+import java.time.LocalDate
 
-@TypeConverters(OffsetDateTimeTypeConverter::class)
+@TypeConverters(LocalDateTypeConverter::class)
 @Entity
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
@@ -19,7 +19,7 @@ data class TaskEntity(
     val room: RoomEntity,
     val duration: Long,
     val frequency: Frequency,
-    val scheduledDate: OffsetDateTime,
+    val scheduledDate: LocalDate,
     val urgency: Urgency,
     @Embedded(prefix = "resident_")
     val allocatedTo: ResidentEntity,
