@@ -55,7 +55,7 @@ interface CleanHomeDao {
     suspend fun getRoomWithMetadata(roomId: Int): RoomWithMetadata
 
     @Query("SELECT * from residententity")
-    suspend fun getAllResidentsWithMetadata(): List<ResidentWithMetadata>
+    suspend fun getAllResidentsWithMetadata(): List<ResidentEntity>
 
     @Query("SELECT * FROM roomentity WHERE id=:residentId")
     suspend fun getResidentWithMetadata(residentId: Int): ResidentWithMetadata

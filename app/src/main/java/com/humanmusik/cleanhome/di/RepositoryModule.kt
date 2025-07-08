@@ -17,4 +17,6 @@ abstract class RepositoryModule {
     abstract fun bindCleanHomeRepository(
         cleanHomeRepository: CleanHomeRepositoryImpl
     ): CleanHomeRepository
+
+    // TODO: How to register fun interfaces
 }

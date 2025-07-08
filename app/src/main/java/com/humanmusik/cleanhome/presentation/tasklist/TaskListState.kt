@@ -1,12 +1,12 @@
 package com.humanmusik.cleanhome.presentation.tasklist
 
-import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import java.time.LocalDate
-import java.time.OffsetDateTime
+import kotlin.time.Duration.Companion.days
 
 data class TaskListState(
     val tasks: List<Task> = listOf(
@@ -14,7 +14,7 @@ data class TaskListState(
             id = 1,
             name = "me",
             room = Room(1, "My Room", 1),
-            duration = 1000L,
+            duration = 1.days,
             frequency = Frequency.Weekly,
             scheduledDate = LocalDate.now(),
             urgency = Urgency.Urgent,

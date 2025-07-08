@@ -8,6 +8,7 @@ import com.humanmusik.cleanhome.data.LocalDateTypeConverter
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import java.time.LocalDate
+import kotlin.time.Duration
 
 @TypeConverters(LocalDateTypeConverter::class)
 @Entity
@@ -17,7 +18,7 @@ data class TaskEntity(
     val name: String,
     @Embedded(prefix = "room_")
     val room: RoomEntity,
-    val duration: Long,
+    val duration: Duration,
     val frequency: Frequency,
     val scheduledDate: LocalDate,
     val urgency: Urgency,

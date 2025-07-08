@@ -3,13 +3,13 @@ package com.humanmusik.cleanhome.domain.model.task
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlin.time.Duration
 
 data class Task(
     val id: Int,
     val name: String,
     val room: Room,
-    val duration: Long,
+    val duration: Duration,
     val frequency: Frequency,
     val scheduledDate: LocalDate,
     val urgency: Urgency,
