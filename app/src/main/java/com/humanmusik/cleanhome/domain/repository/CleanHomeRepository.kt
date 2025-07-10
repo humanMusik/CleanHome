@@ -1,5 +1,6 @@
 package com.humanmusik.cleanhome.domain.repository
 
+import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.Resource
@@ -15,6 +16,15 @@ fun interface FlowOfAllTasks {
     companion object {
         operator fun FlowOfAllTasks.invoke() =
             flowOfAllTasks()
+    }
+}
+
+fun interface FlowOfTasks {
+    fun flowOfTasks(filter: TaskFilter): Flow<List<Task>>
+
+    companion object {
+        operator fun FlowOfTasks.invoke(filter: TaskFilter) =
+            flowOfTasks(filter)
     }
 }
 

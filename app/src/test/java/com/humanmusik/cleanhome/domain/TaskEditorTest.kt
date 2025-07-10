@@ -6,14 +6,12 @@ import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.domain.model.task.Urgency
-import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasksForResident
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Test
 import java.time.LocalDate
-import java.time.LocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -23,14 +21,14 @@ class TaskEditorTest {
     fun `reassignTask() - reassigned task has the same id`() {
         val originalTask = task(id = 1)
 
-        taskEditor().reassignTask(originalTask).id assertIsEqualTo 1
+        taskEditor().reassignTask(task = originalTask, dateCompleted = dateCompleted).id assertIsEqualTo 1
     }
 
     @Test
     fun `reassignTask() - reassigned task has the same name`() {
         val originalTask = task(name = "Vacuum")
 
-        taskEditor().reassignTask(originalTask).name assertIsEqualTo "Vacuum"
+        taskEditor().reassignTask(task = originalTask, dateCompleted = dateCompleted).name assertIsEqualTo "Vacuum"
     }
 
     @Test
@@ -43,7 +41,7 @@ class TaskEditorTest {
             )
         )
 
-        taskEditor().reassignTask(originalTask).room assertIsEqualTo
+        taskEditor().reassignTask(task = originalTask, dateCompleted = dateCompleted).room assertIsEqualTo
                 Room(
                     id = 1,
                     name = "Living Room",
@@ -53,93 +51,107 @@ class TaskEditorTest {
 
     @Test
     fun `reassignTask() - reassigned task has the same duration`() {
-        val originalTask = task(duration = 1000L)
+        val originalTask = task(duration = 1.hours)
 
-        taskEditor().reassignTask(originalTask).duration assertIsEqualTo 1000L
+        taskEditor().reassignTask(task = originalTask, dateCompleted = dateCompleted).duration assertIsEqualTo 1000L
     }
 
     @Test
     fun `reassignTask() - reassigned task has the same urgency`() {
         val originalTask = task(urgency = Urgency.Urgent)
 
-        taskEditor().reassignTask(originalTask).urgency assertIsEqualTo Urgency.Urgent
+        taskEditor().reassignTask(task = originalTask, dateCompleted = dateCompleted).urgency assertIsEqualTo Urgency.Urgent
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 1 day from original date if frequency is daily`() {
+    fun `reassignTask() - scheduled date is 1 day from completed date if frequency is daily`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
             frequency = Frequency.Daily,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2026, 7, 8)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2026, 7, 11)
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 7 days from original date if frequency is weekly`() {
+    fun `reassignTask() - scheduled date is 7 days from completed date if frequency is weekly`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
             frequency = Frequency.Weekly,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2026, 7, 14)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2026, 7, 17)
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 14 days from original date if frequency is fortnightly`() {
+    fun `reassignTask() - scheduled date is 14 days from completed date if frequency is fortnightly`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
             frequency = Frequency.Fortnightly,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2026, 7, 21)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2026, 7, 24)
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 1 month from original date if frequency is monthly`() {
+    fun `reassignTask() - scheduled date is 1 month from completed date if frequency is monthly`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
             frequency = Frequency.Monthly,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2026, 8, 7)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2026, 8, 10)
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 3 months from original date if frequency is quarterly`() {
+    fun `reassignTask() - scheduled date is 3 months from completed date if frequency is quarterly`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
             frequency = Frequency.Quarterly,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2026, 10, 7)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2026, 10, 10)
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 6 months from original date if frequency is bi-anually`() {
+    fun `reassignTask() - scheduled date is 6 months from completed date if frequency is bi-anually`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
-            frequency = Frequency.Quarterly,
+            frequency = Frequency.BiAnnually,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2027, 1, 7)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2027, 1, 10)
     }
 
     @Test
-    fun `reassignTask() - scheduled date is 1 year from original date if frequency is anually`() {
+    fun `reassignTask() - scheduled date is 1 year from completed date if frequency is annually`() {
         val originalTask = task(
             scheduledDate = LocalDate.of(2026, 7, 7),
-            frequency = Frequency.Quarterly,
+            frequency = Frequency.Annually,
         )
 
-        taskEditor().reassignTask(originalTask).scheduledDate assertIsEqualTo
-                LocalDate.of(2027, 7, 7)
+        taskEditor(allResidents = allResidents)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .scheduledDate assertIsEqualTo
+                LocalDate.of(2027, 7, 10)
     }
 
     @Test
@@ -148,33 +160,36 @@ class TaskEditorTest {
             scheduledDate = LocalDate.of(2026, 6, 6),
             frequency = Frequency.Daily,
         )
+
+        val dateCompleted = LocalDate.of(2026, 6, 14)
+
         val allTasksForResident1 = listOf(
             task(
-                scheduledDate = LocalDate.of(2026, 6, 7),
+                scheduledDate = LocalDate.of(2026, 6, 15),
                 frequency = Frequency.Weekly,
                 duration = 20.minutes,
             ),
             task(
-                scheduledDate = LocalDate.of(2026, 6, 7),
+                scheduledDate = LocalDate.of(2026, 6, 15),
                 frequency = Frequency.BiAnnually,
                 duration = 2.hours,
             )
         )
         val allTasksForResident2 = listOf(
             task(
-                scheduledDate = LocalDate.of(2026, 6, 7),
+                scheduledDate = LocalDate.of(2026, 6, 15),
                 frequency = Frequency.Weekly,
                 duration = 30.minutes,
             ),
         )
         val allTasksForResident3 = listOf(
             task(
-                scheduledDate = LocalDate.of(2026, 6, 7),
+                scheduledDate = LocalDate.of(2026, 6, 15),
                 frequency = Frequency.Annually,
                 duration = 4.hours,
             ),
             task(
-                scheduledDate = LocalDate.of(2026, 6, 7),
+                scheduledDate = LocalDate.of(2026, 6, 15),
                 frequency = Frequency.Monthly,
                 duration = 2.hours,
             )
@@ -190,17 +205,355 @@ class TaskEditorTest {
 
         taskEditor(
             allResidents = allResidents,
-            taskMapper = mapOfResidentIdToTasks,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
         )
-            .reassignTask(task = originalTask)
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
             .assignedTo assertIsEqualTo residentWithLeastWorkload
     }
 
-    private val allResidents: List<ResidentDomain> = listOf(
-        Resident.One.value,
-        Resident.Two.value,
-        Resident.Three.value,
-    )
+    @Test
+    fun `reassignTask() - assign task to resident with least workload in next 7 days if frequency is weekly`() {
+        val originalTask = task(
+            scheduledDate = LocalDate.of(2026, 6, 6),
+            frequency = Frequency.Weekly,
+        )
+
+        val dateCompleted = LocalDate.of(2026, 6, 14)
+
+        val allTasksForResident1 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 20),
+                duration = 20.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 18),
+                duration = 2.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 13),
+                duration = 2.hours,
+            )
+        )
+        val allTasksForResident2 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 12),
+                duration = 30.minutes,
+            ),
+        )
+        val allTasksForResident3 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 7),
+                duration = 4.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 21),
+                duration = 2.hours,
+            )
+        )
+
+        val residentWithLeastWorkload = Resident.Two.value
+
+        val mapOfResidentIdToTasks = taskMapper(
+            1 to flowOf(allTasksForResident1),
+            2 to flowOf(allTasksForResident2),
+            3 to flowOf(allTasksForResident3),
+        )
+
+        taskEditor(
+            allResidents = allResidents,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
+        )
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .assignedTo assertIsEqualTo residentWithLeastWorkload
+    }
+
+    @Test
+    fun `reassignTask() - assign task to resident with least workload in next 14 days if frequency is fortnightly`() {
+        val originalTask = task(
+            scheduledDate = LocalDate.of(2026, 6, 6),
+            frequency = Frequency.Fortnightly,
+        )
+
+        val dateCompleted = LocalDate.of(2026, 6, 14)
+
+        val allTasksForResident1 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 7),
+                duration = 20.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 8, 7),
+                duration = 2.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 11),
+                duration = 2.hours,
+            )
+        )
+        val allTasksForResident2 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 27),
+                duration = 30.minutes,
+            ),
+        )
+        val allTasksForResident3 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 20),
+                duration = 4.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 28),
+                duration = 2.hours,
+            )
+        )
+
+        val residentWithLeastWorkload = Resident.One.value
+
+        val mapOfResidentIdToTasks = taskMapper(
+            1 to flowOf(allTasksForResident1),
+            2 to flowOf(allTasksForResident2),
+            3 to flowOf(allTasksForResident3),
+        )
+
+        taskEditor(
+            allResidents = allResidents,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
+        )
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .assignedTo assertIsEqualTo residentWithLeastWorkload
+    }
+
+    @Test
+    fun `reassignTask() - assign task to resident with least workload in next month if frequency is monthly`() {
+        val originalTask = task(
+            scheduledDate = LocalDate.of(2026, 6, 6),
+            frequency = Frequency.Monthly,
+        )
+
+        val dateCompleted = LocalDate.of(2026, 6, 14)
+
+        val allTasksForResident1 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 7),
+                duration = 20.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 8, 7),
+                duration = 2.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 11),
+                duration = 2.hours,
+            )
+        )
+        val allTasksForResident2 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 6, 27),
+                duration = 30.minutes,
+            ),
+        )
+        val allTasksForResident3 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 20),
+                duration = 4.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 28),
+                duration = 2.hours,
+            )
+        )
+
+        val residentWithLeastWorkload = Resident.Two.value
+
+        val mapOfResidentIdToTasks = taskMapper(
+            1 to flowOf(allTasksForResident1),
+            2 to flowOf(allTasksForResident2),
+            3 to flowOf(allTasksForResident3),
+        )
+
+        taskEditor(
+            allResidents = allResidents,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
+        )
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .assignedTo assertIsEqualTo residentWithLeastWorkload
+    }
+
+    @Test
+    fun `reassignTask() - assign task to resident with least workload in 3 months if frequency is quarterly`() {
+        val originalTask = task(
+            scheduledDate = LocalDate.of(2026, 6, 6),
+            frequency = Frequency.Quarterly,
+        )
+
+        val dateCompleted = LocalDate.of(2026, 6, 14)
+
+        val allTasksForResident1 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 11, 7),
+                duration = 20.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 10, 7),
+                duration = 2.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 11),
+                duration = 2.hours,
+            )
+        )
+        val allTasksForResident2 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 9, 27),
+                duration = 30.minutes,
+            ),
+        )
+        val allTasksForResident3 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 10),
+                duration = 4.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2027, 1, 4),
+                duration = 2.hours,
+            )
+        )
+
+        val residentWithLeastWorkload = Resident.Two.value
+
+        val mapOfResidentIdToTasks = taskMapper(
+            1 to flowOf(allTasksForResident1),
+            2 to flowOf(allTasksForResident2),
+            3 to flowOf(allTasksForResident3),
+        )
+
+        taskEditor(
+            allResidents = allResidents,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
+        )
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .assignedTo assertIsEqualTo residentWithLeastWorkload
+    }
+
+    @Test
+    fun `reassignTask() - assign task to resident with least workload in 6 months if frequency is biannually`() {
+        val originalTask = task(
+            scheduledDate = LocalDate.of(2026, 6, 6),
+            frequency = Frequency.BiAnnually,
+        )
+
+        val dateCompleted = LocalDate.of(2026, 7, 14)
+
+        val allTasksForResident1 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2027, 11, 7),
+                duration = 20.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 10, 7),
+                duration = 2.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 7, 11),
+                duration = 2.hours,
+            )
+        )
+        val allTasksForResident2 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 9, 27),
+                duration = 30.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 1, 13),
+                duration = 6.hours,
+            ),
+        )
+        val allTasksForResident3 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2027, 2, 10),
+                duration = 4.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2027, 1, 15),
+                duration = 2.hours,
+            )
+        )
+
+        val residentWithLeastWorkload = Resident.Three.value
+
+        val mapOfResidentIdToTasks = taskMapper(
+            1 to flowOf(allTasksForResident1),
+            2 to flowOf(allTasksForResident2),
+            3 to flowOf(allTasksForResident3),
+        )
+
+        taskEditor(
+            allResidents = allResidents,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
+        )
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .assignedTo assertIsEqualTo residentWithLeastWorkload
+    }
+
+    @Test
+    fun `reassignTask() - assign task to resident with least workload in next 1 year if frequency is annually`() {
+        val originalTask = task(
+            scheduledDate = LocalDate.of(2026, 6, 6),
+            frequency = Frequency.Annually,
+        )
+
+        val dateCompleted = LocalDate.of(2026, 7, 14)
+
+        val allTasksForResident1 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2027, 1, 15),
+                duration = 20.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2027, 7, 15),
+                duration = 2.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2027, 12, 11),
+                duration = 2.hours,
+            )
+        )
+        val allTasksForResident2 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2026, 9, 27),
+                duration = 30.minutes,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2026, 1, 13),
+                duration = 6.hours,
+            ),
+        )
+        val allTasksForResident3 = listOf(
+            task(
+                scheduledDate = LocalDate.of(2028, 6, 10),
+                duration = 4.hours,
+            ),
+            task(
+                scheduledDate = LocalDate.of(2027, 1, 15),
+                duration = 2.hours,
+            )
+        )
+
+        val residentWithLeastWorkload = Resident.One.value
+
+        val mapOfResidentIdToTasks = taskMapper(
+            1 to flowOf(allTasksForResident1),
+            2 to flowOf(allTasksForResident2),
+            3 to flowOf(allTasksForResident3),
+        )
+
+        taskEditor(
+            allResidents = allResidents,
+            tasksForResidentMapper = mapOfResidentIdToTasks,
+        )
+            .reassignTask(task = originalTask, dateCompleted = dateCompleted)
+            .assignedTo assertIsEqualTo residentWithLeastWorkload
+    }
 
     object Resident {
         object One {
@@ -210,6 +563,7 @@ class TaskEditorTest {
                 homeId = 1,
             )
         }
+
         object Two {
             val value = ResidentDomain(
                 id = 2,
@@ -217,6 +571,7 @@ class TaskEditorTest {
                 homeId = 1,
             )
         }
+
         object Three {
             val value = ResidentDomain(
                 id = 3,
@@ -225,6 +580,14 @@ class TaskEditorTest {
             )
         }
     }
+
+    private val allResidents: List<ResidentDomain> = listOf(
+        Resident.One.value,
+        Resident.Two.value,
+        Resident.Three.value,
+    )
+
+    private val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
 
     private fun task(
         id: Int = 1,
@@ -255,11 +618,11 @@ class TaskEditorTest {
     )
 
     private fun taskEditor(
-        allResidents: List<ResidentDomain>,
-        taskMapper: Int.() -> Flow<List<Task>>,
+        allResidents: List<ResidentDomain> = emptyList(),
+        tasksForResidentMapper: Int.() -> Flow<List<Task>> = { flowOf(emptyList()) },
     ): TaskEditorImpl {
         val flowOfTasksForResident = FlowOfTasksForResident { residentId ->
-            residentId.taskMapper()
+            residentId.tasksForResidentMapper()
         }
         return TaskEditorImpl(
             flowOfAllResidents = { flowOf(allResidents) },

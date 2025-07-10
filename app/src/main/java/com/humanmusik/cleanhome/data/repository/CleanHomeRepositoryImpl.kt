@@ -4,23 +4,35 @@ import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toTask
 import com.humanmusik.cleanhome.data.mappers.toTaskEntity
+import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.repository.CleanHomeRepository
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllTasks
+import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasksForResident
 import com.humanmusik.cleanhome.util.Resource
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.shareIn
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CleanHomeRepositoryImpl @Inject constructor(
+    scope: CoroutineScope,
     db: CleanHomeDatabase,
 ) : CleanHomeRepository,
+    FlowOfTasks,
     FlowOfAllTasks,
     FlowOfAllResidents,
     FlowOfTasksForResident {
@@ -30,16 +42,32 @@ class CleanHomeRepositoryImpl @Inject constructor(
         dao.upsertTask(task.toTaskEntity())
     }
 
-    override fun flowOfAllTasks(): Flow<Resource<List<Task>>> {
-        return flow {
-            emit(Resource.Loading(true))
-            val localTasks = dao.getAllTasks()
-            emit(
-                Resource.Success(
-                    data = localTasks.map { it.toTask() },
-                )
-            )
+    private val allTasks = flow {
+        flow {
+            emit(dao.getAllTasks().map { it.toTask() })
         }
+            .distinctUntilChanged()
+            .shareIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(
+                    stopTimeoutMillis = 0,
+                    replayExpirationMillis = 0,
+                ),
+                replay = 1,
+            )
+            .collect(this@flow)
+    }
+
+    override fun flowOfAllTasks(): Flow<Resource<List<Task>>> {
+//        return flow {
+//            emit(Resource.Loading(true))
+//            val localTasks = dao.getAllTasks()
+//            emit(
+//                Resource.Success(
+//                    data = localTasks.map { it.toTask() },
+//                )
+//            )
+//        }
     }
 
     override fun flowOfAllResidents(): Flow<List<Resident>> {
@@ -64,5 +92,34 @@ class CleanHomeRepositoryImpl @Inject constructor(
                     }
             )
         }
+    }
+
+    override fun flowOfTasks(
+        filter: TaskFilter,
+    ): Flow<List<Task>> {
+        return allTasks.map { tasks ->
+            tasks.filter { task ->
+                filter.getFilterPredicate()(task)
+            }
+        }
+            .distinctUntilChanged()
+    }
+
+    private fun TaskFilter.getFilterPredicate(): (Task) -> Boolean {
+        return when (this) {
+            TaskFilter.All -> { { true } }
+            is TaskFilter.ByAssignment -> {
+                { it.assignedTo == this.assignedTo }
+            }
+            is TaskFilter.ByScheduledDate -> {
+                { it.scheduledDate.isBetween(this.startDateInclusive, this.endDateInclusive) }
+            }
+        }
+    }
+
+    private fun LocalDate.isBetween(startDateInclusive: LocalDate, endDateInclusive: LocalDate): Boolean {
+        isEqual(startDateInclusive) ||
+                (isAfter(startDateInclusive) && isBefore(endDateInclusive)) ||
+                isEqual(endDateInclusive)
     }
 }
