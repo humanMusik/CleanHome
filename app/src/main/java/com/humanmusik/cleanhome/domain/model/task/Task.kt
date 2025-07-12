@@ -2,6 +2,7 @@ package com.humanmusik.cleanhome.domain.model.task
 
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.taskComparator
 import java.time.LocalDate
 import kotlin.time.Duration
 
@@ -14,7 +15,10 @@ data class Task(
     val scheduledDate: LocalDate,
     val urgency: Urgency,
     val assignedTo: Resident,
-) {
+) : Comparable<Task> {
+    override fun compareTo(other: Task): Int =
+        taskComparator.compare(this, other)
+
     fun editName(name: String): Task {
         return copy(name = name)
     }

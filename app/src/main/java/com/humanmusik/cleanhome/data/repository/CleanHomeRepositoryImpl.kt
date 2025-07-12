@@ -9,19 +9,14 @@ import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.repository.CleanHomeRepository
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
-import com.humanmusik.cleanhome.domain.repository.FlowOfAllTasks
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasksForResident
-import com.humanmusik.cleanhome.util.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.shareIn
 import java.time.LocalDate
 import javax.inject.Inject
@@ -33,7 +28,6 @@ class CleanHomeRepositoryImpl @Inject constructor(
     db: CleanHomeDatabase,
 ) : CleanHomeRepository,
     FlowOfTasks,
-    FlowOfAllTasks,
     FlowOfAllResidents,
     FlowOfTasksForResident {
     private val dao = db.cleanHomeDao()
@@ -56,18 +50,6 @@ class CleanHomeRepositoryImpl @Inject constructor(
                 replay = 1,
             )
             .collect(this@flow)
-    }
-
-    override fun flowOfAllTasks(): Flow<Resource<List<Task>>> {
-//        return flow {
-//            emit(Resource.Loading(true))
-//            val localTasks = dao.getAllTasks()
-//            emit(
-//                Resource.Success(
-//                    data = localTasks.map { it.toTask() },
-//                )
-//            )
-//        }
     }
 
     override fun flowOfAllResidents(): Flow<List<Resident>> {
@@ -96,11 +78,13 @@ class CleanHomeRepositoryImpl @Inject constructor(
 
     override fun flowOfTasks(
         filter: TaskFilter,
-    ): Flow<List<Task>> {
+    ): Flow<Set<Task>> {
         return allTasks.map { tasks ->
             tasks.filter { task ->
                 filter.getFilterPredicate()(task)
             }
+                .sorted()
+                .toSet()
         }
             .distinctUntilChanged()
     }
@@ -118,7 +102,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
     }
 
     private fun LocalDate.isBetween(startDateInclusive: LocalDate, endDateInclusive: LocalDate): Boolean {
-        isEqual(startDateInclusive) ||
+        return isEqual(startDateInclusive) ||
                 (isAfter(startDateInclusive) && isBefore(endDateInclusive)) ||
                 isEqual(endDateInclusive)
     }

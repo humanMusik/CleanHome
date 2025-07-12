@@ -10,17 +10,8 @@ interface CleanHomeRepository {
     suspend fun updateTask(task: Task)
 }
 
-fun interface FlowOfAllTasks {
-    fun flowOfAllTasks(): Flow<Resource<List<Task>>>
-
-    companion object {
-        operator fun FlowOfAllTasks.invoke() =
-            flowOfAllTasks()
-    }
-}
-
 fun interface FlowOfTasks {
-    fun flowOfTasks(filter: TaskFilter): Flow<List<Task>>
+    fun flowOfTasks(filter: TaskFilter): Flow<Set<Task>>
 
     companion object {
         operator fun FlowOfTasks.invoke(filter: TaskFilter) =
