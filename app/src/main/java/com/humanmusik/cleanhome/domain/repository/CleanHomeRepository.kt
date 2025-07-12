@@ -20,7 +20,7 @@ fun interface FlowOfTasks {
 }
 
 fun interface FlowOfAllResidents {
-    fun flowOfAllResidents(): Flow<List<Resident>>
+    fun flowOfAllResidents(): Flow<Set<Resident>>
 
     companion object {
         operator fun FlowOfAllResidents.invoke() =

@@ -16,7 +16,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-class TaskEditorTest {
+class TaskEditorImplTest {
     @Test
     fun `reassignTask() - reassigned task has the same id`() {
         val originalTask = task(id = 1)

@@ -52,7 +52,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
             .collect(this@flow)
     }
 
-    override fun flowOfAllResidents(): Flow<List<Resident>> {
+    override fun flowOfAllResidents(): Flow<Set<Resident>> {
         return flow {
             emit(
                 dao
@@ -60,6 +60,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
                     .map { entity ->
                         entity.toResident()
                     }
+                    .toSet()
             )
         }
     }
