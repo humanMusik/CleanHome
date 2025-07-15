@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c747aaef9ee4a2919cfa343fc873fb6e",
+    "identityHash": "78a5db853ffc680e77f965d3ed007681",
     "entities": [
       {
         "tableName": "HomeEntity",
@@ -26,9 +26,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "RoomEntity",
@@ -58,9 +56,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "ResidentEntity",
@@ -90,13 +86,11 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `duration` INTEGER NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `room_id` INTEGER NOT NULL, `room_name` TEXT NOT NULL, `room_homeId` INTEGER NOT NULL, `resident_id` INTEGER NOT NULL, `resident_name` TEXT NOT NULL, `resident_homeId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `room_id` INTEGER NOT NULL, `room_name` TEXT NOT NULL, `room_homeId` INTEGER NOT NULL, `resident_id` INTEGER NOT NULL, `resident_name` TEXT NOT NULL, `resident_homeId` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -113,7 +107,7 @@
           {
             "fieldPath": "duration",
             "columnName": "duration",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -153,19 +147,19 @@
             "notNull": true
           },
           {
-            "fieldPath": "resident.id",
+            "fieldPath": "allocatedTo.id",
             "columnName": "resident_id",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "resident.name",
+            "fieldPath": "allocatedTo.name",
             "columnName": "resident_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "resident.homeId",
+            "fieldPath": "allocatedTo.homeId",
             "columnName": "resident_homeId",
             "affinity": "INTEGER",
             "notNull": true
@@ -176,9 +170,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "ResidentRoomCrossRef",
@@ -204,7 +196,6 @@
             "roomId"
           ]
         },
-        "indices": [],
         "foreignKeys": [
           {
             "table": "ResidentEntity",
@@ -231,10 +222,9 @@
         ]
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c747aaef9ee4a2919cfa343fc873fb6e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '78a5db853ffc680e77f965d3ed007681')"
     ]
   }
 }

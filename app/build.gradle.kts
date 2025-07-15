@@ -98,4 +98,6 @@ dependencies {
 
     // Unit Tests
     implementation(libs.truth)
+    implementation(libs.kotlinx.coroutines.test)
+    implementation(libs.turbine)
 }

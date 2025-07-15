@@ -4,13 +4,17 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.humanmusik.cleanhome.data.DurationTypeConverter
 import com.humanmusik.cleanhome.data.LocalDateTypeConverter
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import java.time.LocalDate
 import kotlin.time.Duration
 
-@TypeConverters(LocalDateTypeConverter::class)
+@TypeConverters(
+    LocalDateTypeConverter::class,
+    DurationTypeConverter::class,
+)
 @Entity
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)

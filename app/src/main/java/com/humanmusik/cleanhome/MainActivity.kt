@@ -17,7 +17,8 @@ import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.OffsetDateTime
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
                     name = "Cihan bedroom",
                     homeId = 1,
                 ),
-                duration = 1000L,
+                duration = 10.minutes,
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
@@ -93,7 +94,7 @@ class MainActivity : ComponentActivity() {
                     name = "Bathroom",
                     homeId = 1,
                 ),
-                duration = 1000L,
+                duration = 15.minutes,
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
@@ -110,7 +111,7 @@ class MainActivity : ComponentActivity() {
                     name = "Living Room",
                     homeId = 1,
                 ),
-                duration = 1000L,
+                duration = 1.hours,
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
@@ -127,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     name = "Bathroom",
                     homeId = 1,
                 ),
-                duration = 1000L,
+                duration = 5.minutes,
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
