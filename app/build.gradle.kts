@@ -55,6 +55,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    tasks.withType<Test>().configureEach { useJUnitPlatform() }
 }
 
 dependencies {
@@ -68,7 +69,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.javax.inject)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -100,4 +100,7 @@ dependencies {
     implementation(libs.truth)
     implementation(libs.kotlinx.coroutines.test)
     implementation(libs.turbine)
+    testImplementation(libs.junit5.jupiter.api)
+    testImplementation(libs.junit5.jupiter.engine)
+    testImplementation(libs.junit5.jupiter.params)
 }

@@ -160,15 +160,15 @@ class MainActivity : ComponentActivity() {
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 
             val getAllTasks = dao.getAllTasks()
-            val getHomeWithMetadata = dao.getHomeWithMetadata(1)
-            val getAllRoomsWithMetadata = dao.getAllRoomsWithMetadata()
-            val getAllResidentsWithMetadata = dao.getAllResidentsWithMetadata()
+//            val getHomeWithMetadata = dao.getHomeWithMetadata(1)
+//            val getAllRoomsWithMetadata = dao.getAllRoomsWithMetadata()
+//            val getAllResidentsWithMetadata = dao.getAllResidentsWithMetadata()
             val getTasksForLeslie = dao.getTasksForResident(1)
 
             getAllTasks.onEach(::println)
-            getAllRoomsWithMetadata.onEach(::println)
-            getAllResidentsWithMetadata.onEach(::println)
-            println(getHomeWithMetadata)
+//            getAllRoomsWithMetadata.onEach(::println)
+//            getAllResidentsWithMetadata.onEach(::println)
+//            println(getHomeWithMetadata)
             getTasksForLeslie.onEach(::println)
         }
     }

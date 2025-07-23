@@ -44,18 +44,18 @@ interface CleanHomeDao {
     @Query("SELECT * FROM taskentity WHERE resident_id=:residentId")
     suspend fun getTasksForResident(residentId: Int): List<TaskEntity>
 
-    @Query("SELECT * FROM homeentity WHERE id=:homeId")
-    suspend fun getHomeWithMetadata(homeId: Int): HomeWithMetadata
-
-    @Query("SELECT * from roomentity")
-    suspend fun getAllRoomsWithMetadata(): List<RoomWithMetadata>
-
-    @Query("SELECT * FROM roomentity WHERE id=:roomId")
-    suspend fun getRoomWithMetadata(roomId: Int): RoomWithMetadata
-
+//    @Query("SELECT * FROM homeentity WHERE id=:homeId")
+//    suspend fun getHomeWithMetadata(homeId: Int): HomeWithMetadata
+//
+//    @Query("SELECT * from roomentity")
+//    suspend fun getAllRoomsWithMetadata(): List<RoomWithMetadata>
+//
+//    @Query("SELECT * FROM roomentity WHERE id=:roomId")
+//    suspend fun getRoomWithMetadata(roomId: Int): RoomWithMetadata
+//
     @Query("SELECT * from residententity")
     suspend fun getAllResidentsWithMetadata(): List<ResidentEntity>
-
-    @Query("SELECT * FROM roomentity WHERE id=:residentId")
-    suspend fun getResidentWithMetadata(residentId: Int): ResidentWithMetadata
+//
+//    @Query("SELECT * FROM roomentity WHERE id=:residentId")
+//    suspend fun getResidentWithMetadata(residentId: Int): ResidentWithMetadata
 }

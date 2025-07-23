@@ -10,6 +10,8 @@ import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 
+const val DB_VERSION = 1
+
 @Database(
     entities = [
         HomeEntity::class,
@@ -18,7 +20,7 @@ import com.humanmusik.cleanhome.data.entities.TaskEntity
         TaskEntity::class,
         ResidentRoomCrossRef::class,
     ],
-    version = 1,
+    version = DB_VERSION,
 )
 abstract class CleanHomeDatabase : RoomDatabase() {
 

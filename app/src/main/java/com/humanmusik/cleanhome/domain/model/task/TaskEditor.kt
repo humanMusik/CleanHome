@@ -39,7 +39,7 @@ class TaskEditorImpl @Inject constructor(
         return combine(
             flowOfTasks(filter),
             flowOfAllResidents(),
-        ) { tasks, allResidents ->
+        ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
             Task(
                 id = task.id,
                 name = task.name,
@@ -52,7 +52,7 @@ class TaskEditorImpl @Inject constructor(
                 ),
                 urgency = task.urgency,
                 assignedTo = getNewAssignment(
-                    tasks = tasks,
+                    tasks = tasksBetweenDateCompletedAndNewDate,
                     allResidents = allResidents
                 ),
             )
@@ -67,6 +67,7 @@ class TaskEditorImpl @Inject constructor(
             .minByOrNull { it.value }
             ?.key
             ?: allResidents.random()
+        // TODO: handle scenario when allResidents is empty
     }
 
     private fun getNewScheduledDate(

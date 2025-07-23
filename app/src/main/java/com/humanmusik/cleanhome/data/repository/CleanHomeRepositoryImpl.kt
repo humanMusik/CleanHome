@@ -4,6 +4,7 @@ import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toTask
 import com.humanmusik.cleanhome.data.mappers.toTaskEntity
+import com.humanmusik.cleanhome.di.ApplicationScope
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Task
@@ -24,7 +25,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CleanHomeRepositoryImpl @Inject constructor(
-    scope: CoroutineScope,
+    @ApplicationScope scope: CoroutineScope,
     db: CleanHomeDatabase,
 ) : CleanHomeRepository,
     FlowOfTasks,

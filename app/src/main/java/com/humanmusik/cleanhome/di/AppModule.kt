@@ -2,7 +2,6 @@ package com.humanmusik.cleanhome.di
 
 import android.app.Application
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import dagger.Module
 import dagger.Provides

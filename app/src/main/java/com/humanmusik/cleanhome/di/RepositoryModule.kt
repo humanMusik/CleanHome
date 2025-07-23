@@ -2,6 +2,8 @@ package com.humanmusik.cleanhome.di
 
 import com.humanmusik.cleanhome.data.repository.CleanHomeRepositoryImpl
 import com.humanmusik.cleanhome.domain.repository.CleanHomeRepository
+import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
+import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -19,4 +21,15 @@ abstract class RepositoryModule {
     ): CleanHomeRepository
 
     // TODO: How to register fun interfaces
+    @Binds
+    @Singleton
+    abstract fun bindFlowOfTasks(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): FlowOfTasks
+
+    @Binds
+    @Singleton
+    abstract fun bindFlowOfAllResidents(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): FlowOfAllResidents
 }
