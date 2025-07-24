@@ -20,7 +20,6 @@ abstract class RepositoryModule {
         cleanHomeRepository: CleanHomeRepositoryImpl,
     ): CleanHomeRepository
 
-    // TODO: How to register fun interfaces
     @Binds
     @Singleton
     abstract fun bindFlowOfTasks(

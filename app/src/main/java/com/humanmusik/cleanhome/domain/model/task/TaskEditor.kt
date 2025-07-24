@@ -67,7 +67,7 @@ class TaskEditorImpl @Inject constructor(
             .minByOrNull { it.value }
             ?.key
             ?: allResidents.random()
-        // TODO: handle scenario when allResidents is empty
+        // TODO: handle scenario when allResidents is empty..throw
     }
 
     private fun getNewScheduledDate(
