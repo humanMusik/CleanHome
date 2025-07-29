@@ -1,26 +1,8 @@
 package com.humanmusik.cleanhome.presentation.tasklist
 
-import com.humanmusik.cleanhome.domain.model.Resident
-import com.humanmusik.cleanhome.domain.model.Room
-import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.domain.model.task.Urgency
-import java.time.LocalDate
-import kotlin.time.Duration.Companion.days
+import com.humanmusik.cleanhome.presentation.FlowState
 
 data class TaskListState(
-    val tasks: List<Task> = listOf(
-        Task(
-            id = 1,
-            name = "me",
-            room = Room(1, "My Room", 1),
-            duration = 1.days,
-            frequency = Frequency.Weekly,
-            scheduledDate = LocalDate.now(),
-            urgency = Urgency.Urgent,
-            assignedTo = Resident(1, "me", 1)
-        ),
-    ),
-    val isLoading: Boolean = false,
-    val isRefreshing: Boolean = false,
+    val tasks: FlowState<Set<Task>>,
 )
