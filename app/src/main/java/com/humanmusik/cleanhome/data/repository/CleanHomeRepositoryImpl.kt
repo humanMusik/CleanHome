@@ -8,10 +8,10 @@ import com.humanmusik.cleanhome.di.ApplicationScope
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.domain.repository.CleanHomeRepository
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasksForResident
+import com.humanmusik.cleanhome.domain.repository.UpdateTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,14 +27,14 @@ import javax.inject.Singleton
 class CleanHomeRepositoryImpl @Inject constructor(
     @ApplicationScope scope: CoroutineScope,
     db: CleanHomeDatabase,
-) : CleanHomeRepository,
+) : UpdateTask,
     FlowOfTasks,
     FlowOfAllResidents,
     FlowOfTasksForResident {
     private val dao = db.cleanHomeDao()
 
-    override suspend fun updateTask(task: Task) {
-        dao.upsertTask(task.toTaskEntity())
+    override fun updateTask(task: Task) {
+        dao.updateTask(task.toTaskEntity())
     }
 
     private val allTasks = flow {

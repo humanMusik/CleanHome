@@ -6,28 +6,28 @@ import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents.Companion.invoke
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks.Companion.invoke
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 interface TaskEditor {
-    fun reassignTask(
+    suspend fun reassignTask(
         task: Task,
         dateCompleted: LocalDate,
-    ): Flow<Task>
+    ): Task
 }
 
 class TaskEditorImpl @Inject constructor(
     private val flowOfTasks: FlowOfTasks,
     private val flowOfAllResidents: FlowOfAllResidents,
 ) : TaskEditor {
-    override fun reassignTask(
+    override suspend fun reassignTask(
         task: Task,
         dateCompleted: LocalDate,
-    ): Flow<Task> {
+    ): Task {
         val filter = TaskFilter.ByScheduledDate(
             startDateInclusive = dateCompleted,
             endDateInclusive = getNewScheduledDate(
@@ -40,23 +40,18 @@ class TaskEditorImpl @Inject constructor(
             flowOfTasks(filter),
             flowOfAllResidents(),
         ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
-            Task(
-                id = task.id,
-                name = task.name,
-                room = task.room,
-                duration = task.duration,
-                frequency = task.frequency,
+            task.copy(
                 scheduledDate = getNewScheduledDate(
                     dateCompleted = dateCompleted,
                     taskFrequency = task.frequency,
                 ),
-                urgency = task.urgency,
                 assignedTo = getNewAssignment(
                     tasks = tasksBetweenDateCompletedAndNewDate,
                     allResidents = allResidents
                 ),
             )
         }
+            .first()
     }
 
     private fun getNewAssignment(
@@ -66,8 +61,8 @@ class TaskEditorImpl @Inject constructor(
         return tasks.mapOfResidentToTotalTaskDuration()
             .minByOrNull { it.value }
             ?.key
-            ?: allResidents.random()
-        // TODO: handle scenario when allResidents is empty..throw
+            ?: allResidents.randomOrNull()
+            ?: throw IllegalStateException()
     }
 
     private fun getNewScheduledDate(

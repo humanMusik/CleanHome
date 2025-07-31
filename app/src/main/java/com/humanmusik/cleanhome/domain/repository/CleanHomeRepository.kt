@@ -6,8 +6,13 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.Resource
 import kotlinx.coroutines.flow.Flow
 
-interface CleanHomeRepository {
-    suspend fun updateTask(task: Task)
+fun interface UpdateTask {
+    fun updateTask(task: Task)
+
+    companion object {
+        operator fun UpdateTask.invoke(task: Task) =
+            updateTask(task)
+    }
 }
 
 fun interface FlowOfTasks {

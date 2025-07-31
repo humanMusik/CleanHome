@@ -7,7 +7,6 @@ import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
 import com.humanmusik.cleanhome.utilstest.runTest
-import com.humanmusik.cleanhome.utilstest.test
 import kotlinx.coroutines.flow.flowOf
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -28,10 +27,7 @@ class TaskEditorImplTest {
                 tasks = setOf(task()),
             )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().id assertIsEqualTo 1
-                    awaitComplete()
-                }
+                .id assertIsEqualTo 1
         }
     }
 
@@ -44,10 +40,7 @@ class TaskEditorImplTest {
                 tasks = setOf(task())
             )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().name assertIsEqualTo "Vacuum"
-                    awaitComplete()
-                }
+                .name assertIsEqualTo "Vacuum"
         }
     }
 
@@ -64,15 +57,13 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().room assertIsEqualTo
-                            Room(
-                                id = 1,
-                                name = "Living Room",
-                                homeId = 1,
-                            )
-                    awaitComplete()
-                }
+                .room assertIsEqualTo
+                    Room(
+                        id = 1,
+                        name = "Living Room",
+                        homeId = 1,
+                    )
+
         }
     }
 
@@ -83,10 +74,7 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().duration assertIsEqualTo 1.hours
-                    awaitComplete()
-                }
+                .duration assertIsEqualTo 1.hours
         }
     }
 
@@ -97,10 +85,7 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().urgency assertIsEqualTo Urgency.Urgent
-                    awaitComplete()
-                }
+                .urgency assertIsEqualTo Urgency.Urgent
         }
     }
 
@@ -114,11 +99,7 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2026, 7, 11)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2026, 7, 11)
         }
     }
 
@@ -132,11 +113,8 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2026, 7, 17)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2026, 7, 17)
+
         }
     }
 
@@ -150,11 +128,7 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2026, 7, 24)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2026, 7, 24)
         }
     }
 
@@ -168,11 +142,7 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2026, 8, 10)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2026, 8, 10)
         }
     }
 
@@ -186,11 +156,8 @@ class TaskEditorImplTest {
 
             taskEditor(setOf(task()))
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2026, 10, 10)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2026, 10, 10)
+
         }
     }
 
@@ -204,11 +171,7 @@ class TaskEditorImplTest {
 
             taskEditor(allResidents = allResidents)
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2027, 1, 10)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2027, 1, 10)
         }
     }
 
@@ -222,11 +185,7 @@ class TaskEditorImplTest {
 
             taskEditor(allResidents = allResidents)
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .test {
-                    awaitItem().scheduledDate assertIsEqualTo
-                            LocalDate.of(2027, 7, 10)
-                    awaitComplete()
-                }
+                .scheduledDate assertIsEqualTo LocalDate.of(2027, 7, 10)
         }
     }
 
@@ -306,10 +265,7 @@ class TaskEditorImplTest {
                     task = originalTask,
                     dateCompleted = dateCompleted,
                 )
-                .test {
-                    awaitItem().assignedTo assertIsEqualTo expectedAssignedTo
-                    awaitComplete()
-                }
+                .assignedTo assertIsEqualTo expectedAssignedTo
         }
     }
 
