@@ -7,7 +7,7 @@ import java.time.LocalDate
 import kotlin.time.Duration
 
 data class Task(
-    val id: Int,
+    val id: Int?,
     val name: String,
     val room: Room,
     val duration: Duration,

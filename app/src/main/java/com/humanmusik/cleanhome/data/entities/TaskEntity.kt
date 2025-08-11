@@ -27,6 +27,6 @@ data class TaskEntity(
     val scheduledDate: LocalDate,
     val urgency: Urgency,
     @Embedded(prefix = "resident_")
-    val allocatedTo: ResidentEntity,
+    val assignedTo: ResidentEntity,
 )
 

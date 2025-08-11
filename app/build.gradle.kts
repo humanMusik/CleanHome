@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.robolectric.extension)
 }
 
 android {
@@ -56,6 +57,10 @@ android {
         }
     }
     tasks.withType<Test>().configureEach { useJUnitPlatform() }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -90,6 +95,7 @@ dependencies {
 
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.truth)
+    testImplementation(libs.androidx.room.testing)
 
     // Dagger-Hilt
     implementation(libs.hilt.android)
@@ -103,4 +109,6 @@ dependencies {
     testImplementation(libs.junit5.jupiter.api)
     testImplementation(libs.junit5.jupiter.engine)
     testImplementation(libs.junit5.jupiter.params)
+    testImplementation(libs.androidx.junit.ktx)
+    testImplementation(libs.roboelectric)
 }

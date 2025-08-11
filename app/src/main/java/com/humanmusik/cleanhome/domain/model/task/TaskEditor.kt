@@ -6,6 +6,8 @@ import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents.Companion.invoke
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks.Companion.invoke
+import com.humanmusik.cleanhome.domain.repository.UpdateTask
+import com.humanmusik.cleanhome.domain.repository.UpdateTask.Companion.invoke
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -17,17 +19,18 @@ interface TaskEditor {
     suspend fun reassignTask(
         task: Task,
         dateCompleted: LocalDate,
-    ): Task
+    )
 }
 
 class TaskEditorImpl @Inject constructor(
     private val flowOfTasks: FlowOfTasks,
     private val flowOfAllResidents: FlowOfAllResidents,
+    private val updateTask: UpdateTask,
 ) : TaskEditor {
     override suspend fun reassignTask(
         task: Task,
         dateCompleted: LocalDate,
-    ): Task {
+    ) {
         val filter = TaskFilter.ByScheduledDate(
             startDateInclusive = dateCompleted,
             endDateInclusive = getNewScheduledDate(
@@ -36,7 +39,7 @@ class TaskEditorImpl @Inject constructor(
             ),
         )
 
-        return combine(
+        val reAssignedTask = combine(
             flowOfTasks(filter),
             flowOfAllResidents(),
         ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
@@ -52,6 +55,8 @@ class TaskEditorImpl @Inject constructor(
             )
         }
             .first()
+
+        updateTask(reAssignedTask)
     }
 
     private fun getNewAssignment(

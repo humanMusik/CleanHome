@@ -11,16 +11,18 @@ fun TaskEntity.toTask() = Task(
     frequency = frequency,
     scheduledDate = scheduledDate,
     urgency = urgency,
-    assignedTo = allocatedTo.toResident()
+    assignedTo = assignedTo.toResident()
 )
 
+fun List<TaskEntity>.toTasks() = map { it.toTask() }
+
 fun Task.toTaskEntity() = TaskEntity(
-    id = id,
+    id = id ?: 0,
     name = name,
     room = room.toRoomEntity(),
     duration = duration,
     frequency = frequency,
     scheduledDate = scheduledDate,
     urgency = urgency,
-    allocatedTo = assignedTo.toResidentEntity(),
+    assignedTo = assignedTo.toResidentEntity(),
 )

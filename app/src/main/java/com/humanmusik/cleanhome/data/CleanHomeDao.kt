@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import com.humanmusik.cleanhome.data.entities.HomeEntity
@@ -11,6 +12,7 @@ import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CleanHomeDao {
@@ -27,8 +29,11 @@ interface CleanHomeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(taskEntity: TaskEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTasks(taskEntities: List<TaskEntity>)
+
     @Update
-    fun updateTask(taskEntity: TaskEntity)
+    suspend fun updateTask(taskEntity: TaskEntity)
 
     @Insert
     suspend fun insertResidentRoomCrossRef(residentRoomCrossRef: ResidentRoomCrossRef)
@@ -37,7 +42,7 @@ interface CleanHomeDao {
     suspend fun deleteAllTasks()
 
     @Query("SELECT * FROM taskentity")
-    suspend fun getAllTasks(): List<TaskEntity>
+    fun getAllTasks(): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM taskentity WHERE resident_id=:residentId")
     suspend fun getTasksForResident(residentId: Int): List<TaskEntity>
@@ -56,4 +61,10 @@ interface CleanHomeDao {
 //
 //    @Query("SELECT * FROM roomentity WHERE id=:residentId")
 //    suspend fun getResidentWithMetadata(residentId: Int): ResidentWithMetadata
+
+    @Transaction
+    suspend fun deleteAndInsertTasks(tasks: List<TaskEntity>) {
+        deleteAllTasks()
+        insertAllTasks(tasks)
+    }
 }

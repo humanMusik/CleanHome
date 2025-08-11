@@ -3,9 +3,9 @@ package com.humanmusik.cleanhome.di
 import com.humanmusik.cleanhome.data.repository.CleanHomeRepositoryImpl
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
-import com.humanmusik.cleanhome.domain.repository.CleanHomeRepository
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
+import com.humanmusik.cleanhome.domain.repository.UpdateTask
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,12 +15,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
     @Binds
     @Singleton
-    abstract fun bindCleanHomeRepository(
+    abstract fun bindUpdateTask(
         cleanHomeRepository: CleanHomeRepositoryImpl,
-    ): CleanHomeRepository
+    ): UpdateTask
 
     @Binds
     @Singleton

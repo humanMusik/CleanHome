@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                allocatedTo = ResidentEntity(
+                assignedTo = ResidentEntity(
                     id = 3,
                     name = "Cihan",
                     homeId = 1,
@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                allocatedTo = ResidentEntity(
+                assignedTo = ResidentEntity(
                     id = 2,
                     name = "Jenny",
                     homeId = 1,
@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                allocatedTo = ResidentEntity(
+                assignedTo = ResidentEntity(
                     id = 1,
                     name = "Leslie",
                     homeId = 1,
@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                allocatedTo = ResidentEntity(
+                assignedTo = ResidentEntity(
                     id = 2,
                     name = "Jenny",
                     homeId = 1,
@@ -165,7 +165,6 @@ class MainActivity : ComponentActivity() {
 //            val getAllResidentsWithMetadata = dao.getAllResidentsWithMetadata()
             val getTasksForLeslie = dao.getTasksForResident(1)
 
-            getAllTasks.onEach(::println)
 //            getAllRoomsWithMetadata.onEach(::println)
 //            getAllResidentsWithMetadata.onEach(::println)
 //            println(getHomeWithMetadata)

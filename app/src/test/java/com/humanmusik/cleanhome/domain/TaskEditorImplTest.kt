@@ -5,6 +5,7 @@ import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.domain.model.task.Urgency
+import com.humanmusik.cleanhome.domain.repository.UpdateTask
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
 import com.humanmusik.cleanhome.utilstest.runTest
 import kotlinx.coroutines.flow.flowOf
@@ -23,11 +24,15 @@ class TaskEditorImplTest {
         runTest {
             val originalTask = task(id = 1)
 
+            val expectedId = 1
+
             taskEditor(
                 tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.id assertIsEqualTo expectedId
+                }
             )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .id assertIsEqualTo 1
         }
     }
 
@@ -36,11 +41,16 @@ class TaskEditorImplTest {
         runTest {
             val originalTask = task(name = "Vacuum")
 
+            val expectedName = "Vacuum"
+
             taskEditor(
-                tasks = setOf(task())
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.name assertIsEqualTo expectedName
+                }
             )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .name assertIsEqualTo "Vacuum"
+
         }
     }
 
@@ -55,14 +65,19 @@ class TaskEditorImplTest {
                 )
             )
 
-            taskEditor(setOf(task()))
+            val expectedRoom = Room(
+                id = 1,
+                name = "Living Room",
+                homeId = 1,
+            )
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.room assertIsEqualTo expectedRoom
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .room assertIsEqualTo
-                    Room(
-                        id = 1,
-                        name = "Living Room",
-                        homeId = 1,
-                    )
 
         }
     }
@@ -72,9 +87,15 @@ class TaskEditorImplTest {
         runTest {
             val originalTask = task(duration = 1.hours)
 
-            taskEditor(setOf(task()))
+            val expectedDuration = 1.hours
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.duration assertIsEqualTo expectedDuration
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .duration assertIsEqualTo 1.hours
         }
     }
 
@@ -83,9 +104,15 @@ class TaskEditorImplTest {
         runTest {
             val originalTask = task(urgency = Urgency.Urgent)
 
-            taskEditor(setOf(task()))
+            val expectedUrgency = Urgency.Urgent
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.urgency assertIsEqualTo expectedUrgency
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .urgency assertIsEqualTo Urgency.Urgent
         }
     }
 
@@ -96,10 +123,16 @@ class TaskEditorImplTest {
                 scheduledDate = LocalDate.of(2026, 7, 7),
                 frequency = Frequency.Daily,
             )
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2026, 7, 11)
 
-            taskEditor(setOf(task()))
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2026, 7, 11)
         }
     }
 
@@ -111,10 +144,16 @@ class TaskEditorImplTest {
                 frequency = Frequency.Weekly,
             )
 
-            taskEditor(setOf(task()))
-                .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2026, 7, 17)
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2026, 7, 17)
 
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
+                .reassignTask(task = originalTask, dateCompleted = dateCompleted)
         }
     }
 
@@ -126,9 +165,16 @@ class TaskEditorImplTest {
                 frequency = Frequency.Fortnightly,
             )
 
-            taskEditor(setOf(task()))
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2026, 7, 24)
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2026, 7, 24)
         }
     }
 
@@ -140,9 +186,16 @@ class TaskEditorImplTest {
                 frequency = Frequency.Monthly,
             )
 
-            taskEditor(setOf(task()))
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2026, 8, 10)
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2026, 8, 10)
         }
     }
 
@@ -154,10 +207,16 @@ class TaskEditorImplTest {
                 frequency = Frequency.Quarterly,
             )
 
-            taskEditor(setOf(task()))
-                .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2026, 10, 10)
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2026, 10, 10)
 
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
+                .reassignTask(task = originalTask, dateCompleted = dateCompleted)
         }
     }
 
@@ -169,9 +228,16 @@ class TaskEditorImplTest {
                 frequency = Frequency.BiAnnually,
             )
 
-            taskEditor(allResidents = allResidents)
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2027, 1, 10)
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2027, 1, 10)
         }
     }
 
@@ -183,9 +249,16 @@ class TaskEditorImplTest {
                 frequency = Frequency.Annually,
             )
 
-            taskEditor(allResidents = allResidents)
+            val dateCompleted: LocalDate = LocalDate.of(2026, 7, 10)
+            val expectedScheduledDate = LocalDate.of(2027, 7, 10)
+
+            taskEditor(
+                tasks = setOf(task()),
+                updateTask = { reassignedTask ->
+                    reassignedTask.scheduledDate assertIsEqualTo expectedScheduledDate
+                },
+            )
                 .reassignTask(task = originalTask, dateCompleted = dateCompleted)
-                .scheduledDate assertIsEqualTo LocalDate.of(2027, 7, 10)
         }
     }
 
@@ -211,7 +284,8 @@ class TaskEditorImplTest {
                     )
                     flowOf(setOf(task()))
                 },
-                flowOfAllResidents = { flowOf(allResidents) }
+                flowOfAllResidents = { flowOf(allResidents) },
+                updateTask = { _ -> }
             )
         }
     }
@@ -260,12 +334,14 @@ class TaskEditorImplTest {
             taskEditor(
                 tasks = allTasks,
                 allResidents = allResidents,
+                updateTask = { reassignedTask ->
+                    reassignedTask.assignedTo assertIsEqualTo expectedAssignedTo
+                }
             )
                 .reassignTask(
                     task = originalTask,
                     dateCompleted = dateCompleted,
                 )
-                .assignedTo assertIsEqualTo expectedAssignedTo
         }
     }
 
@@ -334,10 +410,12 @@ class TaskEditorImplTest {
     private fun taskEditor(
         tasks: Set<Task> = emptySet(),
         allResidents: Set<ResidentDomain> = emptySet(),
+        updateTask: UpdateTask,
     ): TaskEditorImpl {
         return TaskEditorImpl(
             flowOfTasks = { _ -> flowOf(tasks) },
             flowOfAllResidents = { flowOf(allResidents) },
+            updateTask = updateTask,
         )
     }
 }

@@ -6,11 +6,20 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.Resource
 import kotlinx.coroutines.flow.Flow
 
-fun interface UpdateTask {
-    fun updateTask(task: Task)
+fun interface CreateTask {
+    suspend fun createTask(task: Task)
 
     companion object {
-        operator fun UpdateTask.invoke(task: Task) =
+        suspend operator fun CreateTask.invoke(task: Task) =
+            createTask(task)
+    }
+}
+
+fun interface UpdateTask {
+    suspend fun updateTask(task: Task)
+
+    companion object {
+        suspend operator fun UpdateTask.invoke(task: Task) =
             updateTask(task)
     }
 }
@@ -30,14 +39,5 @@ fun interface FlowOfAllResidents {
     companion object {
         operator fun FlowOfAllResidents.invoke() =
             flowOfAllResidents()
-    }
-}
-
-fun interface FlowOfTasksForResident {
-    fun flowOfTasksForResident(residentId: Int): Flow<List<Task>>
-
-    companion object {
-        operator fun FlowOfTasksForResident.invoke(residentId: Int) =
-            flowOfTasksForResident(residentId)
     }
 }
