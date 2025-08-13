@@ -23,11 +23,11 @@ sealed class FlowState<out T> : Parcelable {
         companion object : Parceler<Success<*>> {
             override fun Success<*>.write(parcel: Parcel, flags: Int) {
                 val parcelClassName = value?.let {it::class.java.name } ?: "null"
-                parcel.writeString("ViewState($parcelClassName)")
+                parcel.writeString("FlowState($parcelClassName)")
                 when (parcelClassName) {
                     Unit::class.java.name,
                     "null"
-                    -> parcel.writeString("ViewState($parcelClassName)")
+                    -> parcel.writeString("FlowState($parcelClassName)")
                     else -> parcel.writeValue(value)
                 }
             }
@@ -35,9 +35,9 @@ sealed class FlowState<out T> : Parcelable {
             override fun create(parcel: Parcel): Success<*> {
                 val parcelClassName = parcel.readString()
                 return if (parcelClassName == null) {
-                    throw IllegalStateException("Unable to create ViewState.Success from parcel")
+                    throw IllegalStateException("Unable to create FlowState.Success from parcel")
                 } else {
-                    when (val className = parcelClassName.removePrefix("AsyncState(").removeSuffix(")")) {
+                    when (val className = parcelClassName.removePrefix("FlowState(").removeSuffix(")")) {
                         "null" -> Success(null)
                         Unit::class.java.name -> Success(Unit)
                         else -> {
@@ -58,16 +58,18 @@ sealed class FlowState<out T> : Parcelable {
 
     override fun toString(): String {
         return when (this) {
-            is Loading -> "ViewState.Loading"
-            is Success -> "ViewState.Success($value)"
-            is Failure -> "ViewState.Failure(${throwable::class.java.simpleName})"
+            is Loading -> "FlowState.Loading"
+            is Success -> "FlowState.Success($value)"
+            is Failure -> "FlowState.Failure(${throwable::class.java.simpleName})"
         }
     }
 
     companion object
 }
 
+@OptIn(ExperimentalContracts::class)
 fun <T> FlowState<T>.getOrNull(): T? {
+    contract { returnsNotNull() implies (this@getOrNull is FlowState.Success) }
     return when (this) {
         is FlowState.Success -> value
         else -> null
@@ -97,8 +99,8 @@ inline fun <T> FlowState<T>.onLoading(block: () -> Unit): FlowState<T> {
     return this
 }
 
-inline fun <T> FlowState<T>.onSuccess(block: () -> Unit): FlowState<T> {
-    if (isSuccess()) block()
+inline fun <T> FlowState<T>.onSuccess(block: (T) -> Unit): FlowState<T> {
+    if (isSuccess()) block(value)
     return this
 }
 
@@ -113,7 +115,7 @@ inline fun <T> Flow<FlowState<T>>.onLoading(crossinline block: () -> Unit): Flow
     }
 }
 
-inline fun <T> Flow<FlowState<T>>.onSuccess(crossinline block: () -> Unit): Flow<FlowState<T>> {
+inline fun <T> Flow<FlowState<T>>.onSuccess(crossinline block: (T) -> Unit): Flow<FlowState<T>> {
     return onEach { state ->
         state.onSuccess(block)
     }
@@ -152,4 +154,12 @@ fun <T> Flow<T>.asFlowState(): Flow<FlowState<T>> {
     return FlowState.fromFlow(this)
 }
 
+fun <T, R> FlowState<T>.map(
+    block: (T) -> R,
+): FlowState<R> {
+    return when (this) {
+        is FlowState.Success -> FlowState.Success(block(value))
+        else -> this as FlowState<R>
+    }
+}
 // Finish off extensions

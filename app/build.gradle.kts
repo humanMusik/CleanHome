@@ -105,6 +105,7 @@ dependencies {
     // Unit Tests
     implementation(libs.truth)
     implementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.test)
     implementation(libs.turbine)
     testImplementation(libs.junit5.jupiter.api)
     testImplementation(libs.junit5.jupiter.engine)

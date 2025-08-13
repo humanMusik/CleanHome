@@ -1,10 +1,8 @@
-package com.humanmusik.cleanhome.test
+package com.humanmusik.cleanhome.data
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.humanmusik.cleanhome.data.CleanHomeDao
-import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
@@ -267,7 +265,7 @@ class CleanHomeRepositoryImplTest {
     //endregion
 
     // TODO: test flowOfAllResidents
-    
+
     private fun TestScope.createCleanHomeRepository(
         scope: CoroutineScope = this.backgroundScope,
     ) =
