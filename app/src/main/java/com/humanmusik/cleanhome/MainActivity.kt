@@ -15,7 +15,10 @@ import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
+import com.humanmusik.cleanhome.domain.model.Resident
+import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
+import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.navigation.NavigationRoot
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
@@ -144,6 +147,81 @@ class MainActivity : ComponentActivity() {
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assignedTo = ResidentEntity(
+                    id = 2,
+                    name = "Jenny",
+                    homeId = 1,
+                ),
+            ),
+        )
+
+        val tasks = listOf(
+            Task(
+                id = 1,
+                name = "Vacuum",
+                room = Room(
+                    id = 3,
+                    name = "Cihan bedroom",
+                    homeId = 1,
+                ),
+                duration = 10.minutes,
+                frequency = Frequency.Weekly,
+                scheduledDate = LocalDate.now(),
+                urgency = Urgency.NonUrgent,
+                assignedTo = Resident(
+                    id = 3,
+                    name = "Cihan",
+                    homeId = 1,
+                ),
+            ),
+            Task(
+                id = 2,
+                name = "Clean toilet",
+                room = Room(
+                    id = 2,
+                    name = "Bathroom",
+                    homeId = 1,
+                ),
+                duration = 15.minutes,
+                frequency = Frequency.Weekly,
+                scheduledDate = LocalDate.now(),
+                urgency = Urgency.NonUrgent,
+                assignedTo = Resident(
+                    id = 2,
+                    name = "Jenny",
+                    homeId = 1,
+                ),
+            ),
+            Task(
+                id = 3,
+                name = "Tidy",
+                room = Room(
+                    id = 4,
+                    name = "Living Room",
+                    homeId = 1,
+                ),
+                duration = 1.hours,
+                frequency = Frequency.Weekly,
+                scheduledDate = LocalDate.now(),
+                urgency = Urgency.NonUrgent,
+                assignedTo = Resident(
+                    id = 1,
+                    name = "Leslie",
+                    homeId = 1,
+                ),
+            ),
+            Task(
+                id = 4,
+                name = "Mop",
+                room = Room(
+                    id = 2,
+                    name = "Bathroom",
+                    homeId = 1,
+                ),
+                duration = 5.minutes,
+                frequency = Frequency.Weekly,
+                scheduledDate = LocalDate.now(),
+                urgency = Urgency.NonUrgent,
+                assignedTo = Resident(
                     id = 2,
                     name = "Jenny",
                     homeId = 1,
