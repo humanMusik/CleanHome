@@ -15,8 +15,9 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 fun TaskItem(
     modifier: Modifier = Modifier,
     task: Task,
-    onEdit: (Task) -> Unit,
-    onComplete: (Task) -> Unit,
+    onSwipeStartToEnd: (Task) -> Unit,
+    onSwipeEndToStart: (Task) -> Unit,
+    onClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val currentItem by rememberUpdatedState(task)
@@ -24,10 +25,10 @@ fun TaskItem(
         confirmValueChange = {
             when(it) {
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    onEdit(currentItem)
+                    onSwipeStartToEnd(currentItem)
                 }
                 SwipeToDismissBoxValue.EndToStart -> {
-                    onComplete(currentItem)
+                    onSwipeEndToStart(currentItem)
                     Toast.makeText(context, "Task Completed", Toast.LENGTH_SHORT).show()
                 }
                 SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
@@ -43,7 +44,10 @@ fun TaskItem(
         modifier = modifier,
         backgroundContent = { DismissBackground(dismissState)},
         content = {
-            TaskCard(task)
+            TaskCard(
+                task = task,
+                onClick = { onClick() },
+            )
         }
     )
 }

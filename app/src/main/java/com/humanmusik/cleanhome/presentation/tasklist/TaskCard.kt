@@ -1,5 +1,6 @@
 package com.humanmusik.cleanhome.presentation.tasklist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +21,12 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 @Composable
 fun TaskCard(
     task: Task,
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable { onClick() },
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),

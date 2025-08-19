@@ -22,12 +22,14 @@ import com.humanmusik.cleanhome.presentation.onSuccess
 @Composable
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
+    onExamine: (Task) -> Unit,
 ) {
     val state: State<FlowState<TaskListModel>> = viewModel.stateFlow.collectAsState()
     TaskListContent(
         state = state,
         onEdit = viewModel::onEditTask,
         onComplete = viewModel::onCompleteTask,
+        onExamine = onExamine,
     )
 }
 
@@ -37,6 +39,7 @@ private fun TaskListContent(
     state: State<FlowState<TaskListModel>>,
     onEdit: (Task) -> Unit,
     onComplete: (Task) -> Unit,
+    onExamine: (Task) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -57,8 +60,9 @@ private fun TaskListContent(
                 ) { task ->
                     TaskItem(
                         task = task,
-                        onEdit = { onEdit(task) },
-                        onComplete = { onComplete(task) },
+                        onSwipeStartToEnd = { providedTask -> onEdit(providedTask) },
+                        onSwipeEndToStart = { providedTask -> onComplete(providedTask) },
+                        onClick = { onExamine(task) },
                     )
                 }
             }

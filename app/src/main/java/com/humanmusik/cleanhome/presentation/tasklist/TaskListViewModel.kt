@@ -80,5 +80,9 @@ class TaskListViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun onExamine(task: Task) {
+        // TODO: Go to task details
+    }
+
     private fun getTodayLocalDate() = LocalDate.now()
 }
