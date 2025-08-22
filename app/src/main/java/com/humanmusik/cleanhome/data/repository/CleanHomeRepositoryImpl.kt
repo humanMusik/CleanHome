@@ -2,14 +2,17 @@ package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.mappers.toResident
+import com.humanmusik.cleanhome.data.mappers.toRoom
 import com.humanmusik.cleanhome.data.mappers.toTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTasks
 import com.humanmusik.cleanhome.di.ApplicationScope
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
+import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.repository.CreateTask
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
+import com.humanmusik.cleanhome.domain.repository.FlowOfAllRooms
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.UpdateTask
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +34,8 @@ class CleanHomeRepositoryImpl @Inject constructor(
 ) : CreateTask,
     UpdateTask,
     FlowOfTasks,
-    FlowOfAllResidents {
+    FlowOfAllResidents,
+    FlowOfAllRooms {
 
     private val dao = db.cleanHomeDao()
 
@@ -89,6 +93,14 @@ class CleanHomeRepositoryImpl @Inject constructor(
             .distinctUntilChanged()
     }
 
+    override fun flowOfAllRooms(): Flow<List<Room>> {
+        return dao
+            .getAllRooms()
+            .mapContent {
+                it.toRoom()
+            }
+    }
+
     private fun TaskFilter.getFilterPredicate(): (Task) -> Boolean {
         return when (this) {
             is TaskFilter.All -> {
@@ -116,5 +128,11 @@ class CleanHomeRepositoryImpl @Inject constructor(
         return isEqual(startDateInclusive) ||
                 (isAfter(startDateInclusive) && isBefore(endDateInclusive)) ||
                 isEqual(endDateInclusive)
+    }
+
+    private inline fun <T, R> Flow<Iterable<T>>.mapContent(
+        crossinline transform: (T) -> R,
+    ): Flow<List<R>> {
+        return map { it.map(transform) }
     }
 }

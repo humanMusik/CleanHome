@@ -4,6 +4,7 @@ import com.humanmusik.cleanhome.data.repository.CleanHomeRepositoryImpl
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
+import com.humanmusik.cleanhome.domain.repository.FlowOfAllRooms
 import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
 import com.humanmusik.cleanhome.domain.repository.UpdateTask
 import dagger.Binds
@@ -38,4 +39,10 @@ abstract class RepositoryModule {
     abstract fun bindTaskEditor(
         taskEditor: TaskEditorImpl,
     ): TaskEditor
+
+    @Binds
+    @Singleton
+    abstract fun bindFlowOfAllRooms(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): FlowOfAllRooms
 }

@@ -2,6 +2,7 @@ package com.humanmusik.cleanhome.domain.repository
 
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
+import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -39,5 +40,13 @@ fun interface FlowOfAllResidents {
     companion object {
         operator fun FlowOfAllResidents.invoke() =
             flowOfAllResidents()
+    }
+}
+
+fun interface FlowOfAllRooms {
+    fun flowOfAllRooms(): Flow<List<Room>>
+
+    companion object {
+        operator fun FlowOfAllRooms.invoke() = flowOfAllRooms()
     }
 }

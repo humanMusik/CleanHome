@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -23,6 +27,7 @@ import com.humanmusik.cleanhome.presentation.onSuccess
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
     onExamine: (Task) -> Unit,
+    onAddTask: () -> Unit,
 ) {
     val state: State<FlowState<TaskListModel>> = viewModel.stateFlow.collectAsState()
     TaskListContent(
@@ -30,6 +35,7 @@ fun TaskListScreen(
         onEdit = viewModel::onEditTask,
         onComplete = viewModel::onCompleteTask,
         onExamine = onExamine,
+        onAddTask = onAddTask,
     )
 }
 
@@ -40,13 +46,19 @@ private fun TaskListContent(
     onEdit: (Task) -> Unit,
     onComplete: (Task) -> Unit,
     onExamine: (Task) -> Unit,
+    onAddTask: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Sample") },
+                navigationIcon = {
+                    IconButton(onClick = onAddTask) {
+                        Icon(Icons.Filled.Add, contentDescription = "Add Task")
+                    }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         state.value.onSuccess {
             LazyColumn(

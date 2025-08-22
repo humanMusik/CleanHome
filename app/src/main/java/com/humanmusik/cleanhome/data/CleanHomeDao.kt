@@ -11,6 +11,7 @@ import com.humanmusik.cleanhome.data.entities.HomeEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
+import com.humanmusik.cleanhome.data.entities.RoomWithMetadata
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -50,8 +51,8 @@ interface CleanHomeDao {
     //    @Query("SELECT * FROM homeentity WHERE id=:homeId")
 //    suspend fun getHomeWithMetadata(homeId: Int): HomeWithMetadata
 //
-//    @Query("SELECT * from roomentity")
-//    suspend fun getAllRoomsWithMetadata(): List<RoomWithMetadata>
+    @Query("SELECT * from roomentity")
+    fun getAllRooms(): Flow<List<RoomEntity>>
 //
 //    @Query("SELECT * FROM roomentity WHERE id=:roomId")
 //    suspend fun getRoomWithMetadata(roomId: Int): RoomWithMetadata

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel(assistedFactory = TaskDetailsViewModel.Factory::class)
 class TaskDetailsViewModel @AssistedInject constructor(
-    @Assisted val navKey: TaskDetailsNavKey,
+    @Assisted private val navKey: TaskDetailsNavKey,
 ) : ViewModel() {
 
     private var mutableStateFlow = MutableStateFlow(navKey.task)
