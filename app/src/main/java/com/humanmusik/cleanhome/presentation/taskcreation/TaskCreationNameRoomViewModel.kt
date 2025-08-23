@@ -37,10 +37,16 @@ class TaskCreationNameRoomViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun createTaskData(taskName: String, roomName: String): TaskParcelData {
-        return TaskParcelData().copy(
+    fun onContinue(
+        taskName: String,
+        roomName: String,
+        navigate: (TaskParcelData) -> Unit,
+    ) {
+        val taskParcelData = TaskParcelData().copy(
             name = taskName,
             roomName = roomName,
         )
+
+        navigate(taskParcelData)
     }
 }

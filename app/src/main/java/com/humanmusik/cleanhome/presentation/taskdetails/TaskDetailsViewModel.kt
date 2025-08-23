@@ -17,6 +17,7 @@ class TaskDetailsViewModel @AssistedInject constructor(
     private var mutableStateFlow = MutableStateFlow(navKey.task)
     val stateFlow = mutableStateFlow.asStateFlow()
 
+
     @AssistedFactory
     interface Factory {
         fun create(navKey: TaskDetailsNavKey): TaskDetailsViewModel

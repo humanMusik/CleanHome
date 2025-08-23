@@ -42,7 +42,7 @@ fun TaskCreationNameRoomScreen(
     state.value.onSuccess {
         TaskCreationNameRoomContent(
             state = it,
-            onContinue = viewModel::createTaskData,
+            onContinue = viewModel::onContinue,
         )
     }
 }

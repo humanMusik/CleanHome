@@ -14,7 +14,7 @@ class TaskCreationNavigationContainer(
             TaskCreationNavKey.NameRoom -> {
                 TaskCreationNameRoomScreen(
                     onContinue = { taskParcelData ->
-                        backStack.add(TaskCreationNavKey.DataFreqUrgency(taskParcelData))
+                        backStack.add(TaskCreationNavKey.DateFrequencyUrgency(taskParcelData))
                     }
                 )
             }

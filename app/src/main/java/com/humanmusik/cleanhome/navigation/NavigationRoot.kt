@@ -27,9 +27,9 @@ data class TaskDetailsNavKey(@Contextual val task: Task) : NavKey
 
 @Serializable
 sealed interface TaskCreationNavKey : NavKey {
-    data class DataFreqUrgency(val taskParcelData: TaskParcelData) : TaskCreationNavKey
-    data object Duration : TaskCreationNavKey
     data object NameRoom : TaskCreationNavKey
+    data class DateFrequencyUrgency(val taskParcelData: TaskParcelData) : TaskCreationNavKey
+    data object Duration : TaskCreationNavKey
 }
 
 @Composable
