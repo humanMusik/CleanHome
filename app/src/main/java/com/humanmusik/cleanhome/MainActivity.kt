@@ -33,18 +33,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            MaterialTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavigationRoot(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    )
-                }
-            }
-        }
-
         val dao = CleanHomeDatabase.getDbInstance(this).cleanHomeDao()
 
         val homeEntity = listOf(HomeEntity(name = "221b Baker St"))
@@ -243,8 +231,8 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
 //            homeEntity.forEach { dao.insertHouse(it) }
-//            residentEntities.forEach { dao.insertResident(it) }
-//            roomEntities.forEach { dao.insertRoom(it) }
+            residentEntities.forEach { dao.insertResident(it) }
+            roomEntities.forEach { dao.insertRoom(it) }
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 
@@ -258,6 +246,18 @@ class MainActivity : ComponentActivity() {
 //            getAllResidentsWithMetadata.onEach(::println)
 //            println(getHomeWithMetadata)
             getTasksForLeslie.onEach(::println)
+        }
+
+        setContent {
+            MaterialTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    NavigationRoot(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    )
+                }
+            }
         }
     }
 }

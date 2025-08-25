@@ -17,6 +17,7 @@ import kotlin.contracts.contract
 
 @Parcelize
 sealed class FlowState<out T> : Parcelable {
+    class Idle<T> : FlowState<T>()
     class Loading<T> : FlowState<T>()
 
     data class Success<T>(val value: T) : FlowState<T>() {
@@ -58,6 +59,7 @@ sealed class FlowState<out T> : Parcelable {
 
     override fun toString(): String {
         return when (this) {
+            is Idle -> "FlowState.Idle"
             is Loading -> "FlowState.Loading"
             is Success -> "FlowState.Success($value)"
             is Failure -> "FlowState.Failure(${throwable::class.java.simpleName})"
@@ -76,10 +78,24 @@ fun <T> FlowState<T>.getOrNull(): T? {
     }
 }
 
+fun <T> FlowState<T>.getOrThrow(): T {
+    return when(this) {
+        is FlowState.Success -> value
+        is FlowState.Failure -> throw throwable
+        else -> throw IllegalStateException()
+    }
+}
+
 @OptIn(ExperimentalContracts::class)
 fun <T> FlowState<T>.isLoading(): Boolean {
     contract { returns(true) implies (this@isLoading is FlowState.Loading) }
     return this is FlowState.Loading
+}
+
+@OptIn(ExperimentalContracts::class)
+fun <T> FlowState<T>.isIdle(): Boolean {
+    contract { returns(true) implies (this@isIdle is FlowState.Idle) }
+    return this is FlowState.Idle
 }
 
 @OptIn(ExperimentalContracts::class)
@@ -96,6 +112,11 @@ fun <T> FlowState<T>.isFailure(): Boolean {
 
 inline fun <T> FlowState<T>.onLoading(block: () -> Unit): FlowState<T> {
     if (isLoading()) block()
+    return this
+}
+
+inline fun <T> FlowState<T>.onIdle(block: () -> Unit): FlowState<T> {
+    if (isIdle()) block()
     return this
 }
 

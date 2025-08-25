@@ -28,21 +28,30 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.TextField
+import androidx.compose.material3.getSelectedDate
 import androidx.compose.runtime.mutableIntStateOf
 import com.humanmusik.cleanhome.domain.model.task.Frequency
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
+import com.humanmusik.cleanhome.domain.model.task.Urgency
+import com.humanmusik.cleanhome.navigation.BackStackInstructor
+import java.time.LocalDate
 
 @Composable
 fun TaskCreationDateFreqUrgencyScreen(
     viewModel: TaskCreationDateFreqUrgencyViewModel,
-    onContinue: (TaskParcelData) -> Unit,
+    navigation: (BackStackInstructor) -> Unit,
 ) {
-    TaskCreationDateFreqUrgencyContent()
+    TaskCreationDateFreqUrgencyContent(
+        onContinue = { date, frequency, urgency ->
+            navigation(viewModel.onContinue(date, frequency, urgency))
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TaskCreationDateFreqUrgencyContent() {
+private fun TaskCreationDateFreqUrgencyContent(
+    onContinue: (LocalDate?, String, Urgency) -> Unit,
+) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -50,22 +59,13 @@ private fun TaskCreationDateFreqUrgencyContent() {
                 .padding(padding),
         ) {
             Text(text = "Date")
-            val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
-            DatePicker(state = state)
+            val datePickerState = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
+            DatePicker(state = datePickerState)
 
             Text(text = "Frequency")
 
-            val frequencies: List<String> = listOf(
-                Frequency.Daily.name,
-                Frequency.Weekly.name,
-                Frequency.Fortnightly.name,
-                Frequency.Monthly.name,
-                Frequency.Quarterly.name,
-                Frequency.BiAnnually.name,
-                Frequency.Annually.name,
-            )
             var expanded by remember { mutableStateOf(false) }
-            val frequencyTextField = rememberTextFieldState(frequencies[0])
+            val frequencyTextField = rememberTextFieldState(Frequency.Daily.name)
 
             ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
                 TextField(
@@ -81,11 +81,11 @@ private fun TaskCreationDateFreqUrgencyContent() {
                     colors = ExposedDropdownMenuDefaults.textFieldColors(),
                 )
                 ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    frequencies.forEach { option ->
+                    Frequency.entries.forEach { frequency ->
                         DropdownMenuItem(
-                            text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
+                            text = { Text(frequency.name, style = MaterialTheme.typography.bodyLarge) },
                             onClick = {
-                                frequencyTextField.setTextAndPlaceCursorAtEnd(option)
+                                frequencyTextField.setTextAndPlaceCursorAtEnd(frequency.name)
                                 expanded = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -96,15 +96,15 @@ private fun TaskCreationDateFreqUrgencyContent() {
 
             Text(text = "Urgency")
             var selectedIndex by remember { mutableIntStateOf(0) }
-            val options = listOf("Non-Urgent", "Urgent")
+            val urgencyOptions = Urgency.entries
             SingleChoiceSegmentedButtonRow {
-                options.forEachIndexed { index, label ->
+                urgencyOptions.forEachIndexed { index, urgency ->
                     SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = urgencyOptions.size),
                         onClick = { selectedIndex = index },
                         selected = index == selectedIndex,
                     ) {
-                        Text(label)
+                        Text(urgency.name)
                     }
                 }
             }
@@ -112,8 +112,9 @@ private fun TaskCreationDateFreqUrgencyContent() {
             Button(
                 onClick = {
                     onContinue(
-                        nameTextFieldState.text.toString(),
-                        roomTextFieldState.text.toString(),
+                        datePickerState.getSelectedDate(),
+                        frequencyTextField.text.toString(),
+                        urgencyOptions[selectedIndex],
                     )
                 },
             ) {

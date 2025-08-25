@@ -21,34 +21,6 @@ data class Task(
 ) : Comparable<Task>, Parcelable {
     override fun compareTo(other: Task): Int =
         taskComparator.compare(this, other)
-
-    fun editName(name: String): Task {
-        return copy(name = name)
-    }
-
-    fun editRoom(room: Room): Task {
-        return copy(room = room)
-    }
-
-    fun editDuration(room: Room): Task {
-        return copy(duration = duration)
-    }
-
-    fun editFrequency(frequency: Frequency): Task {
-        return copy(frequency = frequency)
-    }
-
-    fun editScheduledDate(scheduledDate: LocalDate): Task {
-        return copy(scheduledDate = scheduledDate)
-    }
-
-    fun editUrgency(urgency: Urgency): Task {
-        return copy(urgency = urgency)
-    }
-
-    fun editAssignedTo(assignedTo: Resident): Task {
-        return copy(assignedTo = assignedTo)
-    }
 }
 
 enum class Frequency {
@@ -65,3 +37,6 @@ enum class Urgency {
     Urgent,
     NonUrgent,
 }
+
+fun String.toFrequency(): Frequency? = Frequency.entries.firstOrNull { it.name == this }
+

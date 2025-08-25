@@ -1,10 +1,9 @@
-package com.humanmusik.cleanhome.domain.repository
+package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 fun interface CreateTask {

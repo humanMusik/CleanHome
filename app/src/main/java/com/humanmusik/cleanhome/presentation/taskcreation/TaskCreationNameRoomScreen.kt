@@ -28,21 +28,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.onSuccess
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationNameRoomState
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 
 @Composable
 fun TaskCreationNameRoomScreen(
     viewModel: TaskCreationNameRoomViewModel = hiltViewModel(),
-    onContinue: (TaskParcelData) -> Unit,
-    ) {
+    navigation: (BackStackInstructor) -> Unit,
+) {
     val state = viewModel.stateFlow.collectAsState()
 
     state.value.onSuccess {
         TaskCreationNameRoomContent(
             state = it,
-            onContinue = viewModel::onContinue,
+            onContinue = { taskName, roomName ->
+                navigation(viewModel.onContinue(taskName = taskName, roomName = roomName))
+            },
         )
     }
 }
@@ -72,8 +74,7 @@ private fun TaskCreationNameRoomContent(
 
             Text(text = "Room")
 
-//            val options: List<String> = state.allRooms.map { it.name }
-            val options = listOf("Bedroom", "Living Room", "Bathroom")
+            val options: List<String> = state.allRooms.map { it.name }
             var expanded by remember { mutableStateOf(false) }
             val roomTextFieldState = rememberTextFieldState(options[0])
 

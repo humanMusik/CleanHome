@@ -1,13 +1,16 @@
 package com.humanmusik.cleanhome.domain.model.task
 
+import com.humanmusik.cleanhome.data.repository.CreateTask
+import com.humanmusik.cleanhome.data.repository.CreateTask.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
+import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.FlowOfTasks
+import com.humanmusik.cleanhome.data.repository.FlowOfTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.UpdateTask
+import com.humanmusik.cleanhome.data.repository.UpdateTask.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
-import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
-import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents.Companion.invoke
-import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
-import com.humanmusik.cleanhome.domain.repository.FlowOfTasks.Companion.invoke
-import com.humanmusik.cleanhome.domain.repository.UpdateTask
-import com.humanmusik.cleanhome.domain.repository.UpdateTask.Companion.invoke
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -20,12 +23,18 @@ interface TaskEditor {
         task: Task,
         dateCompleted: LocalDate,
     )
+
+    suspend fun assignTask(
+        taskParcelData: TaskParcelData,
+        todayDate: LocalDate,
+    )
 }
 
 class TaskEditorImpl @Inject constructor(
     private val flowOfTasks: FlowOfTasks,
     private val flowOfAllResidents: FlowOfAllResidents,
     private val updateTask: UpdateTask,
+    private val createTask: CreateTask,
 ) : TaskEditor {
     override suspend fun reassignTask(
         task: Task,
@@ -57,6 +66,28 @@ class TaskEditorImpl @Inject constructor(
             .first()
 
         updateTask(reAssignedTask)
+    }
+
+    override suspend fun assignTask(taskParcelData: TaskParcelData, todayDate: LocalDate) {
+        val filter = TaskFilter.ByScheduledDate(
+            startDateInclusive = todayDate,
+            endDateInclusive = taskParcelData.date!!,
+        )
+
+        val assignedTo = combine(
+            flowOfTasks(filter),
+            flowOfAllResidents(),
+        ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
+            getNewAssignment(
+                tasks = tasksBetweenDateCompletedAndNewDate,
+                allResidents = allResidents
+            )
+        }
+            .first()
+
+        val newTask = taskParcelData.toTask(assignedTo = assignedTo)
+
+        createTask(newTask)
     }
 
     private fun getNewAssignment(

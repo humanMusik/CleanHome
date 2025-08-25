@@ -2,18 +2,24 @@ package com.humanmusik.cleanhome.presentation.tasklist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.humanmusik.cleanhome.data.repository.FlowOfTasks
+import com.humanmusik.cleanhome.data.repository.FlowOfTasks.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
-import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
-import com.humanmusik.cleanhome.domain.repository.FlowOfTasks.Companion.invoke
+import com.humanmusik.cleanhome.navigation.BackStackInstruction
+import com.humanmusik.cleanhome.navigation.BackStackInstructor
+import com.humanmusik.cleanhome.navigation.TaskCreationNavKey
+import com.humanmusik.cleanhome.navigation.TaskDetailsNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.asFlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
-import com.humanmusik.cleanhome.presentation.getOrNull
 import com.humanmusik.cleanhome.presentation.onFailure
 import com.humanmusik.cleanhome.presentation.onSuccess
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -26,6 +32,7 @@ import javax.inject.Inject
 class TaskListViewModel @Inject constructor(
     flowOfTasks: FlowOfTasks,
     private val taskEditor: TaskEditor,
+    private val backStackInstructor: BackStackInstructor,
 ) : ViewModel() {
     private var mutableStateFlow: MutableStateFlow<FlowState<TaskListModel>> =
         MutableStateFlow(FlowState.Loading())
@@ -50,10 +57,10 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    fun onAddTask(task: Task) {
-        viewModelScope.launch {
-            // TODO: Go to task creation screen
-        }
+    fun onAddTask(): BackStackInstructor {
+        val backStackInstructor =
+            backStackInstructor.learnInstructions(BackStackInstruction.Push(TaskCreationNavKey.NameRoom))
+        return backStackInstructor
     }
 
     fun onCompleteTask(task: Task) {
@@ -80,8 +87,10 @@ class TaskListViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onExamine(task: Task) {
-        // TODO: Go to task details
+    fun onExamine(task: Task): BackStackInstructor {
+        val backStackInstructor =
+            backStackInstructor.learnInstructions(BackStackInstruction.Push(TaskDetailsNavKey(task = task)))
+        return backStackInstructor
     }
 
     private fun getTodayLocalDate() = LocalDate.now()

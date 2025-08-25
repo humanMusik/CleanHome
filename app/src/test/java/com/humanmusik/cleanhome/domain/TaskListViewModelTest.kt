@@ -5,7 +5,7 @@ import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.Urgency
-import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
+import com.humanmusik.cleanhome.data.repository.FlowOfTasks
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.getOrNull
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListModel
@@ -44,8 +44,8 @@ class TaskListViewModelTest {
             )
 
             viewModel.stateFlow.test {
-                awaitItem().tasks.assertIsInstanceOf<FlowState.Loading<TaskListModel>>()
-                awaitItem().tasks.getOrNull() assertIsEqualTo tasks.toList()
+                awaitItem().assertIsInstanceOf<FlowState.Loading<TaskListModel>>()
+                awaitItem().getOrNull()?.tasks assertIsEqualTo tasks.toList()
             }
         }
     }
@@ -77,8 +77,8 @@ class TaskListViewModelTest {
                 viewModel.onCompleteTask(completedTask)
                 advanceUntilIdle()
 
-                awaitItem().tasks.assertIsInstanceOf<FlowState.Success<List<Task>>> {
-                    value assertIsEqualTo listOf(
+                awaitItem().getOrNull().assertIsInstanceOf<FlowState.Success<TaskListModel>> {
+                    value.tasks assertIsEqualTo listOf(
                         task(id = 2),
                         task(id = 3),
                         task(id = 4),
@@ -121,7 +121,7 @@ class TaskListViewModelTest {
                 viewModel.onCompleteTask(completedTask)
                 advanceUntilIdle()
 
-                awaitItem().tasks.assertIsInstanceOf<FlowState.Success<List<Task>>>()
+                awaitItem().getOrNull().assertIsInstanceOf<FlowState.Success<List<Task>>>()
             }
         }
     }

@@ -10,11 +10,6 @@ import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.domain.repository.CreateTask
-import com.humanmusik.cleanhome.domain.repository.FlowOfAllResidents
-import com.humanmusik.cleanhome.domain.repository.FlowOfAllRooms
-import com.humanmusik.cleanhome.domain.repository.FlowOfTasks
-import com.humanmusik.cleanhome.domain.repository.UpdateTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
