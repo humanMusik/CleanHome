@@ -1,13 +1,17 @@
 package com.humanmusik.cleanhome.domain
 
+import androidx.navigation3.runtime.NavBackStack
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.data.repository.FlowOfTasks
+import com.humanmusik.cleanhome.navigation.BackStackInstruction
+import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.getOrNull
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListModel
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListViewModel
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
@@ -112,6 +116,13 @@ class TaskListViewModelTest {
                     override suspend fun reassignTask(task: Task, dateCompleted: LocalDate) {
                         /* Does not throw */
                     }
+
+                    override suspend fun assignTask(
+                        taskParcelData: TaskParcelData,
+                        todayDate: LocalDate,
+                    ) {
+                        throw NotImplementedError()
+                    }
                 }
             )
 
@@ -158,12 +169,34 @@ class TaskListViewModelTest {
     private fun TestScope.createViewModel(
         flowOfTasks: FlowOfTasks = FlowOfTasks { _ -> flowOf(emptySet()) },
         taskEditor: TaskEditor = object : TaskEditor {
-            override suspend fun reassignTask(task: Task, dateCompleted: LocalDate) {}
+            override suspend fun reassignTask(task: Task, dateCompleted: LocalDate) {
+                throw NotImplementedError()
+            }
+            override suspend fun assignTask(
+                taskParcelData: TaskParcelData,
+                todayDate: LocalDate,
+            ) {
+                throw NotImplementedError()
+            }
         },
+        backStackInstructor: BackStackInstructor = object : BackStackInstructor {
+            override val instructions: MutableList<BackStackInstruction>
+                get() = mutableListOf()
+
+            override fun provideInstructions(backStack: NavBackStack) {
+                throw NotImplementedError()
+            }
+
+            override fun learnInstructions(vararg instructions: BackStackInstruction): BackStackInstructor {
+                throw NotImplementedError()
+            }
+
+        }
     ) =
         TaskListViewModel(
             flowOfTasks = flowOfTasks,
             taskEditor = taskEditor,
+            backStackInstructor = backStackInstructor,
         )
 //            .also { runCurrent() }
 }

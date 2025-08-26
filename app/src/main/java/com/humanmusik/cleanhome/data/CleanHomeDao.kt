@@ -25,7 +25,19 @@ interface CleanHomeDao {
     suspend fun insertResident(residentEntity: ResidentEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllResidents(residentEntities: List<ResidentEntity>)
+
+    @Query("DELETE FROM residententity")
+    suspend fun deleteAllResidents()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRoom(roomEntity: RoomEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllRooms(roomEntities: List<RoomEntity>)
+
+    @Query("DELETE FROM roomentity")
+    suspend fun deleteAllRooms()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(taskEntity: TaskEntity)
@@ -67,5 +79,17 @@ interface CleanHomeDao {
     suspend fun deleteAndInsertTasks(tasks: List<TaskEntity>) {
         deleteAllTasks()
         insertAllTasks(tasks)
+    }
+
+    @Transaction
+    suspend fun deleteAndInsertRooms(rooms: List<RoomEntity>) {
+        deleteAllRooms()
+        insertAllRooms(rooms)
+    }
+
+    @Transaction
+    suspend fun deleteAndInsertResidents(residents: List<ResidentEntity>) {
+        deleteAllResidents()
+        insertAllResidents(residents)
     }
 }

@@ -50,7 +50,7 @@ class CleanHomeRepositoryImplTest {
     }
 
     @Test
-    fun `test CRUD operations`() {
+    fun `test task CRUD operations`() {
         runCancellingTest {
             var taskId: Int? = null
 
@@ -264,6 +264,32 @@ class CleanHomeRepositoryImplTest {
 
     //endregion
 
+    @Test
+    fun `flowOfAllRooms() - returns all rooms`() {
+        runCancellingTest {
+            val roomEntities = listOf(
+                RoomEntity(0, "My Bedroom", 1),
+                RoomEntity(0, "Living Room", 1),
+                RoomEntity(0, "Bathroom", 1),
+            )
+
+            val expectedRooms = listOf(
+                com.humanmusik.cleanhome.domain.model.Room(1, "My Bedroom", 1),
+                com.humanmusik.cleanhome.domain.model.Room(2, "Living Room", 1),
+                com.humanmusik.cleanhome.domain.model.Room(3, "Bathroom", 1),
+            )
+
+            val cleanHomeRepository = createCleanHomeRepository()
+
+            cleanHomeDao.deleteAndInsertRooms(roomEntities)
+
+            cleanHomeRepository
+                .flowOfAllRooms()
+                .test {
+                    awaitItem().assertContainsExactlyElementsIn(expectedRooms)
+                }
+        }
+    }
     // TODO: test flowOfAllResidents
 
     private fun TestScope.createCleanHomeRepository(

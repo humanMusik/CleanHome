@@ -40,7 +40,7 @@ fun TaskCreationDurationContent(
             val durationState = rememberTimePickerState(is24Hour = true)
             TimeInput(state = durationState)
 
-            Button(onClick = { onCreateTask(Duration.parse("PT${durationState.hour}H${durationState.minute}")) }) {
+            Button(onClick = { onCreateTask(Duration.parse("PT${durationState.hour}H${durationState.minute}M")) }) {
                 Text("Create Task")
             }
         }

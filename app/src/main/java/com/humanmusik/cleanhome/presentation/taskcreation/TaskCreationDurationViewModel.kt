@@ -19,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import kotlin.time.Duration
@@ -41,19 +42,15 @@ class TaskCreationDurationViewModel @AssistedInject constructor(
                 todayDate = getTodayLocalDate(),
             )
         }
-            .onLoading { mutableStateFlow.update { FlowState.Loading() } }
+            .onEach { mutableStateFlow.update { it } }
             .onSuccess {
-                mutableStateFlow.update { FlowState.Success(Unit) }
+                backStackInstructor.learnInstructions(
+                    BackStackInstruction.PopUntil(TaskListNavKey)
+                )
             }
             .launchIn(viewModelScope)
 
-        return if (stateFlow.value.isSuccess()) {
-            backStackInstructor.learnInstructions(
-                BackStackInstruction.PopUntil(TaskListNavKey)
-            )
-        } else {
-            backStackInstructor.learnInstructions()
-        }
+        return backStackInstructor
     }
 
     private fun getTodayLocalDate() = LocalDate.now()

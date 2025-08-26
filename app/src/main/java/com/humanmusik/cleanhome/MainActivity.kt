@@ -23,6 +23,7 @@ import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.navigation.NavigationRoot
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import kotlin.time.Duration.Companion.hours
@@ -32,6 +33,17 @@ import kotlin.time.Duration.Companion.minutes
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    NavigationRoot(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    )
+                }
+            }
+        }
 
         val dao = CleanHomeDatabase.getDbInstance(this).cleanHomeDao()
 
@@ -229,10 +241,10 @@ class MainActivity : ComponentActivity() {
             ResidentRoomCrossRef(3, 4),
         )
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
 //            homeEntity.forEach { dao.insertHouse(it) }
-            residentEntities.forEach { dao.insertResident(it) }
-            roomEntities.forEach { dao.insertRoom(it) }
+            dao.deleteAndInsertResidents(residentEntities)
+            dao.deleteAndInsertRooms(roomEntities)
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 
@@ -246,18 +258,6 @@ class MainActivity : ComponentActivity() {
 //            getAllResidentsWithMetadata.onEach(::println)
 //            println(getHomeWithMetadata)
             getTasksForLeslie.onEach(::println)
-        }
-
-        setContent {
-            MaterialTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavigationRoot(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    )
-                }
-            }
         }
     }
 }

@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -89,8 +91,10 @@ class CleanHomeRepositoryImpl @Inject constructor(
     }
 
     override fun flowOfAllRooms(): Flow<List<Room>> {
-        return dao
-            .getAllRooms()
+        val rooms = dao.getAllRooms()
+            .onEach { println("repo rooms: $it") }
+        return rooms
+            .distinctUntilChanged()
             .mapContent {
                 it.toRoom()
             }

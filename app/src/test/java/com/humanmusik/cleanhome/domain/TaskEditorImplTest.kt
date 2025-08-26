@@ -1,5 +1,6 @@
 package com.humanmusik.cleanhome.domain
 
+import com.humanmusik.cleanhome.data.repository.CreateTask
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
@@ -285,7 +286,8 @@ class TaskEditorImplTest {
                     flowOf(setOf(task()))
                 },
                 flowOfAllResidents = { flowOf(allResidents) },
-                updateTask = { _ -> }
+                updateTask = { _ -> },
+                createTask = { _ -> },
             )
         }
     }
@@ -411,11 +413,13 @@ class TaskEditorImplTest {
         tasks: Set<Task> = emptySet(),
         allResidents: Set<ResidentDomain> = emptySet(),
         updateTask: UpdateTask,
+        createTask: CreateTask = CreateTask { _ -> },
     ): TaskEditorImpl {
         return TaskEditorImpl(
             flowOfTasks = { _ -> flowOf(tasks) },
             flowOfAllResidents = { flowOf(allResidents) },
             updateTask = updateTask,
+            createTask = createTask,
         )
     }
 }

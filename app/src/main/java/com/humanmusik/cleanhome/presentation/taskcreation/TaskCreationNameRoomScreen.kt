@@ -76,7 +76,7 @@ private fun TaskCreationNameRoomContent(
 
             val options: List<String> = state.allRooms.map { it.name }
             var expanded by remember { mutableStateOf(false) }
-            val roomTextFieldState = rememberTextFieldState(options[0])
+            val roomTextFieldState = rememberTextFieldState()
 
             ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
                 TextField(

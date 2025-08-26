@@ -1,7 +1,6 @@
 package com.humanmusik.cleanhome.di
 
 import android.app.Application
-import androidx.room.Room
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import dagger.Module
 import dagger.Provides
@@ -15,11 +14,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCleanHomeDatabase(app: Application): CleanHomeDatabase {
-        return Room.databaseBuilder(
-            context = app,
-            klass = CleanHomeDatabase::class.java,
-            name = "cleanhomedb.db"
-        ).build()
+    fun provideCleanHomeDatabase(appContext: Application): CleanHomeDatabase {
+        return CleanHomeDatabase.getDbInstance(appContext)
     }
 }
