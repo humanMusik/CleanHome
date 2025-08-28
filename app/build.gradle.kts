@@ -83,6 +83,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.jackson.serialization)
 
     // Nav3
     implementation(libs.androidx.navigation3.runtime)

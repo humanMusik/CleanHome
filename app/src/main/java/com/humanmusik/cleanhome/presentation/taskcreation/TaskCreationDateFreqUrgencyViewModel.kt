@@ -32,11 +32,6 @@ class TaskCreationDateFreqUrgencyViewModel @AssistedInject constructor(
         )
 
         return backStackInstructor
-            .learnInstructions(
-                BackStackInstruction.Push(
-                    navKey = TaskCreationNavKey.Duration(taskParcelData = updatedTaskParcelData),
-                )
-            )
     }
 
     @AssistedFactory

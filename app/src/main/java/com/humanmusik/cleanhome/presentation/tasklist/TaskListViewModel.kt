@@ -9,6 +9,7 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.navigation.BackStackInstruction
 import com.humanmusik.cleanhome.navigation.BackStackInstructor
+import com.humanmusik.cleanhome.navigation.NavigationViewModel
 import com.humanmusik.cleanhome.navigation.TaskCreationNavKey
 import com.humanmusik.cleanhome.navigation.TaskDetailsNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
@@ -16,10 +17,7 @@ import com.humanmusik.cleanhome.presentation.asFlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
 import com.humanmusik.cleanhome.presentation.onFailure
 import com.humanmusik.cleanhome.presentation.onSuccess
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -57,12 +55,6 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    fun onAddTask(): BackStackInstructor {
-        val backStackInstructor =
-            backStackInstructor.learnInstructions(BackStackInstruction.Push(TaskCreationNavKey.NameRoom))
-        return backStackInstructor
-    }
-
     fun onCompleteTask(task: Task) {
         // Optimistically remove completed task
         mutableStateFlow.value.onSuccess {
@@ -85,12 +77,6 @@ class TaskListViewModel @Inject constructor(
                 // TODO: OtherError() - Dialog
             }
             .launchIn(viewModelScope)
-    }
-
-    fun onExamine(task: Task): BackStackInstructor {
-        val backStackInstructor =
-            backStackInstructor.learnInstructions(BackStackInstruction.Push(TaskDetailsNavKey(task = task)))
-        return backStackInstructor
     }
 
     private fun getTodayLocalDate() = LocalDate.now()

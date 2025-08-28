@@ -20,14 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.onSuccess
 
 @Composable
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
-    navigation: (BackStackInstructor) -> Unit,
+    onAddTaskNavigator: () -> Unit,
+    onExamineNavigator: (Task) -> Unit,
 ) {
     Log.d("TaskListViewModel", viewModel.hashCode().toString())
     val state: FlowState<TaskListModel> = viewModel.stateFlow.collectAsState().value
@@ -35,8 +35,8 @@ fun TaskListScreen(
         state = state,
         onEdit = viewModel::onEditTask,
         onComplete = viewModel::onCompleteTask,
-        onExamine = { task -> navigation(viewModel.onExamine(task)) },
-        onAddTask = { navigation(viewModel.onAddTask()) },
+        onExamine = onExamineNavigator,
+        onAddTask = onAddTaskNavigator,
     )
 }
 

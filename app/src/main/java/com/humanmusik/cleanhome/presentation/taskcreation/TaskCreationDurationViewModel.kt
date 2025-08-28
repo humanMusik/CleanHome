@@ -44,9 +44,9 @@ class TaskCreationDurationViewModel @AssistedInject constructor(
         }
             .onEach { mutableStateFlow.update { it } }
             .onSuccess {
-                backStackInstructor.learnInstructions(
-                    BackStackInstruction.PopUntil(TaskListNavKey)
-                )
+//                backStackInstructor.learnInstructions(
+//                    BackStackInstruction.PopUntil(TaskListNavKey)
+//                )
             }
             .launchIn(viewModelScope)
 

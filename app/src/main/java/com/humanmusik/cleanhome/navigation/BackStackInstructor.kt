@@ -1,20 +1,19 @@
 package com.humanmusik.cleanhome.navigation
 
-import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 interface BackStackInstructor {
     val instructions: MutableList<BackStackInstruction>
 
-    fun provideInstructions(backStack: NavBackStack)
+    fun provideInstructions(backStack: MutableList<NavKey>)
     fun learnInstructions(vararg instructions: BackStackInstruction): BackStackInstructor
 }
 
 class StandardBackStackInstructor() : BackStackInstructor {
     override val instructions: MutableList<BackStackInstruction> = mutableListOf()
 
-    override fun provideInstructions(backStack: NavBackStack) {
+    override fun provideInstructions(backStack: MutableList<NavKey>) {
         backStack.apply {
             instructions.forEach { instruction ->
                 when (instruction) {

@@ -35,7 +35,7 @@ import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationName
 @Composable
 fun TaskCreationNameRoomScreen(
     viewModel: TaskCreationNameRoomViewModel = hiltViewModel(),
-    navigation: (BackStackInstructor) -> Unit,
+    onContinue: () -> Unit = {},
 ) {
     val state = viewModel.stateFlow.collectAsState()
 
@@ -43,7 +43,7 @@ fun TaskCreationNameRoomScreen(
         TaskCreationNameRoomContent(
             state = it,
             onContinue = { taskName, roomName ->
-                navigation(viewModel.onContinue(taskName = taskName, roomName = roomName))
+                onContinue
             },
         )
     }

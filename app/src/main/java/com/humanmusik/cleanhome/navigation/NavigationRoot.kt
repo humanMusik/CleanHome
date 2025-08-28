@@ -1,53 +1,56 @@
 package com.humanmusik.cleanhome.navigation
 
+import android.os.Parcelable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDateFreqUrgencyScreen
-import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDateFreqUrgencyViewModel
-import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDurationScreen
-import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDurationViewModel
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationNameRoomScreen
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
-data object TaskListNavKey : NavKey
+interface CustomNavKey : Parcelable
 
-@Serializable
-data class TaskDetailsNavKey(@Contextual val task: Task) : NavKey
+@Parcelize
+data class BackStack(val navKeys: SnapshotStateList<CustomNavKey>) : Parcelable
 
-@Serializable
-sealed interface TaskCreationNavKey : NavKey {
-    @Serializable
+@Parcelize
+data object TaskListNavKey : CustomNavKey
+
+@Parcelize
+data class TaskDetailsNavKey(val task: Task) : CustomNavKey
+
+@Parcelize
+sealed interface TaskCreationNavKey : CustomNavKey {
     data object NameRoom : TaskCreationNavKey
 
-    @Serializable
     data class DateFrequencyUrgency(
-        @Contextual val taskParcelData: TaskParcelData,
-    ) :
-        TaskCreationNavKey
+        val taskParcelData: TaskParcelData,
+    ) : TaskCreationNavKey
 
-    @Serializable
     data class Duration(
-        @Contextual val taskParcelData: TaskParcelData,
+        val taskParcelData: TaskParcelData,
     ) : TaskCreationNavKey
 }
 
 @Composable
-fun NavigationRoot(modifier: Modifier) {
-    val backStack = rememberNavBackStack(TaskListNavKey)
+fun NavigationRoot(
+    modifier: Modifier,
+) {
+    val viewModel: NavigationViewModel = hiltViewModel()
+    val backStack = viewModel.backStack.collectAsState().value.navKeys
+
 
     NavDisplay(
         modifier = modifier,
@@ -57,44 +60,47 @@ fun NavigationRoot(modifier: Modifier) {
             rememberSavedStateNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
         ),
-        onBack = { backStack.removeLastOrNull() },
+        onBack = { viewModel.pop() },
         entryProvider = entryProvider {
             entry<TaskListNavKey> {
-                TaskListScreen(navigation = { it.provideInstructions(backStack) })
+                TaskListScreen(
+                    onAddTaskNavigator = { viewModel.push(TaskCreationNavKey.NameRoom) },
+                    onExamineNavigator = { task -> viewModel.push(TaskDetailsNavKey(task = task)) }
+                )
             }
 
             entry<TaskCreationNavKey.NameRoom> {
-                TaskCreationNameRoomScreen(navigation = { it.provideInstructions(backStack) })
+                TaskCreationNameRoomScreen()
             }
 
-            entry<TaskCreationNavKey.DateFrequencyUrgency> { key ->
-                val taskCreationDateFreqUrgencyViewModel: TaskCreationDateFreqUrgencyViewModel =
-                    hiltViewModel<TaskCreationDateFreqUrgencyViewModel, TaskCreationDateFreqUrgencyViewModel.Factory>(
-                        creationCallback = { factory ->
-                            factory.create(key)
-                        }
-                    )
-
-                TaskCreationDateFreqUrgencyScreen(
-                    viewModel = taskCreationDateFreqUrgencyViewModel,
-                    navigation = { it.provideInstructions(backStack) }
-                )
+//            entry<TaskCreationNavKey.DateFrequencyUrgency> { key ->
+//                val taskCreationDateFreqUrgencyViewModel: TaskCreationDateFreqUrgencyViewModel =
+//                    hiltViewModel<TaskCreationDateFreqUrgencyViewModel, TaskCreationDateFreqUrgencyViewModel.Factory>(
+//                        creationCallback = { factory ->
+//                            factory.create(key)
+//                        }
+//                    )
+//
+//                TaskCreationDateFreqUrgencyScreen(
+//                    viewModel = taskCreationDateFreqUrgencyViewModel,
+//                    navigation = { it.provideInstructions(backStack) }
+//                )
+//            }
+//
+//            entry<TaskCreationNavKey.Duration> { key ->
+//                val taskCreationDurationViewModel: TaskCreationDurationViewModel =
+//                    hiltViewModel<TaskCreationDurationViewModel, TaskCreationDurationViewModel.Factory>(
+//                        creationCallback = { factory ->
+//                            factory.create(key)
+//                        }
+//                    )
+//
+//                TaskCreationDurationScreen(
+//                    viewModel = taskCreationDurationViewModel,
+//                    navigation = { it.provideInstructions(backStack) }
+//                )
             }
 
-            entry<TaskCreationNavKey.Duration> { key ->
-                val taskCreationDurationViewModel: TaskCreationDurationViewModel =
-                    hiltViewModel<TaskCreationDurationViewModel, TaskCreationDurationViewModel.Factory>(
-                        creationCallback = { factory ->
-                            factory.create(key)
-                        }
-                    )
-
-                TaskCreationDurationScreen(
-                    viewModel = taskCreationDurationViewModel,
-                    navigation = { it.provideInstructions(backStack) }
-                )
-            }
-        }
 
 
 //            { key ->
