@@ -3,8 +3,6 @@ package com.humanmusik.cleanhome.navigation
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -70,7 +68,15 @@ fun NavigationRoot(
             }
 
             entry<TaskCreationNavKey.NameRoom> {
-                TaskCreationNameRoomScreen()
+                TaskCreationNameRoomScreen(
+                    onContinueNavigation = { taskParcelData ->
+                        viewModel.push(
+                            TaskCreationNavKey.DateFrequencyUrgency(
+                                taskParcelData = taskParcelData,
+                            ),
+                        )
+                    }
+                )
             }
 
 //            entry<TaskCreationNavKey.DateFrequencyUrgency> { key ->
@@ -99,8 +105,7 @@ fun NavigationRoot(
 //                    viewModel = taskCreationDurationViewModel,
 //                    navigation = { it.provideInstructions(backStack) }
 //                )
-            }
-
+        }
 
 
 //            { key ->

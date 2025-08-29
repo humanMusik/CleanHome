@@ -5,9 +5,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.humanmusik.cleanhome.util.saveState
+import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -15,26 +14,20 @@ import javax.inject.Inject
 class NavigationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
-    private val savedStateBehaviour = saveState<BackStack>(savedStateHandle)
-    private val savedState = savedStateBehaviour.restore()
-    private val initialState = BackStack(navKeys = mutableStateListOf(TaskListNavKey))
-    private val mutableStateFlow =
-        MutableStateFlow(savedState ?: initialState).also { stateFlow ->
-            savedStateBehaviour.bind(stateFlow)
-        }
-
-    val backStack = mutableStateFlow.asStateFlow()
+    val backStack = savedStateFlow(
+        savedStateBehaviour = saveState(savedStateHandle),
+        initialState = BackStack(navKeys = mutableStateListOf(TaskListNavKey))
+    )
 
     fun push(navKey: CustomNavKey) {
-        mutableStateFlow.update {
+        backStack.update {
             it.copy(navKeys = it.navKeys.addAndReturn(navKey))
         }
     }
 
     fun pop() {
-        if (mutableStateFlow.value.navKeys.size > 1) {
-            mutableStateFlow.update {
+        if (backStack.value.navKeys.size > 1) {
+            backStack.update {
                 it.copy(navKeys = it.navKeys.apply { removeLastOrNull() })
             }
         }

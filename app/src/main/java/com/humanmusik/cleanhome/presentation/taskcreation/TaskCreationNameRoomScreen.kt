@@ -28,14 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.onSuccess
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationNameRoomState
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 
 @Composable
 fun TaskCreationNameRoomScreen(
     viewModel: TaskCreationNameRoomViewModel = hiltViewModel(),
-    onContinue: () -> Unit = {},
+    onContinueNavigation: (TaskParcelData) -> Unit,
 ) {
     val state = viewModel.stateFlow.collectAsState()
 
@@ -43,7 +43,12 @@ fun TaskCreationNameRoomScreen(
         TaskCreationNameRoomContent(
             state = it,
             onContinue = { taskName, roomName ->
-                onContinue
+                viewModel.onContinue(
+                    taskName = taskName,
+                    roomName = roomName,
+                ) { taskParcelData ->
+                    onContinueNavigation(taskParcelData)
+                }
             },
         )
     }
