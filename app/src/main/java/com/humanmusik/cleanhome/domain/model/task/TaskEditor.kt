@@ -44,7 +44,7 @@ class TaskEditorImpl @Inject constructor(
             startDateInclusive = dateCompleted,
             endDateInclusive = getNewScheduledDate(
                 dateCompleted = dateCompleted,
-                taskFrequency = task.frequency,
+                taskFrequency = task.frequency!!,
             ),
         )
 
@@ -77,9 +77,9 @@ class TaskEditorImpl @Inject constructor(
         val assignedTo = combine(
             flowOfTasks(filter),
             flowOfAllResidents(),
-        ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
+        ) { tasksBetweenTodaysDateAndScheduledDate, allResidents ->
             getNewAssignment(
-                tasks = tasksBetweenDateCompletedAndNewDate,
+                tasks = tasksBetweenTodaysDateAndScheduledDate,
                 allResidents = allResidents
             )
         }
@@ -94,7 +94,7 @@ class TaskEditorImpl @Inject constructor(
         tasks: Set<Task>,
         allResidents: Set<Resident>,
     ): Resident {
-        return tasks.mapOfResidentToTotalTaskDuration()
+        return tasks.mapOfResidentToTotalTaskDuration(allResidents)
             .minByOrNull { it.value }
             ?.key
             ?: allResidents.randomOrNull()
@@ -111,12 +111,17 @@ class TaskEditorImpl @Inject constructor(
         Frequency.Monthly -> dateCompleted.plusMonths(1)
         Frequency.Quarterly -> dateCompleted.plusMonths(3)
         Frequency.BiAnnually -> dateCompleted.plusMonths(6)
-        Frequency.Annually -> dateCompleted.plusMonths(12)
+        Frequency.Annually -> dateCompleted.plusYears(1)
     }
 
-    private fun Set<Task>.mapOfResidentToTotalTaskDuration(): Map<Resident, Duration> =
-        groupingBy { it.assignedTo }
+    private fun Set<Task>.mapOfResidentToTotalTaskDuration(allResidents: Set<Resident>): Map<Resident, Duration> {
+        val tasks = this.toMutableSet()
+        allResidents.forEach { resident ->
+            tasks.add(Task.build(assignedTo = resident, duration = Duration.ZERO))
+        }
+        return tasks.groupingBy { it.assignedTo!! }
             .fold(0.minutes) { acc, task ->
-                acc + task.duration
+                acc + task.duration!!
             }
+    }
 }

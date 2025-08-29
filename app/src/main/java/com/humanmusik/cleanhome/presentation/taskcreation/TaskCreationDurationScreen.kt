@@ -17,10 +17,15 @@ import kotlin.time.Duration
 @Composable
 fun TaskCreationDurationScreen(
     viewModel: TaskCreationDurationViewModel,
-    navigation: (BackStackInstructor) -> Unit,
+    onCreateTaskNavigation: () -> Unit,
 ) {
     TaskCreationDurationContent(
-        onCreateTask = { duration -> navigation(viewModel.onCreateTask(duration)) }
+        onCreateTask = { duration ->
+            viewModel.onCreateTask(
+                duration = duration,
+                navigation = onCreateTaskNavigation,
+            )
+        }
     )
 }
 

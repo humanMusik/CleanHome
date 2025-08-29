@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -115,7 +114,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
             }
 
             is TaskFilter.ByScheduledDate -> {
-                { it.scheduledDate.isBetween(this.startDateInclusive, this.endDateInclusive) }
+                { it.scheduledDate?.isBetween(this.startDateInclusive, this.endDateInclusive) ?: false }
             }
         }
     }

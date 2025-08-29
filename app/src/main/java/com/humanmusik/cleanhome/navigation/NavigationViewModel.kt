@@ -32,6 +32,17 @@ class NavigationViewModel @Inject constructor(
             }
         }
     }
+
+    fun popUntil(navKey: CustomNavKey) {
+        if (backStack.value.navKeys.contains(navKey)) {
+            while (backStack.value.navKeys.last() != navKey) {
+                backStack.update {
+                    it.copy(navKeys = it.navKeys.apply { removeLastOrNull() })
+                }
+            }
+        }
+        println("popUntil ${backStack.value.navKeys}")
+    }
 }
 
 fun <T> SnapshotStateList<T>.addAndReturn(element: T): SnapshotStateList<T> {

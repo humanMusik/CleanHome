@@ -12,7 +12,7 @@ import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.getOrNull
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
-import com.humanmusik.cleanhome.presentation.tasklist.TaskListModel
+import com.humanmusik.cleanhome.presentation.tasklist.TaskListState
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListViewModel
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
 import com.humanmusik.cleanhome.utilstest.assertIsInstanceOf
@@ -48,7 +48,7 @@ class TaskListViewModelTest {
             )
 
             viewModel.stateFlow.test {
-                awaitItem().assertIsInstanceOf<FlowState.Loading<TaskListModel>>()
+                awaitItem().assertIsInstanceOf<FlowState.Loading<TaskListState>>()
                 awaitItem().getOrNull()?.tasks assertIsEqualTo tasks.toList()
             }
         }
@@ -81,7 +81,7 @@ class TaskListViewModelTest {
                 viewModel.onCompleteTask(completedTask)
                 advanceUntilIdle()
 
-                awaitItem().getOrNull().assertIsInstanceOf<FlowState.Success<TaskListModel>> {
+                awaitItem().getOrNull().assertIsInstanceOf<FlowState.Success<TaskListState>> {
                     value.tasks assertIsEqualTo listOf(
                         task(id = 2),
                         task(id = 3),

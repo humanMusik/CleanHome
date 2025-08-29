@@ -17,6 +17,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.humanmusik.cleanhome.domain.model.task.Task
+import com.humanmusik.cleanhome.util.toDateString
+import java.time.format.FormatStyle
 
 @Composable
 fun TaskCard(
@@ -35,7 +37,7 @@ fun TaskCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Vacuum",
+                    text = task.name ?: "",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -44,7 +46,7 @@ fun TaskCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Living Room",
+                    text = task.room?.name ?: "",
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
@@ -54,14 +56,14 @@ fun TaskCard(
 
             Column {
                 Text(
-                    text = "Mon",
+                    text = task.assignedTo?.name ?: "",
                     fontWeight = FontWeight.Medium,
                     fontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "1st Jan",
+                    text = task.scheduledDate?.toDateString("d MMM") ?: "",
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.onBackground,
                 )

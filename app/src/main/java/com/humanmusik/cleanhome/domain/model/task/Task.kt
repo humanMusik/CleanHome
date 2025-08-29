@@ -11,16 +11,42 @@ import kotlin.time.Duration
 @Parcelize
 data class Task(
     val id: Int?,
-    val name: String,
-    val room: Room,
-    val duration: Duration,
-    val frequency: Frequency,
-    val scheduledDate: LocalDate,
-    val urgency: Urgency,
-    val assignedTo: Resident,
+    val name: String?,
+    val room: Room?,
+    val duration: Duration?,
+    val frequency: Frequency?,
+    val scheduledDate: LocalDate?,
+    val urgency: Urgency?,
+    val assignedTo: Resident?,
 ) : Comparable<Task>, Parcelable {
     override fun compareTo(other: Task): Int =
         taskComparator.compare(this, other)
+
+    fun hasNullProperties(includeId: Boolean) = name == null || room == null || duration == null
+            || frequency == null || scheduledDate == null || urgency == null || assignedTo == null
+            || if (includeId) id == null else false
+
+    companion object {
+        fun build(
+            id: Int? = null,
+            name: String? = null,
+            room: Room? = null,
+            duration: Duration? = null,
+            frequency: Frequency? = null,
+            scheduledDate: LocalDate? = null,
+            urgency: Urgency? = null,
+            assignedTo: Resident? = null,
+        ) = Task(
+            id = id,
+            name = name,
+            room = room,
+            duration = duration,
+            frequency = frequency,
+            scheduledDate = scheduledDate,
+            urgency = urgency,
+            assignedTo = assignedTo,
+        )
+    }
 }
 
 enum class Frequency {

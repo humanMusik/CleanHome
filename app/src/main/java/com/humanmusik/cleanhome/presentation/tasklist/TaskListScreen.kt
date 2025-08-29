@@ -30,7 +30,7 @@ fun TaskListScreen(
     onExamineNavigator: (Task) -> Unit,
 ) {
     Log.d("TaskListViewModel", viewModel.hashCode().toString())
-    val state: FlowState<TaskListModel> = viewModel.stateFlow.collectAsState().value
+    val state: FlowState<TaskListState> = viewModel.state.collectAsState().value
     TaskListContent(
         state = state,
         onEdit = viewModel::onEditTask,
@@ -43,7 +43,7 @@ fun TaskListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskListContent(
-    state: FlowState<TaskListModel>,
+    state: FlowState<TaskListState>,
     onEdit: (Task) -> Unit,
     onComplete: (Task) -> Unit,
     onExamine: (Task) -> Unit,
@@ -52,7 +52,7 @@ private fun TaskListContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Sample") },
+                title = { Text(text = "CleanHome") },
                 navigationIcon = {
                     IconButton(onClick = onAddTask) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Task")

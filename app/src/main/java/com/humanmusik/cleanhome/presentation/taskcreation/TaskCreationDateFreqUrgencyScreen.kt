@@ -32,17 +32,22 @@ import androidx.compose.material3.getSelectedDate
 import androidx.compose.runtime.mutableIntStateOf
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Urgency
-import com.humanmusik.cleanhome.navigation.BackStackInstructor
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import java.time.LocalDate
 
 @Composable
 fun TaskCreationDateFreqUrgencyScreen(
     viewModel: TaskCreationDateFreqUrgencyViewModel,
-    navigation: (BackStackInstructor) -> Unit,
+    onContinueNavigation: (TaskParcelData) -> Unit,
 ) {
     TaskCreationDateFreqUrgencyContent(
         onContinue = { date, frequency, urgency ->
-            navigation(viewModel.onContinue(date, frequency, urgency))
+            viewModel.onContinue(
+                date = date,
+                frequency = frequency,
+                urgency = urgency,
+                navigation = { taskParcelData -> onContinueNavigation(taskParcelData) },
+            )
         }
     )
 }

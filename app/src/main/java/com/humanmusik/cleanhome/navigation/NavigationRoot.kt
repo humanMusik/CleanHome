@@ -13,6 +13,10 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.humanmusik.cleanhome.domain.model.task.Task
+import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDateFreqUrgencyScreen
+import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDateFreqUrgencyViewModel
+import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDurationScreen
+import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDurationViewModel
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationNameRoomScreen
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
@@ -49,7 +53,6 @@ fun NavigationRoot(
     val viewModel: NavigationViewModel = hiltViewModel()
     val backStack = viewModel.backStack.collectAsState().value.navKeys
 
-
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
@@ -70,42 +73,40 @@ fun NavigationRoot(
             entry<TaskCreationNavKey.NameRoom> {
                 TaskCreationNameRoomScreen(
                     onContinueNavigation = { taskParcelData ->
-                        viewModel.push(
-                            TaskCreationNavKey.DateFrequencyUrgency(
-                                taskParcelData = taskParcelData,
-                            ),
-                        )
-                    }
+                        viewModel.push(TaskCreationNavKey.DateFrequencyUrgency(taskParcelData))
+                    },
                 )
             }
 
-//            entry<TaskCreationNavKey.DateFrequencyUrgency> { key ->
-//                val taskCreationDateFreqUrgencyViewModel: TaskCreationDateFreqUrgencyViewModel =
-//                    hiltViewModel<TaskCreationDateFreqUrgencyViewModel, TaskCreationDateFreqUrgencyViewModel.Factory>(
-//                        creationCallback = { factory ->
-//                            factory.create(key)
-//                        }
-//                    )
-//
-//                TaskCreationDateFreqUrgencyScreen(
-//                    viewModel = taskCreationDateFreqUrgencyViewModel,
-//                    navigation = { it.provideInstructions(backStack) }
-//                )
-//            }
-//
-//            entry<TaskCreationNavKey.Duration> { key ->
-//                val taskCreationDurationViewModel: TaskCreationDurationViewModel =
-//                    hiltViewModel<TaskCreationDurationViewModel, TaskCreationDurationViewModel.Factory>(
-//                        creationCallback = { factory ->
-//                            factory.create(key)
-//                        }
-//                    )
-//
-//                TaskCreationDurationScreen(
-//                    viewModel = taskCreationDurationViewModel,
-//                    navigation = { it.provideInstructions(backStack) }
-//                )
-        }
+            entry<TaskCreationNavKey.DateFrequencyUrgency> { key ->
+                val taskCreationDateFreqUrgencyViewModel: TaskCreationDateFreqUrgencyViewModel =
+                    hiltViewModel<TaskCreationDateFreqUrgencyViewModel, TaskCreationDateFreqUrgencyViewModel.Factory>(
+                        creationCallback = { factory ->
+                            factory.create(key)
+                        }
+                    )
+
+                TaskCreationDateFreqUrgencyScreen(
+                    viewModel = taskCreationDateFreqUrgencyViewModel,
+                    onContinueNavigation = { taskParcelData ->
+                        viewModel.push(TaskCreationNavKey.Duration(taskParcelData))
+                    },
+                )
+            }
+
+            entry<TaskCreationNavKey.Duration> { key ->
+                val taskCreationDurationViewModel: TaskCreationDurationViewModel =
+                    hiltViewModel<TaskCreationDurationViewModel, TaskCreationDurationViewModel.Factory>(
+                        creationCallback = { factory ->
+                            factory.create(key)
+                        }
+                    )
+
+                TaskCreationDurationScreen(
+                    viewModel = taskCreationDurationViewModel,
+                    onCreateTaskNavigation = { viewModel.popUntil(TaskListNavKey) },
+                )
+            }
 
 
 //            { key ->
@@ -164,5 +165,7 @@ fun NavigationRoot(
 //                else -> throw RuntimeException("Invalid NavKey")
 //            }
 //        }
+
+        }
     )
 }

@@ -11,6 +11,6 @@ fun Urgency.sortOrder(): Int = when (this) {
 
 internal val taskComparator: Comparator<Task> = compareBy(
     { it.scheduledDate },
-    { it.urgency.sortOrder() },
+    { it.urgency?.sortOrder() },
     { it.duration },
 )

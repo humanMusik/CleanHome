@@ -16,13 +16,19 @@ fun TaskEntity.toTask() = Task(
 
 fun List<TaskEntity>.toTasks() = map { it.toTask() }
 
-fun Task.toTaskEntity() = TaskEntity(
-    id = id ?: 0,
-    name = name,
-    room = room.toRoomEntity(),
-    duration = duration,
-    frequency = frequency,
-    scheduledDate = scheduledDate,
-    urgency = urgency,
-    assignedTo = assignedTo.toResidentEntity(),
-)
+fun Task.toTaskEntity(): TaskEntity {
+    if (hasNullProperties(includeId = false)) {
+        throw IllegalStateException()
+    }
+
+    return TaskEntity(
+        id = id ?: 0,
+        name = name!!,
+        room = room!!.toRoomEntity(),
+        duration = duration!!,
+        frequency = frequency!!,
+        scheduledDate = scheduledDate!!,
+        urgency = urgency!!,
+        assignedTo = assignedTo!!.toResidentEntity(),
+    )
+}
