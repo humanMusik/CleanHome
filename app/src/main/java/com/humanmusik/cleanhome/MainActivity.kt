@@ -246,7 +246,7 @@ class MainActivity : ComponentActivity() {
 //            homeEntity.forEach { dao.insertHouse(it) }
             dao.deleteAndInsertResidents(residentEntities)
             dao.deleteAndInsertRooms(roomEntities)
-            dao.deleteAllTasks()
+            dao.deleteAndInsertTasks(taskEntities)
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 

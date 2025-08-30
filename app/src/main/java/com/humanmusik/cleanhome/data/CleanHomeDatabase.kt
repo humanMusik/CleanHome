@@ -9,6 +9,7 @@ import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
+import com.humanmusik.cleanhome.data.entities.TaskLogEntity
 
 const val DB_VERSION = 1
 
@@ -19,6 +20,7 @@ const val DB_VERSION = 1
         ResidentEntity::class,
         TaskEntity::class,
         ResidentRoomCrossRef::class,
+        TaskLogEntity::class,
     ],
     version = DB_VERSION,
 )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "78a5db853ffc680e77f965d3ed007681",
+    "identityHash": "cdfcd762f4133780801d55d1c9b4557b",
     "entities": [
       {
         "tableName": "HomeEntity",
@@ -147,19 +147,19 @@
             "notNull": true
           },
           {
-            "fieldPath": "allocatedTo.id",
+            "fieldPath": "assignedTo.id",
             "columnName": "resident_id",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "allocatedTo.name",
+            "fieldPath": "assignedTo.name",
             "columnName": "resident_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "allocatedTo.homeId",
+            "fieldPath": "assignedTo.homeId",
             "columnName": "resident_homeId",
             "affinity": "INTEGER",
             "notNull": true
@@ -220,11 +220,47 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "TaskLogEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `date` TEXT NOT NULL, `recordedAction` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordedAction",
+            "columnName": "recordedAction",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '78a5db853ffc680e77f965d3ed007681')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cdfcd762f4133780801d55d1c9b4557b')"
     ]
   }
 }

@@ -4,11 +4,14 @@ import com.humanmusik.cleanhome.data.repository.CreateTask
 import com.humanmusik.cleanhome.data.repository.CreateTask.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId
+import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfTasks
 import com.humanmusik.cleanhome.data.repository.FlowOfTasks.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.UpdateTask
 import com.humanmusik.cleanhome.data.repository.UpdateTask.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
+import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import kotlinx.coroutines.flow.combine
@@ -35,6 +38,7 @@ class TaskEditorImpl @Inject constructor(
     private val flowOfAllResidents: FlowOfAllResidents,
     private val updateTask: UpdateTask,
     private val createTask: CreateTask,
+    private val flowOfLogsByTaskId: FlowOfTaskLogsByTaskId,
 ) : TaskEditor {
     override suspend fun reassignTask(
         task: Task,
@@ -51,7 +55,10 @@ class TaskEditorImpl @Inject constructor(
         val reAssignedTask = combine(
             flowOfTasks(filter),
             flowOfAllResidents(),
-        ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
+            flowOfLogsByTaskId(requireNotNull(task.id)),
+        ) { tasksBetweenDateCompletedAndNewDate, allResidents, logs ->
+            if (logs.any { it.wasCompletedOn(dateCompleted) }) throw TaskEditorExceptions.AlreadyCompletedToday()
+
             task.copy(
                 scheduledDate = getNewScheduledDate(
                     dateCompleted = dateCompleted,
@@ -124,4 +131,8 @@ class TaskEditorImpl @Inject constructor(
                 acc + task.duration!!
             }
     }
+}
+
+sealed class TaskEditorExceptions : Throwable() {
+    class AlreadyCompletedToday: TaskEditorExceptions()
 }

@@ -4,11 +4,14 @@ import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toRoom
 import com.humanmusik.cleanhome.data.mappers.toTaskEntity
+import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
+import com.humanmusik.cleanhome.data.mappers.toTaskLogs
 import com.humanmusik.cleanhome.data.mappers.toTasks
 import com.humanmusik.cleanhome.di.ApplicationScope
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +34,9 @@ class CleanHomeRepositoryImpl @Inject constructor(
     UpdateTask,
     FlowOfTasks,
     FlowOfAllResidents,
-    FlowOfAllRooms {
+    FlowOfAllRooms,
+    CreateTaskLog,
+    FlowOfTaskLogsByTaskId {
 
     private val dao = db.cleanHomeDao()
 
@@ -67,7 +72,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
         return flow {
             emit(
                 dao
-                    .getAllResidentsWithMetadata()
+                    .getAllResidents()
                     .map { entity ->
                         entity.toResident()
                     }
@@ -114,7 +119,10 @@ class CleanHomeRepositoryImpl @Inject constructor(
             }
 
             is TaskFilter.ByScheduledDate -> {
-                { it.scheduledDate?.isBetween(this.startDateInclusive, this.endDateInclusive) ?: false }
+                {
+                    it.scheduledDate?.isBetween(this.startDateInclusive, this.endDateInclusive)
+                        ?: false
+                }
             }
         }
     }
@@ -132,5 +140,15 @@ class CleanHomeRepositoryImpl @Inject constructor(
         crossinline transform: (T) -> R,
     ): Flow<List<R>> {
         return map { it.map(transform) }
+    }
+
+    override suspend fun createTaskLog(taskLog: TaskLog) {
+        dao.insertTaskLog(taskLog.toTaskLogEntity())
+    }
+
+    override fun flowOfTaskLogsByTaskId(taskId: Int): Flow<List<TaskLog>> {
+        return dao
+            .getLogsByTaskId(taskId = taskId)
+            .map { it.toTaskLogs() }
     }
 }

@@ -6,13 +6,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import androidx.room.Upsert
 import com.humanmusik.cleanhome.data.entities.HomeEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
-import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
-import com.humanmusik.cleanhome.data.entities.RoomWithMetadata
 import com.humanmusik.cleanhome.data.entities.TaskEntity
+import com.humanmusik.cleanhome.data.entities.TaskLogEntity
+import com.humanmusik.cleanhome.domain.model.ActionType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,11 +47,17 @@ interface CleanHomeDao {
     @Update
     suspend fun updateTask(taskEntity: TaskEntity)
 
-    @Insert
-    suspend fun insertResidentRoomCrossRef(residentRoomCrossRef: ResidentRoomCrossRef)
-
     @Query("DELETE FROM taskentity")
     suspend fun deleteAllTasks()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTaskLog(taskLogEntity: TaskLogEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTaskLogs(taskLogEntities: List<TaskLogEntity>)
+
+    @Query("DELETE FROM tasklogentity")
+    suspend fun deleteAllTaskLogs()
 
     @Query("SELECT * FROM taskentity")
     fun getAllTasks(): Flow<List<TaskEntity>>
@@ -60,20 +65,17 @@ interface CleanHomeDao {
     @Query("SELECT * FROM taskentity WHERE resident_id=:residentId")
     suspend fun getTasksForResident(residentId: Int): List<TaskEntity>
 
-    //    @Query("SELECT * FROM homeentity WHERE id=:homeId")
-//    suspend fun getHomeWithMetadata(homeId: Int): HomeWithMetadata
-//
     @Query("SELECT * from roomentity")
     fun getAllRooms(): Flow<List<RoomEntity>>
-//
-//    @Query("SELECT * FROM roomentity WHERE id=:roomId")
-//    suspend fun getRoomWithMetadata(roomId: Int): RoomWithMetadata
-//
+
     @Query("SELECT * from residententity")
-    suspend fun getAllResidentsWithMetadata(): List<ResidentEntity>
-//
-//    @Query("SELECT * FROM roomentity WHERE id=:residentId")
-//    suspend fun getResidentWithMetadata(residentId: Int): ResidentWithMetadata
+    suspend fun getAllResidents(): List<ResidentEntity>
+
+    @Query("SELECT * from tasklogentity WHERE taskId=:taskId")
+    fun getLogsByTaskId(taskId: Int): Flow<List<TaskLogEntity>>
+
+    @Query("SELECT * from tasklogentity WHERE recordedAction=:actionType")
+    fun getLogsByAction(actionType: ActionType): Flow<List<TaskLogEntity>>
 
     @Transaction
     suspend fun deleteAndInsertTasks(tasks: List<TaskEntity>) {

@@ -1,5 +1,6 @@
 package com.humanmusik.cleanhome.presentation.tasklist
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.humanmusik.cleanhome.domain.model.task.Task
@@ -45,10 +47,12 @@ fun TaskListScreen(
 private fun TaskListContent(
     state: FlowState<TaskListState>,
     onEdit: (Task) -> Unit,
-    onComplete: (Task) -> Unit,
+    onComplete: (Context, Task) -> Unit,
     onExamine: (Task) -> Unit,
     onAddTask: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,6 +66,7 @@ private fun TaskListContent(
         },
     ) { paddingValues ->
         state.onSuccess {
+            Log.d("Les", "${it.tasks.size}")
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -71,12 +76,16 @@ private fun TaskListContent(
                 items(
                     items = it.tasks,
                 ) { task ->
-                    TaskItem(
-                        task = task,
-                        onSwipeStartToEnd = { providedTask -> onEdit(providedTask) },
-                        onSwipeEndToStart = { providedTask -> onComplete(providedTask) },
+                    SwipeToDismissItem(
+                        onSwipeStartToEnd = { onEdit(task) },
+                        onSwipeEndToStart = { onComplete(context, task) },
                         onClick = { onExamine(task) },
-                    )
+                    ) {
+                        TaskCard(
+                            task = task,
+                            onClick = {}
+                        )
+                    }
                 }
             }
         }

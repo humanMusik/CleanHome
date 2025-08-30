@@ -1,8 +1,10 @@
 package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.domain.TaskFilter
+import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.flow.Flow
 
@@ -47,5 +49,32 @@ fun interface FlowOfAllRooms {
 
     companion object {
         operator fun FlowOfAllRooms.invoke() = flowOfAllRooms()
+    }
+}
+
+fun interface CreateTaskLog {
+    suspend fun createTaskLog(taskLog: TaskLog)
+
+    companion object {
+        suspend operator fun CreateTaskLog.invoke(taskLog: TaskLog) =
+            createTaskLog(taskLog)
+    }
+}
+
+fun interface FlowOfTaskLogsByTaskId {
+    fun flowOfTaskLogsByTaskId(taskId: Int): Flow<List<TaskLog>>
+
+    companion object {
+        operator fun FlowOfTaskLogsByTaskId.invoke(taskId: Int) =
+            flowOfTaskLogsByTaskId(taskId)
+    }
+}
+
+fun interface FlowOfTaskLogsByActionType {
+    fun flowOfTaskLogsByActionType(actionType: ActionType): Flow<List<TaskLog>>
+
+    companion object {
+        operator fun FlowOfTaskLogsByActionType.invoke(actionType: ActionType) =
+            flowOfTaskLogsByActionType(actionType)
     }
 }

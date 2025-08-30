@@ -125,8 +125,8 @@ inline fun <T> FlowState<T>.onSuccess(block: (T) -> Unit): FlowState<T> {
     return this
 }
 
-inline fun <T> FlowState<T>.onFailure(block: () -> Unit): FlowState<T> {
-    if (isFailure()) block()
+inline fun <T> FlowState<T>.onFailure(block: (Throwable) -> Unit): FlowState<T> {
+    if (isFailure()) block(throwable)
     return this
 }
 
@@ -142,7 +142,7 @@ inline fun <T> Flow<FlowState<T>>.onSuccess(crossinline block: (T) -> Unit): Flo
     }
 }
 
-inline fun <T> Flow<FlowState<T>>.onFailure(crossinline block: () -> Unit): Flow<FlowState<T>> {
+inline fun <T> Flow<FlowState<T>>.onFailure(crossinline block: (Throwable) -> Unit): Flow<FlowState<T>> {
     return onEach { state ->
         state.onFailure(block)
     }
