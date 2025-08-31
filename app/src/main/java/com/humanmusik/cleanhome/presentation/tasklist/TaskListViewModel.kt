@@ -53,12 +53,6 @@ class TaskListViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onEditTask(task: Task) {
-        viewModelScope.launch {
-            // TODO: Go to task edit screen
-        }
-    }
-
     fun onCompleteTask(
         context: Context,
         task: Task,
@@ -101,7 +95,7 @@ class TaskListViewModel @Inject constructor(
                                 FlowState.Success(TaskListState(tasks = updatedTasks))
                             }
                         }
-                        Toast.makeText(context, "Task already completed today!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Task has already been completed today!", Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }

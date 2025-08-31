@@ -3,9 +3,12 @@ package com.humanmusik.cleanhome.data.repository
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.Resident
+import com.humanmusik.cleanhome.domain.model.ResidentId
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.RoomId
 import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
+import com.humanmusik.cleanhome.domain.model.task.TaskId
 import kotlinx.coroutines.flow.Flow
 
 fun interface CreateTask {
@@ -62,10 +65,10 @@ fun interface CreateTaskLog {
 }
 
 fun interface FlowOfTaskLogsByTaskId {
-    fun flowOfTaskLogsByTaskId(taskId: Int): Flow<List<TaskLog>>
+    fun flowOfTaskLogsByTaskId(taskId: TaskId): Flow<List<TaskLog>>
 
     companion object {
-        operator fun FlowOfTaskLogsByTaskId.invoke(taskId: Int) =
+        operator fun FlowOfTaskLogsByTaskId.invoke(taskId: TaskId) =
             flowOfTaskLogsByTaskId(taskId)
     }
 }
@@ -76,5 +79,23 @@ fun interface FlowOfTaskLogsByActionType {
     companion object {
         operator fun FlowOfTaskLogsByActionType.invoke(actionType: ActionType) =
             flowOfTaskLogsByActionType(actionType)
+    }
+}
+
+fun interface FlowOfResidentById {
+    fun flowOfResidentById(residentId: ResidentId): Flow<Resident>
+
+    companion object {
+        operator fun FlowOfResidentById.invoke(residentId: ResidentId) =
+            flowOfResidentById(residentId)
+    }
+}
+
+fun interface FlowOfRoomById {
+    fun flowOfRoomById(roomId: RoomId): Flow<Room>
+
+    companion object {
+        operator fun FlowOfRoomById.invoke(roomId: RoomId) =
+            flowOfRoomById(roomId)
     }
 }

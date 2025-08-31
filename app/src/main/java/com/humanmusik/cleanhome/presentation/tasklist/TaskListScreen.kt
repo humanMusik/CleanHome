@@ -29,15 +29,14 @@ import com.humanmusik.cleanhome.presentation.onSuccess
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
     onAddTaskNavigator: () -> Unit,
-    onExamineNavigator: (Task) -> Unit,
+    onTaskSelectedNavigator: (Int) -> Unit,
 ) {
     Log.d("TaskListViewModel", viewModel.hashCode().toString())
     val state: FlowState<TaskListState> = viewModel.state.collectAsState().value
     TaskListContent(
         state = state,
-        onEdit = viewModel::onEditTask,
         onComplete = viewModel::onCompleteTask,
-        onExamine = onExamineNavigator,
+        onExamine = onTaskSelectedNavigator,
         onAddTask = onAddTaskNavigator,
     )
 }
@@ -46,7 +45,6 @@ fun TaskListScreen(
 @Composable
 private fun TaskListContent(
     state: FlowState<TaskListState>,
-    onEdit: (Task) -> Unit,
     onComplete: (Context, Task) -> Unit,
     onExamine: (Task) -> Unit,
     onAddTask: () -> Unit,
@@ -57,7 +55,7 @@ private fun TaskListContent(
         topBar = {
             TopAppBar(
                 title = { Text(text = "CleanHome") },
-                navigationIcon = {
+                actions = {
                     IconButton(onClick = onAddTask) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Task")
                     }

@@ -1,53 +1,56 @@
 package com.humanmusik.cleanhome.domain.model.task
 
 import android.os.Parcelable
-import com.humanmusik.cleanhome.domain.model.Resident
-import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.ResidentId
+import com.humanmusik.cleanhome.domain.model.RoomId
 import com.humanmusik.cleanhome.domain.taskComparator
 import kotlinx.parcelize.Parcelize
+import org.jetbrains.annotations.Contract
 import java.time.LocalDate
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.time.Duration
 
 @Parcelize
 data class Task(
-    val id: Int?,
+    val id: TaskId,
     val name: String?,
-    val room: Room?,
+    val roomId: RoomId,
     val duration: Duration?,
     val frequency: Frequency?,
     val scheduledDate: LocalDate?,
     val urgency: Urgency?,
-    val assignedTo: Resident?,
+    val assigneeId: ResidentId,
 ) : Comparable<Task>, Parcelable {
     override fun compareTo(other: Task): Int =
         taskComparator.compare(this, other)
 
-    fun hasNullProperties(includeId: Boolean) = name == null || room == null || duration == null
-            || frequency == null || scheduledDate == null || urgency == null || assignedTo == null
-            || if (includeId) id == null else false
-
     companion object {
         fun build(
-            id: Int? = null,
+            id: TaskId = TaskId(null),
             name: String? = null,
-            room: Room? = null,
+            roomId: RoomId = RoomId(null),
             duration: Duration? = null,
             frequency: Frequency? = null,
             scheduledDate: LocalDate? = null,
             urgency: Urgency? = null,
-            assignedTo: Resident? = null,
+            assigneeId: ResidentId = ResidentId(null),
         ) = Task(
             id = id,
             name = name,
-            room = room,
+            roomId = roomId,
             duration = duration,
             frequency = frequency,
             scheduledDate = scheduledDate,
             urgency = urgency,
-            assignedTo = assignedTo,
+            assigneeId = assigneeId,
         )
     }
 }
+
+@JvmInline
+@Parcelize
+value class TaskId(val value: Int?) : Parcelable
 
 enum class Frequency {
     Daily,

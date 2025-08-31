@@ -34,7 +34,7 @@ data class TaskParcelData(
                 frequency = frequency!!,
                 urgency = urgency!!,
                 duration = duration!!,
-                assignedTo = assignedTo,
+                assigneeId = assignedTo,
             )
         }
     }

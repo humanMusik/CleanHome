@@ -11,7 +11,7 @@ const val ROOM_ID_CROSS_REF = "roomId"
     foreignKeys = [
         ForeignKey(
             entity = ResidentEntity::class,
-            parentColumns = [RESIDENT_ID],
+            parentColumns = [RESIDENT_ENTITY_ID],
             childColumns = [RESIDENT_ID_CROSS_REF],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE

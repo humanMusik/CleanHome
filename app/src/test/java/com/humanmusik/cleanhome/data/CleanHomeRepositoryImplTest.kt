@@ -67,7 +67,7 @@ class CleanHomeRepositoryImplTest {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.of(2025, 10, 10),
                 urgency = Urgency.NonUrgent,
-                assignedTo = Resident(
+                assigneeId = Resident(
                     id = 1,
                     name = "Me",
                     homeId = 1,
@@ -101,7 +101,7 @@ class CleanHomeRepositoryImplTest {
                         frequency = Frequency.Fortnightly,
                         scheduledDate = LocalDate.of(2025, 10, 15),
                         urgency = Urgency.NonUrgent,
-                        assignedTo = Resident(
+                        assigneeId = Resident(
                             id = 1,
                             name = "You",
                             homeId = 1,
@@ -308,7 +308,7 @@ class CleanHomeRepositoryImplTest {
                 this.frequency == expectedTask.frequency &&
                 this.scheduledDate == expectedTask.scheduledDate &&
                 this.urgency == expectedTask.urgency &&
-                this.assignedTo == expectedTask.assignedTo
+                this.assigneeId == expectedTask.assigneeId
     }
 
     private fun task(
@@ -336,7 +336,7 @@ class CleanHomeRepositoryImplTest {
         frequency = frequency,
         scheduledDate = scheduledDate,
         urgency = urgency,
-        assignedTo = assignedTo,
+        assigneeId = assignedTo,
     )
 
     private fun taskEntity(

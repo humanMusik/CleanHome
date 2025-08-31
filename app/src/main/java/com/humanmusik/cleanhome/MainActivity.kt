@@ -21,7 +21,6 @@ import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.navigation.NavigationRoot
-import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -168,7 +167,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                assignedTo = Resident(
+                assigneeId = Resident(
                     id = 3,
                     name = "Cihan",
                     homeId = 1,
@@ -186,7 +185,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                assignedTo = Resident(
+                assigneeId = Resident(
                     id = 2,
                     name = "Jenny",
                     homeId = 1,
@@ -204,7 +203,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                assignedTo = Resident(
+                assigneeId = Resident(
                     id = 1,
                     name = "Leslie",
                     homeId = 1,
@@ -222,7 +221,7 @@ class MainActivity : ComponentActivity() {
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
-                assignedTo = Resident(
+                assigneeId = Resident(
                     id = 2,
                     name = "Jenny",
                     homeId = 1,

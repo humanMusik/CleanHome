@@ -12,13 +12,21 @@ import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.data.entities.TaskLogEntity
 import com.humanmusik.cleanhome.domain.model.ActionType
+import com.humanmusik.cleanhome.domain.model.ResidentId
+import com.humanmusik.cleanhome.domain.model.RoomId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CleanHomeDao {
 
+    //region House Daos
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHouse(homeEntity: HomeEntity)
+
+    //endregion
+
+    //region Resident Daos
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertResident(residentEntity: ResidentEntity)
@@ -29,6 +37,16 @@ interface CleanHomeDao {
     @Query("DELETE FROM residententity")
     suspend fun deleteAllResidents()
 
+    @Query("SELECT * from residententity")
+    fun flowOfAllResidents(): Flow<List<ResidentEntity>>
+
+    @Query("SELECT * FROM residententity WHERE id=:residentId")
+    fun flowOfResidentById(residentId: Int): Flow<ResidentEntity>
+
+    //endregion
+
+    //region Room Daos
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRoom(roomEntity: RoomEntity)
 
@@ -37,6 +55,16 @@ interface CleanHomeDao {
 
     @Query("DELETE FROM roomentity")
     suspend fun deleteAllRooms()
+
+    @Query("SELECT * FROM roomentity")
+    fun flowOfAllRooms(): Flow<List<RoomEntity>>
+
+    @Query("SELECT * FROM roomentity WHERE id=:roomId")
+    fun flowOfRoomById(roomId: Int): Flow<RoomEntity>
+
+    //endregion
+
+    //region Task Daos
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(taskEntity: TaskEntity)
@@ -50,6 +78,16 @@ interface CleanHomeDao {
     @Query("DELETE FROM taskentity")
     suspend fun deleteAllTasks()
 
+    @Query("SELECT * FROM taskentity")
+    fun getAllTasks(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM taskentity WHERE assigneeId=:residentId")
+    suspend fun getTasksForResident(residentId: Int): List<TaskEntity>
+
+    //endregion
+
+    //region TaskLog Daos
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTaskLog(taskLogEntity: TaskLogEntity)
 
@@ -59,23 +97,13 @@ interface CleanHomeDao {
     @Query("DELETE FROM tasklogentity")
     suspend fun deleteAllTaskLogs()
 
-    @Query("SELECT * FROM taskentity")
-    fun getAllTasks(): Flow<List<TaskEntity>>
-
-    @Query("SELECT * FROM taskentity WHERE resident_id=:residentId")
-    suspend fun getTasksForResident(residentId: Int): List<TaskEntity>
-
-    @Query("SELECT * from roomentity")
-    fun getAllRooms(): Flow<List<RoomEntity>>
-
-    @Query("SELECT * from residententity")
-    suspend fun getAllResidents(): List<ResidentEntity>
-
     @Query("SELECT * from tasklogentity WHERE taskId=:taskId")
     fun getLogsByTaskId(taskId: Int): Flow<List<TaskLogEntity>>
 
     @Query("SELECT * from tasklogentity WHERE recordedAction=:actionType")
     fun getLogsByAction(actionType: ActionType): Flow<List<TaskLogEntity>>
+
+    //endregion
 
     @Transaction
     suspend fun deleteAndInsertTasks(tasks: List<TaskEntity>) {

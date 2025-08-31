@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.toDateString
-import java.time.format.FormatStyle
 
 @Composable
 fun TaskCard(
@@ -56,7 +55,7 @@ fun TaskCard(
 
             Column {
                 Text(
-                    text = task.assignedTo?.name ?: "",
+                    text = task.assigneeId?.name ?: "",
                     fontWeight = FontWeight.Medium,
                     fontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onBackground,

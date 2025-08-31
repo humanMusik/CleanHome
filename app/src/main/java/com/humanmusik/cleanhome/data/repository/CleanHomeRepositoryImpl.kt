@@ -2,6 +2,7 @@ package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.mappers.toResident
+import com.humanmusik.cleanhome.data.mappers.toResidents
 import com.humanmusik.cleanhome.data.mappers.toRoom
 import com.humanmusik.cleanhome.data.mappers.toTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
@@ -10,9 +11,12 @@ import com.humanmusik.cleanhome.data.mappers.toTasks
 import com.humanmusik.cleanhome.di.ApplicationScope
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
+import com.humanmusik.cleanhome.domain.model.ResidentId
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.RoomId
 import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
+import com.humanmusik.cleanhome.domain.model.task.TaskId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +40,9 @@ class CleanHomeRepositoryImpl @Inject constructor(
     FlowOfAllResidents,
     FlowOfAllRooms,
     CreateTaskLog,
-    FlowOfTaskLogsByTaskId {
+    FlowOfTaskLogsByTaskId,
+    FlowOfRoomById,
+    FlowOfResidentById {
 
     private val dao = db.cleanHomeDao()
 
@@ -69,16 +75,13 @@ class CleanHomeRepositoryImpl @Inject constructor(
     }
 
     override fun flowOfAllResidents(): Flow<Set<Resident>> {
-        return flow {
-            emit(
-                dao
-                    .getAllResidents()
-                    .map { entity ->
-                        entity.toResident()
-                    }
+        return dao
+            .flowOfAllResidents()
+            .map { residents ->
+                residents
+                    .toResidents()
                     .toSet()
-            )
-        }
+            }
     }
 
     override fun flowOfTasks(
@@ -95,7 +98,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
     }
 
     override fun flowOfAllRooms(): Flow<List<Room>> {
-        val rooms = dao.getAllRooms()
+        val rooms = dao.flowOfAllRooms()
             .onEach { println("repo rooms: $it") }
         return rooms
             .distinctUntilChanged()
@@ -115,7 +118,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
             }
 
             is TaskFilter.ByAssignment -> {
-                { this.residents.contains(it.assignedTo) }
+                { this.residents.contains(it.assigneeId) }
             }
 
             is TaskFilter.ByScheduledDate -> {
@@ -146,9 +149,21 @@ class CleanHomeRepositoryImpl @Inject constructor(
         dao.insertTaskLog(taskLog.toTaskLogEntity())
     }
 
-    override fun flowOfTaskLogsByTaskId(taskId: Int): Flow<List<TaskLog>> {
+    override fun flowOfTaskLogsByTaskId(taskId: TaskId): Flow<List<TaskLog>> {
         return dao
-            .getLogsByTaskId(taskId = taskId)
+            .getLogsByTaskId(requireNotNull(taskId.value))
             .map { it.toTaskLogs() }
+    }
+
+    override fun flowOfRoomById(roomId: RoomId): Flow<Room> {
+        return dao
+            .flowOfRoomById(requireNotNull(roomId.value))
+            .map { it.toRoom() }
+    }
+
+    override fun flowOfResidentById(residentId: ResidentId): Flow<Resident> {
+        return dao
+        .flowOfResidentById(requireNotNull(residentId.value))
+            .map { it.toResident() }
     }
 }

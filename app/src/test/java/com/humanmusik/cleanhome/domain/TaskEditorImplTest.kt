@@ -337,7 +337,7 @@ class TaskEditorImplTest {
                 tasks = allTasks,
                 allResidents = allResidents,
                 updateTask = { reassignedTask ->
-                    reassignedTask.assignedTo assertIsEqualTo expectedAssignedTo
+                    reassignedTask.assigneeId assertIsEqualTo expectedAssignedTo
                 }
             )
                 .reassignTask(
@@ -406,7 +406,7 @@ class TaskEditorImplTest {
         frequency = frequency,
         scheduledDate = scheduledDate,
         urgency = urgency,
-        assignedTo = assignedTo,
+        assigneeId = assignedTo,
     )
 
     private fun taskEditor(

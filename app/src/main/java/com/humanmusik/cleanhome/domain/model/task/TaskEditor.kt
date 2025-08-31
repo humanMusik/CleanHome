@@ -11,7 +11,6 @@ import com.humanmusik.cleanhome.data.repository.FlowOfTasks.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.UpdateTask
 import com.humanmusik.cleanhome.data.repository.UpdateTask.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
-import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
 import kotlinx.coroutines.flow.combine
@@ -64,7 +63,7 @@ class TaskEditorImpl @Inject constructor(
                     dateCompleted = dateCompleted,
                     taskFrequency = task.frequency,
                 ),
-                assignedTo = getNewAssignment(
+                assigneeId = getNewAssignment(
                     tasks = tasksBetweenDateCompletedAndNewDate,
                     allResidents = allResidents
                 ),
@@ -126,7 +125,7 @@ class TaskEditorImpl @Inject constructor(
         allResidents.forEach { resident ->
             tasks.add(Task.build(assignedTo = resident, duration = Duration.ZERO))
         }
-        return tasks.groupingBy { it.assignedTo!! }
+        return tasks.groupingBy { it.assigneeId!! }
             .fold(0.minutes) { acc, task ->
                 acc + task.duration!!
             }

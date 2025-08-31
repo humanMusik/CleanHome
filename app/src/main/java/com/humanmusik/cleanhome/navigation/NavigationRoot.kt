@@ -66,7 +66,7 @@ fun NavigationRoot(
             entry<TaskListNavKey> {
                 TaskListScreen(
                     onAddTaskNavigator = { viewModel.push(TaskCreationNavKey.NameRoom) },
-                    onExamineNavigator = { task -> viewModel.push(TaskDetailsNavKey(task = task)) }
+                    onTaskSelectedNavigator = { task -> viewModel.push(TaskDetailsNavKey(task = task)) }
                 )
             }
 

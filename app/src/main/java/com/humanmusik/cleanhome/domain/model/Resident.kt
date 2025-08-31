@@ -5,7 +5,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Resident(
-    val id: Int,
+    val id: ResidentId,
     val name: String,
     val homeId: Int,
 ) : Parcelable
+
+@JvmInline
+@Parcelize
+value class ResidentId(val value: Int?) : Parcelable

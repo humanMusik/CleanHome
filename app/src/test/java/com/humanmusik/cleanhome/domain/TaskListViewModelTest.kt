@@ -162,7 +162,7 @@ class TaskListViewModelTest {
         frequency = frequency,
         scheduledDate = scheduledDate,
         urgency = urgency,
-        assignedTo = assignedTo,
+        assigneeId = assignedTo,
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
