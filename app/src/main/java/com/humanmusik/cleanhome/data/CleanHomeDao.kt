@@ -83,7 +83,7 @@ interface CleanHomeDao {
     @Query("SELECT * FROM enrichedtaskentity")
     fun flowOfEnrichedTasks(): Flow<List<EnrichedTaskEntity>>
 
-    @Query("SELECT * FROM enrichedtaskentity WHERE id=:taskIdInt")
+    @Query("SELECT * FROM enrichedtaskentity WHERE idInt=:taskIdInt")
     fun flowOfEnrichedTaskById(taskIdInt: Int): Flow<EnrichedTaskEntity>
     //endregion
 

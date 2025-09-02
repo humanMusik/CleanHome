@@ -10,9 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
-import com.humanmusik.cleanhome.data.entities.HomeEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
-import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.domain.model.Resident
@@ -215,7 +213,6 @@ class MainActivity : ComponentActivity() {
                 room = Room(
                     id = 2,
                     name = "Bathroom",
-                    homeId = 1,
                 ),
                 duration = 5.minutes,
                 frequency = Frequency.Weekly,
@@ -224,21 +221,8 @@ class MainActivity : ComponentActivity() {
                 assigneeId = Resident(
                     id = 2,
                     name = "Jenny",
-                    homeId = 1,
                 ),
             ),
-        )
-
-        val residentRoomRelations = listOf(
-            ResidentRoomCrossRef(1, 1),
-            ResidentRoomCrossRef(2, 1),
-            ResidentRoomCrossRef(3, 3),
-            ResidentRoomCrossRef(1, 2),
-            ResidentRoomCrossRef(2, 2),
-            ResidentRoomCrossRef(3, 2),
-            ResidentRoomCrossRef(1, 4),
-            ResidentRoomCrossRef(2, 4),
-            ResidentRoomCrossRef(3, 4),
         )
 
         lifecycleScope.launch(Dispatchers.IO) {
