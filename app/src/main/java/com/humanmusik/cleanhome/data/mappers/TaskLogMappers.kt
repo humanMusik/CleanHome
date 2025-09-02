@@ -8,7 +8,7 @@ fun List<TaskLogEntity>.toTaskLogs() =
 
 fun TaskLogEntity.toTaskLog() =
     TaskLog(
-        id = id,
+        id = TaskLog.Id(id),
         taskId = taskId,
         date = date,
         recordedAction = recordedAction,
@@ -19,7 +19,7 @@ fun List<TaskLog>.toTaskLogEntities() =
 
 fun TaskLog.toTaskLogEntity() =
     TaskLogEntity(
-        id = id ?: 0,
+        id = id?.value ?: 0,
         taskId = taskId,
         date = date,
         recordedAction = recordedAction,

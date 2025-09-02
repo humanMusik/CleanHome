@@ -6,25 +6,17 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.humanmusik.cleanhome.data.entities.HomeEntity
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.data.entities.TaskLogEntity
 import com.humanmusik.cleanhome.domain.model.ActionType
-import com.humanmusik.cleanhome.domain.model.ResidentId
-import com.humanmusik.cleanhome.domain.model.RoomId
+import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CleanHomeDao {
-
-    //region House Daos
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHouse(homeEntity: HomeEntity)
-
-    //endregion
 
     //region Resident Daos
 
@@ -84,6 +76,15 @@ interface CleanHomeDao {
     @Query("SELECT * FROM taskentity WHERE assigneeId=:residentId")
     suspend fun getTasksForResident(residentId: Int): List<TaskEntity>
 
+    //endregion
+
+    //region Enriched Task Daos
+
+    @Query("SELECT * FROM enrichedtaskentity")
+    fun flowOfEnrichedTasks(): Flow<List<EnrichedTaskEntity>>
+
+    @Query("SELECT * FROM enrichedtaskentity WHERE id=:taskIdInt")
+    fun flowOfEnrichedTaskById(taskIdInt: Int): Flow<EnrichedTaskEntity>
     //endregion
 
     //region TaskLog Daos

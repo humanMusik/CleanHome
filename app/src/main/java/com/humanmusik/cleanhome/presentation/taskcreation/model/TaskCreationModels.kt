@@ -11,33 +11,25 @@ import java.time.LocalDate
 import kotlin.time.Duration
 
 @Parcelize
-data class TaskParcelData(
+data class TaskCreationParcelData(
     val name: String? = null,
-    val room: Room? = null,
+    val room: Room.Id? = null,
     val date: LocalDate? = null,
     val frequency: Frequency? = null,
     val urgency: Urgency? = null,
     val duration: Duration? = null,
 ) : Parcelable {
-    fun hasNullProperties() = name == null || room == null || date == null || frequency == null
-            || urgency == null || duration == null
-
-    fun toTask(assignedTo: Resident): Task {
-        return if (hasNullProperties()) {
-            throw IllegalStateException()
-        } else {
-            Task(
-                id = null,
-                name = name!!,
-                room = room!!,
-                scheduledDate = date!!,
-                frequency = frequency!!,
-                urgency = urgency!!,
-                duration = duration!!,
-                assigneeId = assignedTo,
-            )
-        }
-    }
+    fun createTask(assigneeId: Resident.Id): Task =
+        Task(
+            id = null,
+            name = requireNotNull(name) { "Task name cannot be null" },
+            roomId = requireNotNull(room) { "Task roomId cannot be null" },
+            scheduledDate = requireNotNull(date) { "Task scheduledDate cannot be null" },
+            frequency = requireNotNull(frequency) { "Task frequency cannot be null" },
+            urgency = requireNotNull(urgency) { "Task urgency cannot be null" },
+            duration = requireNotNull(duration) { "Task duration cannot be null" },
+            assigneeId = assigneeId,
+        )
 }
 
 @Parcelize

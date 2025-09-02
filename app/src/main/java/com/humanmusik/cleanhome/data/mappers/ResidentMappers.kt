@@ -5,16 +5,14 @@ import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.ResidentId
 
 fun ResidentEntity.toResident() = Resident(
-    id = ResidentId(id),
+    id = Resident.Id(id),
     name = name,
-    homeId = homeId,
 )
 
 fun List<ResidentEntity>.toResidents() =
     map { it.toResident() }
 
 fun Resident.toResidentEntity() = ResidentEntity(
-    id = id.value ?: 0,
+    id = id?.value ?: 0,
     name = name,
-    homeId = homeId,
 )

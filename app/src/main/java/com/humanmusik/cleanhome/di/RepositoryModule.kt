@@ -7,6 +7,8 @@ import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms
+import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById
+import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks
 import com.humanmusik.cleanhome.data.repository.FlowOfResidentById
 import com.humanmusik.cleanhome.data.repository.FlowOfRoomById
 import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId
@@ -80,4 +82,16 @@ abstract class RepositoryModule {
     abstract fun bindFlowOfRoomById(
         cleanHomeRepository: CleanHomeRepositoryImpl,
     ): FlowOfRoomById
+
+    @Binds
+    @Singleton
+    abstract fun bindFlowOfEnrichedTasks(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): FlowOfEnrichedTasks
+
+    @Binds
+    @Singleton
+    abstract fun bindFlowOfEnrichedTaskById(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): FlowOfEnrichedTaskById
 }

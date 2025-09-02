@@ -14,5 +14,4 @@ data class ResidentEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(RESIDENT_ENTITY_ID) val id: Int = 0,
     val name: String,
-    val homeId: Int,
 )

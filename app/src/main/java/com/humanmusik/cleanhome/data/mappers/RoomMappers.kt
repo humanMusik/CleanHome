@@ -5,13 +5,11 @@ import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.RoomId
 
 fun RoomEntity.toRoom() = Room(
-    id = RoomId(id),
+    id = Room.Id(id),
     name = name,
-    homeId = homeId,
 )
 
 fun Room.toRoomEntity() = RoomEntity(
-    id = id.value ?: 0,
+    id = id?.value ?: 0,
     name = name,
-    homeId = homeId,
 )

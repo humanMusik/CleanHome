@@ -11,7 +11,7 @@ import com.humanmusik.cleanhome.navigation.BackStackInstruction
 import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.getOrNull
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListState
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListViewModel
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
@@ -82,7 +82,7 @@ class TaskListViewModelTest {
                 advanceUntilIdle()
 
                 awaitItem().getOrNull().assertIsInstanceOf<FlowState.Success<TaskListState>> {
-                    value.tasks assertIsEqualTo listOf(
+                    value.enrichedTaskEntities assertIsEqualTo listOf(
                         task(id = 2),
                         task(id = 3),
                         task(id = 4),
@@ -118,7 +118,7 @@ class TaskListViewModelTest {
                     }
 
                     override suspend fun assignTask(
-                        taskParcelData: TaskParcelData,
+                        taskCreationParcelData: TaskCreationParcelData,
                         todayDate: LocalDate,
                     ) {
                         throw NotImplementedError()
@@ -173,7 +173,7 @@ class TaskListViewModelTest {
                 throw NotImplementedError()
             }
             override suspend fun assignTask(
-                taskParcelData: TaskParcelData,
+                taskCreationParcelData: TaskCreationParcelData,
                 todayDate: LocalDate,
             ) {
                 throw NotImplementedError()

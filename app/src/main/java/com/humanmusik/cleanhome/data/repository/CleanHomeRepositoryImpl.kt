@@ -1,6 +1,7 @@
 package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toResidents
 import com.humanmusik.cleanhome.data.mappers.toRoom
@@ -9,14 +10,12 @@ import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogs
 import com.humanmusik.cleanhome.data.mappers.toTasks
 import com.humanmusik.cleanhome.di.ApplicationScope
+import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
-import com.humanmusik.cleanhome.domain.model.ResidentId
 import com.humanmusik.cleanhome.domain.model.Room
-import com.humanmusik.cleanhome.domain.model.RoomId
 import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.domain.model.task.TaskId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,7 +41,9 @@ class CleanHomeRepositoryImpl @Inject constructor(
     CreateTaskLog,
     FlowOfTaskLogsByTaskId,
     FlowOfRoomById,
-    FlowOfResidentById {
+    FlowOfResidentById,
+    FlowOfEnrichedTasks,
+    FlowOfEnrichedTaskById {
 
     private val dao = db.cleanHomeDao()
 
@@ -74,6 +75,21 @@ class CleanHomeRepositoryImpl @Inject constructor(
             .collect(this@flow)
     }
 
+    private val allEnrichedTasks: Flow<List<EnrichedTaskEntity>> = flow {
+        dao
+            .flowOfEnrichedTasks()
+            .distinctUntilChanged()
+            .shareIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(
+                    stopTimeoutMillis = 0,
+                    replayExpirationMillis = 0,
+                ),
+                replay = 1,
+            )
+            .collect(this@flow)
+    }
+
     override fun flowOfAllResidents(): Flow<Set<Resident>> {
         return dao
             .flowOfAllResidents()
@@ -84,16 +100,26 @@ class CleanHomeRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun flowOfTasks(
-        filter: TaskFilter,
-    ): Flow<Set<Task>> {
+    override fun flowOfTasks(filter: TaskFilter): Flow<Set<Task>> {
         return allTasks.map { tasks ->
-            tasks.filter { task ->
-                filter.getFilterPredicate()(task)
-            }
+            tasks
+                .filter { enrichedTask ->
+                    filter.getFilterPredicate()(enrichedTask)
+                }
                 .sorted()
                 .toSet()
         }
+            .distinctUntilChanged()
+    }
+
+    override fun flowOfEnrichedTasks(filter: EnrichedTaskFilter): Flow<List<EnrichedTaskEntity>> {
+        return allEnrichedTasks
+            .map { enrichedTasks ->
+                enrichedTasks.filter { enrichedTask ->
+                    filter.getFilterPredicate()(enrichedTask)
+                }
+                    .sorted()
+            }
             .distinctUntilChanged()
     }
 
@@ -130,6 +156,28 @@ class CleanHomeRepositoryImpl @Inject constructor(
         }
     }
 
+    private fun EnrichedTaskFilter.getFilterPredicate(): (EnrichedTaskEntity) -> Boolean {
+        return when (this) {
+            is EnrichedTaskFilter.All -> {
+                { true }
+            }
+
+            is EnrichedTaskFilter.ById -> {
+                { this.ids.contains(it.id) }
+            }
+
+            is EnrichedTaskFilter.ByAssignment -> {
+                { this.residents.contains(it.assigneeId) }
+            }
+
+            is EnrichedTaskFilter.ByScheduledDate -> {
+                {
+                    it.scheduledDate.isBetween(this.startDateInclusive, this.endDateInclusive)
+                }
+            }
+        }
+    }
+
     private fun LocalDate.isBetween(
         startDateInclusive: LocalDate,
         endDateInclusive: LocalDate,
@@ -149,21 +197,25 @@ class CleanHomeRepositoryImpl @Inject constructor(
         dao.insertTaskLog(taskLog.toTaskLogEntity())
     }
 
-    override fun flowOfTaskLogsByTaskId(taskId: TaskId): Flow<List<TaskLog>> {
+    override fun flowOfTaskLogsByTaskId(taskId: Task.Id): Flow<List<TaskLog>> {
         return dao
             .getLogsByTaskId(requireNotNull(taskId.value))
             .map { it.toTaskLogs() }
     }
 
-    override fun flowOfRoomById(roomId: RoomId): Flow<Room> {
+    override fun flowOfRoomById(roomId: Room.Id): Flow<Room> {
         return dao
             .flowOfRoomById(requireNotNull(roomId.value))
             .map { it.toRoom() }
     }
 
-    override fun flowOfResidentById(residentId: ResidentId): Flow<Resident> {
+    override fun flowOfResidentById(residentId: Resident.Id): Flow<Resident> {
         return dao
-        .flowOfResidentById(requireNotNull(residentId.value))
+            .flowOfResidentById(requireNotNull(residentId.value))
             .map { it.toResident() }
+    }
+
+    override fun flowOfEnrichedTaskById(taskId: Task.Id): Flow<EnrichedTaskEntity> {
+        return dao.flowOfEnrichedTaskById(taskId.value)
     }
 }

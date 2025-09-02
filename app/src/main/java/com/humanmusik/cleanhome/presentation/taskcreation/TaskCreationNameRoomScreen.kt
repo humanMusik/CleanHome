@@ -30,12 +30,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.humanmusik.cleanhome.presentation.onSuccess
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationNameRoomState
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 
 @Composable
 fun TaskCreationNameRoomScreen(
     viewModel: TaskCreationNameRoomViewModel = hiltViewModel(),
-    onContinueNavigation: (TaskParcelData) -> Unit,
+    onContinueNavigation: (TaskCreationParcelData) -> Unit,
 ) {
     val state = viewModel.stateFlow.collectAsState()
 

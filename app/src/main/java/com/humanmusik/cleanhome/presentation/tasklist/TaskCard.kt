@@ -16,12 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.humanmusik.cleanhome.domain.model.task.Task
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.util.toDateString
 
 @Composable
 fun TaskCard(
-    task: Task,
+    enrichedTask: EnrichedTaskEntity,
     onClick: () -> Unit,
 ) {
     Card(
@@ -36,7 +36,7 @@ fun TaskCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = task.name ?: "",
+                    text = enrichedTask.taskName,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -45,7 +45,7 @@ fun TaskCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = task.room?.name ?: "",
+                    text = enrichedTask.roomName,
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
@@ -55,14 +55,14 @@ fun TaskCard(
 
             Column {
                 Text(
-                    text = task.assigneeId?.name ?: "",
+                    text = enrichedTask.assigneeName,
                     fontWeight = FontWeight.Medium,
                     fontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = task.scheduledDate?.toDateString("d MMM") ?: "",
+                    text = enrichedTask.scheduledDate.toDateString("d MMM"),
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.onBackground,
                 )

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.onSuccess
@@ -29,7 +30,7 @@ import com.humanmusik.cleanhome.presentation.onSuccess
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
     onAddTaskNavigator: () -> Unit,
-    onTaskSelectedNavigator: (Int) -> Unit,
+    onTaskSelectedNavigator: (Task.Id) -> Unit,
 ) {
     Log.d("TaskListViewModel", viewModel.hashCode().toString())
     val state: FlowState<TaskListState> = viewModel.state.collectAsState().value
@@ -45,8 +46,8 @@ fun TaskListScreen(
 @Composable
 private fun TaskListContent(
     state: FlowState<TaskListState>,
-    onComplete: (Context, Task) -> Unit,
-    onExamine: (Task) -> Unit,
+    onComplete: (Context, EnrichedTaskEntity) -> Unit,
+    onExamine: (Task.Id) -> Unit,
     onAddTask: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -64,7 +65,7 @@ private fun TaskListContent(
         },
     ) { paddingValues ->
         state.onSuccess {
-            Log.d("Les", "${it.tasks.size}")
+            Log.d("Les", "${it.enrichedTaskEntities.size}")
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -72,15 +73,15 @@ private fun TaskListContent(
                 contentPadding = PaddingValues(vertical = 12.dp),
             ) {
                 items(
-                    items = it.tasks,
-                ) { task ->
+                    items = it.enrichedTaskEntities,
+                ) { enrichedTask ->
                     SwipeToDismissItem(
-                        onSwipeStartToEnd = { onEdit(task) },
-                        onSwipeEndToStart = { onComplete(context, task) },
-                        onClick = { onExamine(task) },
+                        onSwipeStartToEnd = { /* TODO */ },
+                        onSwipeEndToStart = { onComplete(context, enrichedTask) },
+                        onClick = { onExamine(enrichedTask.id) },
                     ) {
                         TaskCard(
-                            task = task,
+                            enrichedTask = enrichedTask,
                             onClick = {}
                         )
                     }

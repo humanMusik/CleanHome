@@ -7,7 +7,7 @@ import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms.Companion.invoke
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.getOrThrow
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationNameRoomState
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,16 +41,20 @@ class TaskCreationNameRoomViewModel @Inject constructor(
     fun onContinue(
         taskName: String,
         roomName: String,
-        navigation: (TaskParcelData) -> Unit,
+        navigation: (TaskCreationParcelData) -> Unit,
     ) {
-        val selectedRoom = stateFlow.value.getOrThrow().allRooms.first { it.name == roomName }
+        val selectedRoomId = stateFlow.value
+            .getOrThrow()
+            .allRooms
+            .first { it.name == roomName }
+            .id
 
-        val taskParcelData = TaskParcelData()
+        val taskCreationParcelData = TaskCreationParcelData()
             .copy(
                 name = taskName,
-                room = selectedRoom,
+                room = selectedRoomId,
             )
 
-        navigation(taskParcelData)
+        navigation(taskCreationParcelData)
     }
 }

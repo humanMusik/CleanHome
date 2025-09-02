@@ -14,5 +14,4 @@ data class RoomEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(ROOM_ENTITY_ID) val id: Int = 0,
     val name: String,
-    val homeId: Int,
 )

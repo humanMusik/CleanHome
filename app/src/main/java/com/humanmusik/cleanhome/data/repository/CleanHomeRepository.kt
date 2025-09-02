@@ -1,14 +1,13 @@
 package com.humanmusik.cleanhome.data.repository
 
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
+import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.Resident
-import com.humanmusik.cleanhome.domain.model.ResidentId
 import com.humanmusik.cleanhome.domain.model.Room
-import com.humanmusik.cleanhome.domain.model.RoomId
 import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.domain.model.task.TaskId
 import kotlinx.coroutines.flow.Flow
 
 fun interface CreateTask {
@@ -65,10 +64,10 @@ fun interface CreateTaskLog {
 }
 
 fun interface FlowOfTaskLogsByTaskId {
-    fun flowOfTaskLogsByTaskId(taskId: TaskId): Flow<List<TaskLog>>
+    fun flowOfTaskLogsByTaskId(taskId: Task.Id): Flow<List<TaskLog>>
 
     companion object {
-        operator fun FlowOfTaskLogsByTaskId.invoke(taskId: TaskId) =
+        operator fun FlowOfTaskLogsByTaskId.invoke(taskId: Task.Id) =
             flowOfTaskLogsByTaskId(taskId)
     }
 }
@@ -83,19 +82,37 @@ fun interface FlowOfTaskLogsByActionType {
 }
 
 fun interface FlowOfResidentById {
-    fun flowOfResidentById(residentId: ResidentId): Flow<Resident>
+    fun flowOfResidentById(residentId: Resident.Id): Flow<Resident>
 
     companion object {
-        operator fun FlowOfResidentById.invoke(residentId: ResidentId) =
+        operator fun FlowOfResidentById.invoke(residentId: Resident.Id) =
             flowOfResidentById(residentId)
     }
 }
 
 fun interface FlowOfRoomById {
-    fun flowOfRoomById(roomId: RoomId): Flow<Room>
+    fun flowOfRoomById(roomId: Room.Id): Flow<Room>
 
     companion object {
-        operator fun FlowOfRoomById.invoke(roomId: RoomId) =
+        operator fun FlowOfRoomById.invoke(roomId: Room.Id) =
             flowOfRoomById(roomId)
+    }
+}
+
+fun interface FlowOfEnrichedTasks {
+    fun flowOfEnrichedTasks(filter: EnrichedTaskFilter): Flow<List<EnrichedTaskEntity>>
+
+    companion object {
+        operator fun FlowOfEnrichedTasks.invoke(filter: EnrichedTaskFilter) =
+            flowOfEnrichedTasks(filter)
+    }
+}
+
+fun interface FlowOfEnrichedTaskById {
+    fun flowOfEnrichedTaskById(taskId: Task.Id): Flow<EnrichedTaskEntity>
+
+    companion object {
+        operator fun FlowOfEnrichedTaskById.invoke(taskId: Task.Id) =
+            flowOfEnrichedTaskById(taskId)
     }
 }

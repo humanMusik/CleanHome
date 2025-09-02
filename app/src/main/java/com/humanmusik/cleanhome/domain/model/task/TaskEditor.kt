@@ -12,7 +12,7 @@ import com.humanmusik.cleanhome.data.repository.UpdateTask
 import com.humanmusik.cleanhome.data.repository.UpdateTask.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -27,7 +27,7 @@ interface TaskEditor {
     )
 
     suspend fun assignTask(
-        taskParcelData: TaskParcelData,
+        taskCreationParcelData: TaskCreationParcelData,
         todayDate: LocalDate,
     )
 }
@@ -64,8 +64,8 @@ class TaskEditorImpl @Inject constructor(
                     taskFrequency = task.frequency,
                 ),
                 assigneeId = getNewAssignment(
-                    tasks = tasksBetweenDateCompletedAndNewDate,
-                    allResidents = allResidents
+                    tasks = tasksBetweenDateCompletedAndNewDate.toList(),
+                    allResidents = allResidents.map { requireNotNull(it.id) }
                 ),
             )
         }
@@ -74,10 +74,13 @@ class TaskEditorImpl @Inject constructor(
         updateTask(reAssignedTask)
     }
 
-    override suspend fun assignTask(taskParcelData: TaskParcelData, todayDate: LocalDate) {
+    override suspend fun assignTask(
+        taskCreationParcelData: TaskCreationParcelData,
+        todayDate: LocalDate,
+    ) {
         val filter = TaskFilter.ByScheduledDate(
             startDateInclusive = todayDate,
-            endDateInclusive = taskParcelData.date!!,
+            endDateInclusive = taskCreationParcelData.date!!,
         )
 
         val assignedTo = combine(
@@ -85,22 +88,22 @@ class TaskEditorImpl @Inject constructor(
             flowOfAllResidents(),
         ) { tasksBetweenTodaysDateAndScheduledDate, allResidents ->
             getNewAssignment(
-                tasks = tasksBetweenTodaysDateAndScheduledDate,
-                allResidents = allResidents
+                tasks = tasksBetweenTodaysDateAndScheduledDate.toList(),
+                allResidents = allResidents.map { requireNotNull(it.id) }
             )
         }
             .first()
 
-        val newTask = taskParcelData.toTask(assignedTo = assignedTo)
+        val newTask = taskCreationParcelData.createTask(assigneeId = assignedTo)
 
         createTask(newTask)
     }
 
     private fun getNewAssignment(
-        tasks: Set<Task>,
-        allResidents: Set<Resident>,
-    ): Resident {
-        return tasks.mapOfResidentToTotalTaskDuration(allResidents)
+        tasks: List<Task>,
+        allResidents: List<Resident.Id>,
+    ): Resident.Id {
+        return tasks.mapOfResidentIdToTotalTaskDuration(allResidents)
             .minByOrNull { it.value }
             ?.key
             ?: allResidents.randomOrNull()
@@ -120,10 +123,10 @@ class TaskEditorImpl @Inject constructor(
         Frequency.Annually -> dateCompleted.plusYears(1)
     }
 
-    private fun Set<Task>.mapOfResidentToTotalTaskDuration(allResidents: Set<Resident>): Map<Resident, Duration> {
-        val tasks = this.toMutableSet()
+    private fun List<Task>.mapOfResidentIdToTotalTaskDuration(allResidents: List<Resident.Id>): Map<Resident.Id, Duration> {
+        val tasks = this.toMutableList()
         allResidents.forEach { resident ->
-            tasks.add(Task.build(assignedTo = resident, duration = Duration.ZERO))
+            tasks.add(Task.build(assigneeId = resident, duration = Duration.ZERO))
         }
         return tasks.groupingBy { it.assigneeId!! }
             .fold(0.minutes) { acc, task ->
@@ -133,5 +136,5 @@ class TaskEditorImpl @Inject constructor(
 }
 
 sealed class TaskEditorExceptions : Throwable() {
-    class AlreadyCompletedToday: TaskEditorExceptions()
+    class AlreadyCompletedToday : TaskEditorExceptions()
 }

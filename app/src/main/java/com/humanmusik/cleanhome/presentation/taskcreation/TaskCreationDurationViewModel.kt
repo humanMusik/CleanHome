@@ -34,11 +34,11 @@ class TaskCreationDurationViewModel @AssistedInject constructor(
         duration: Duration,
         navigation: () -> Unit,
     ) {
-        val updatedTaskParcelData = navKey.taskParcelData.copy(duration = duration)
+        val updatedTaskParcelData = navKey.taskCreationParcelData.copy(duration = duration)
 
         FlowState.fromSuspendingFunc {
             taskEditor.assignTask(
-                taskParcelData = updatedTaskParcelData,
+                taskCreationParcelData = updatedTaskParcelData,
                 todayDate = getTodayLocalDate(),
             )
         }

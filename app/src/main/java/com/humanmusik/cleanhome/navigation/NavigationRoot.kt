@@ -12,13 +12,14 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDateFreqUrgencyScreen
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDateFreqUrgencyViewModel
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDurationScreen
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationDurationViewModel
 import com.humanmusik.cleanhome.presentation.taskcreation.TaskCreationNameRoomScreen
-import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskParcelData
+import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListScreen
 import kotlinx.parcelize.Parcelize
 
@@ -31,18 +32,18 @@ data class BackStack(val navKeys: SnapshotStateList<CustomNavKey>) : Parcelable
 data object TaskListNavKey : CustomNavKey
 
 @Parcelize
-data class TaskDetailsNavKey(val task: Task) : CustomNavKey
+data class TaskDetailsNavKey(val taskId: Task.Id) : CustomNavKey
 
 @Parcelize
 sealed interface TaskCreationNavKey : CustomNavKey {
     data object NameRoom : TaskCreationNavKey
 
     data class DateFrequencyUrgency(
-        val taskParcelData: TaskParcelData,
+        val taskCreationParcelData: TaskCreationParcelData,
     ) : TaskCreationNavKey
 
     data class Duration(
-        val taskParcelData: TaskParcelData,
+        val taskCreationParcelData: TaskCreationParcelData,
     ) : TaskCreationNavKey
 }
 
@@ -66,7 +67,7 @@ fun NavigationRoot(
             entry<TaskListNavKey> {
                 TaskListScreen(
                     onAddTaskNavigator = { viewModel.push(TaskCreationNavKey.NameRoom) },
-                    onTaskSelectedNavigator = { task -> viewModel.push(TaskDetailsNavKey(task = task)) }
+                    onTaskSelectedNavigator = { taskId -> viewModel.push(TaskDetailsNavKey(taskId = taskId)) }
                 )
             }
 
