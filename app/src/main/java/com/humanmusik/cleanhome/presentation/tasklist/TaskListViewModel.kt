@@ -10,7 +10,7 @@ import com.humanmusik.cleanhome.data.repository.CreateTaskLog
 import com.humanmusik.cleanhome.data.repository.CreateTaskLog.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks
 import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks.Companion.invoke
-import com.humanmusik.cleanhome.domain.TaskFilter
+import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
@@ -41,7 +41,7 @@ class TaskListViewModel @Inject constructor(
     )
 
     init {
-        flowOfEnrichedTasks(filter = TaskFilter.All)
+        flowOfEnrichedTasks(filter = EnrichedTaskFilter.All)
             .asFlowState()
             .onSuccess { enrichedTask ->
                 state.update {

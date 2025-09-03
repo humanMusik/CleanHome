@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.humanmusik.cleanhome.data.entities.HomeEntity
+import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
-import com.humanmusik.cleanhome.data.entities.ResidentRoomCrossRef
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.data.entities.TaskLogEntity
@@ -15,13 +14,12 @@ const val DB_VERSION = 1
 
 @Database(
     entities = [
-        HomeEntity::class,
         RoomEntity::class,
         ResidentEntity::class,
         TaskEntity::class,
-        ResidentRoomCrossRef::class,
         TaskLogEntity::class,
     ],
+    views = [EnrichedTaskEntity::class],
     version = DB_VERSION,
 )
 abstract class CleanHomeDatabase : RoomDatabase() {

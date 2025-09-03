@@ -2,7 +2,6 @@ package com.humanmusik.cleanhome.data.mappers
 
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.domain.model.Room
-import com.humanmusik.cleanhome.domain.model.RoomId
 
 fun RoomEntity.toRoom() = Room(
     id = Room.Id(id),
