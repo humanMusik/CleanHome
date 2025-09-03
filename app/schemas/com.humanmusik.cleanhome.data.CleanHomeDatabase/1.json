@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c747aaef9ee4a2919cfa343fc873fb6e",
+    "identityHash": "82b9c47b430a39713ecaf42d81a1d16e",
     "entities": [
       {
-        "tableName": "HomeEntity",
+        "tableName": "RoomEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
         "fields": [
           {
@@ -26,45 +26,11 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "RoomEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `homeId` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "homeId",
-            "columnName": "homeId",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "ResidentEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `homeId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -76,12 +42,6 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "homeId",
-            "columnName": "homeId",
-            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -90,13 +50,11 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `duration` INTEGER NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `room_id` INTEGER NOT NULL, `room_name` TEXT NOT NULL, `room_homeId` INTEGER NOT NULL, `resident_id` INTEGER NOT NULL, `resident_name` TEXT NOT NULL, `resident_homeId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `roomId` INTEGER NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER NOT NULL, FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -108,12 +66,18 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "roomId",
+            "columnName": "roomId",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "duration",
             "columnName": "duration",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -135,38 +99,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "room.id",
-            "columnName": "room_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "room.name",
-            "columnName": "room_name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "room.homeId",
-            "columnName": "room_homeId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "resident.id",
-            "columnName": "resident_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "resident.name",
-            "columnName": "resident_name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "resident.homeId",
-            "columnName": "resident_homeId",
+            "fieldPath": "assigneeId",
+            "columnName": "assigneeId",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -177,46 +111,7 @@
             "id"
           ]
         },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "ResidentRoomCrossRef",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`residentId` INTEGER NOT NULL, `roomId` INTEGER NOT NULL, PRIMARY KEY(`residentId`, `roomId`), FOREIGN KEY(`residentId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "residentId",
-            "columnName": "residentId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "roomId",
-            "columnName": "roomId",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "residentId",
-            "roomId"
-          ]
-        },
-        "indices": [],
         "foreignKeys": [
-          {
-            "table": "ResidentEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "residentId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
           {
             "table": "RoomEntity",
             "onDelete": "CASCADE",
@@ -227,14 +122,66 @@
             "referencedColumns": [
               "id"
             ]
+          },
+          {
+            "table": "ResidentEntity",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "assigneeId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
           }
         ]
+      },
+      {
+        "tableName": "TaskLogEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `date` TEXT NOT NULL, `recordedAction` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordedAction",
+            "columnName": "recordedAction",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "EnrichedTaskEntity",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT taskentity.id AS idInt,\n        taskentity.name AS taskName,\n        taskentity.duration AS duration,\n        taskentity.frequency AS frequency,\n        taskentity.scheduledDate AS scheduledDate,\n        taskentity.urgency AS urgency,\n        roomentity.id AS roomIdInt,\n        roomentity.name AS roomName,\n        residententity.id AS assigneeIdInt,\n        residententity.name AS assigneeName\n        FROM taskentity\n        INNER JOIN roomentity on taskentity.roomId = roomentity.id\n        INNER JOIN residententity on taskentity.assigneeId = residententity.id"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c747aaef9ee4a2919cfa343fc873fb6e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '82b9c47b430a39713ecaf42d81a1d16e')"
     ]
   }
 }

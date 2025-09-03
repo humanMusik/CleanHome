@@ -1,16 +1,29 @@
 package com.humanmusik.cleanhome.data
 
 import androidx.room.TypeConverter
-import java.time.OffsetDateTime
+import java.time.LocalDate
+import kotlin.time.Duration
 
-object OffsetDateTimeTypeConverter {
+object LocalDateTypeConverter {
     @TypeConverter
-    fun toOffsetDateTime(value: String?): OffsetDateTime? {
-        return value?.let(OffsetDateTime::parse)
+    fun toLocalDate(value: String?): LocalDate? {
+        return value?.let(LocalDate::parse)
     }
 
     @TypeConverter
-    fun fromOffsetDateTime(offsetDateTime: OffsetDateTime?): String? {
-        return offsetDateTime?.toString()
+    fun fromLocalDate(localDate: LocalDate?): String? {
+        return localDate?.toString()
+    }
+}
+
+object DurationTypeConverter {
+    @TypeConverter
+    fun toDuration(value: String?): Duration? {
+        return value?.let(Duration::parse)
+    }
+
+    @TypeConverter
+    fun fromDuration(duration: Duration?): String? {
+        return duration?.toString()
     }
 }
