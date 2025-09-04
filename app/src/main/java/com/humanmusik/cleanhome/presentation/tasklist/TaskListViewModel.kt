@@ -107,5 +107,9 @@ class TaskListViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun onTaskSelected(
+        navigation: () -> Unit,
+    ) { navigation() }
+
     private fun getTodayLocalDate() = LocalDate.now()
 }

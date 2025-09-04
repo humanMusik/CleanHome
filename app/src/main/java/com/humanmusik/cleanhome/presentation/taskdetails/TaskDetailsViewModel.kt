@@ -1,5 +1,6 @@
 package com.humanmusik.cleanhome.presentation.taskdetails
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
@@ -9,6 +10,8 @@ import com.humanmusik.cleanhome.domain.enrichedTaskComparator
 import com.humanmusik.cleanhome.navigation.TaskDetailsNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.asFlowState
+import com.humanmusik.cleanhome.presentation.fromFlow
+import com.humanmusik.cleanhome.presentation.onSuccess
 import com.humanmusik.cleanhome.util.MutableSavedStateFlow
 import com.humanmusik.cleanhome.util.doNotSaveState
 import com.humanmusik.cleanhome.util.savedStateFlow
@@ -35,11 +38,10 @@ class TaskDetailsViewModel @AssistedInject constructor(
     )
 
     init {
-        flowOfEnrichedTaskById(taskId = navKey.taskId)
-            .asFlowState()
-            .onEach {
-                state.update { it }
-            }
+        FlowState.fromFlow(
+            flowOfEnrichedTaskById(taskId = navKey.taskId)
+        )
+            .onEach { flowState -> state.update { flowState } }
             .launchIn(viewModelScope)
     }
 

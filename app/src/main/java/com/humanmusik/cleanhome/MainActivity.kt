@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.room.Insert
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
@@ -91,7 +92,7 @@ class MainActivity : ComponentActivity() {
             ),
             TaskEntity(
                 name = "Tidy",
-                roomId = 4,
+                roomId = 1,
                 duration = 1.hours,
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
@@ -100,7 +101,7 @@ class MainActivity : ComponentActivity() {
             ),
             TaskEntity(
                 name = "Mop",
-                roomId = 2,
+                roomId = 1,
                 duration = 5.minutes,
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
@@ -184,22 +185,26 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
 //            homeEntity.forEach { dao.insertHouse(it) }
-            dao.deleteAndInsertResidents(residentEntities)
-            dao.deleteAndInsertRooms(roomEntities)
-            dao.deleteAndInsertTasks(taskEntities)
+            dao.deleteAllResidents()
+            dao.deleteAllRooms()
+            dao.deleteAllTasks()
+
+            dao.insertAllResidents(residentEntities)
+            dao.insertAllRooms(roomEntities)
+            dao.insertAllTasks(taskEntities)
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 
-            val getAllTasks = dao.getAllTasks()
+//            val getAllTasks = dao.getAllTasks()
 //            val getHomeWithMetadata = dao.getHomeWithMetadata(1)
 //            val getAllRoomsWithMetadata = dao.getAllRoomsWithMetadata()
 //            val getAllResidentsWithMetadata = dao.getAllResidentsWithMetadata()
-            val getTasksForLeslie = dao.getTasksForResident(1)
+//            val getTasksForLeslie = dao.getTasksForResident(1)
 
 //            getAllRoomsWithMetadata.onEach(::println)
 //            getAllResidentsWithMetadata.onEach(::println)
 //            println(getHomeWithMetadata)
-            getTasksForLeslie.onEach(::println)
+//            getTasksForLeslie.onEach(::println)
         }
     }
 }

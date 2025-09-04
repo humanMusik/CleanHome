@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">CleanHome</string>
+    
+    <plurals name="hours_suffix">
+        <item quantity="one"> hour</item>
+        <item quantity="other"> hours</item>
+    </plurals>
+
+    <plurals name="minutes_suffix">
+        <item quantity="one"> minute</item>
+        <item quantity="other"> minutes</item>
+    </plurals>
 </resources>

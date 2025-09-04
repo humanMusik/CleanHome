@@ -65,7 +65,7 @@ data class TaskEntity(
     val scheduledDate: LocalDate,
     val urgency: Urgency,
     @ColumnInfo(TASK_ENTITY_ASSIGNEE_ID)
-    val assigneeId: Int,
+    val assigneeId: Int?,
 )
 
 @TypeConverters(

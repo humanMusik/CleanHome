@@ -14,7 +14,7 @@ fun TaskEntity.toTask() = Task(
     frequency = frequency,
     scheduledDate = scheduledDate,
     urgency = urgency,
-    assigneeId = Resident.Id(assigneeId),
+    assigneeId = assigneeId?.let { Resident.Id(assigneeId) },
 )
 
 fun List<TaskEntity>.toTasks() = map { it.toTask() }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "82b9c47b430a39713ecaf42d81a1d16e",
+    "identityHash": "3fe96e7d1d2a62dc0728a99a0f8445ad",
     "entities": [
       {
         "tableName": "RoomEntity",
@@ -54,7 +54,7 @@
       },
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `roomId` INTEGER NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER NOT NULL, FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `roomId` INTEGER NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER, FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -101,8 +101,7 @@
           {
             "fieldPath": "assigneeId",
             "columnName": "assigneeId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -181,7 +180,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '82b9c47b430a39713ecaf42d81a1d16e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3fe96e7d1d2a62dc0728a99a0f8445ad')"
     ]
   }
 }
