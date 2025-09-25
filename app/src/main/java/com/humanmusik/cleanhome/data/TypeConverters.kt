@@ -2,7 +2,7 @@ package com.humanmusik.cleanhome.data
 
 import androidx.room.TypeConverter
 import java.time.LocalDate
-import kotlin.time.Duration
+import java.time.Duration
 
 object LocalDateTypeConverter {
     @TypeConverter

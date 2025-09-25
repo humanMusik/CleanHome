@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.time.LocalDate
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
+import java.time.Duration
+import java.time.Duration.Companion.hours
+import java.time.Duration.Companion.minutes
 import com.humanmusik.cleanhome.domain.model.Resident as ResidentDomain
 
 class TaskEditorImplTest {

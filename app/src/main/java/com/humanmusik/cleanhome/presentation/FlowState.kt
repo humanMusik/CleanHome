@@ -5,7 +5,6 @@ import android.os.Parcelable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -28,7 +27,9 @@ sealed class FlowState<out T> : Parcelable {
                 when (parcelClassName) {
                     Unit::class.java.name,
                     "null"
-                    -> parcel.writeString("FlowState($parcelClassName)")
+                    -> {
+                        // Do nothing as these cases will be handled by the writeString class name
+                    }
                     else -> parcel.writeValue(value)
                 }
             }

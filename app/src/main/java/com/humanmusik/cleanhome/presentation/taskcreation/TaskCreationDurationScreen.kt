@@ -11,7 +11,7 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kotlin.time.Duration
+import java.time.Duration
 
 @Composable
 fun TaskCreationDurationScreen(

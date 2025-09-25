@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.coreLibraryDesugaring
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,6 +11,10 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
     namespace = "com.example.cleanhome"
     compileSdk = 36
@@ -16,17 +22,13 @@ android {
     defaultConfig {
         applicationId = "com.example.cleanhome"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
-        }
-
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
 
@@ -40,6 +42,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -117,4 +120,6 @@ dependencies {
     testImplementation(libs.junit5.jupiter.params)
     testImplementation(libs.androidx.junit.ktx)
     testImplementation(libs.roboelectric)
+
+    coreLibraryDesugaring(libs.android.desugaring)
 }

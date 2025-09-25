@@ -9,20 +9,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Insert
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.domain.model.task.Frequency
+import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.navigation.NavigationRoot
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.LocalDate
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -75,38 +74,42 @@ class MainActivity : ComponentActivity() {
             TaskEntity(
                 name = "Vacuum",
                 roomId = 3,
-                duration = 10.minutes,
+                duration = Duration.ofMinutes(10),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 3,
+                state = State.Active,
             ),
             TaskEntity(
                 name = "Clean toilet",
                 roomId = 2,
-                duration = 15.minutes,
+                duration = Duration.ofMinutes(15),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 2,
+                state = State.Active,
             ),
             TaskEntity(
                 name = "Tidy",
                 roomId = 1,
-                duration = 1.hours,
+                duration = Duration.ofHours(1),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 1,
+                state = State.Active,
             ),
             TaskEntity(
                 name = "Mop",
                 roomId = 1,
-                duration = 5.minutes,
+                duration = Duration.ofMinutes(5),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 2,
+                state = State.Active,
             ),
         )
 

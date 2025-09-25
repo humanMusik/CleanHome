@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
@@ -89,7 +90,11 @@ fun NavigationRoot(
                         }
                     )
 
-                TaskDetailsScreen(viewModel = taskDetailsViewModel)
+                TaskDetailsScreen(
+                    viewModel = taskDetailsViewModel,
+                    onSaveNavigation = { viewModel.pop() },
+                    onDeleteNavigation = { viewModel.pop() },
+                )
             }
         }
     )

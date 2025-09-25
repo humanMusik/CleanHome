@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3fe96e7d1d2a62dc0728a99a0f8445ad",
+    "identityHash": "3279c00a5f168c18eca66010f0c073f4",
     "entities": [
       {
         "tableName": "RoomEntity",
@@ -54,7 +54,7 @@
       },
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `roomId` INTEGER NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER, FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `roomId` INTEGER NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER, `state` TEXT NOT NULL, FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -102,6 +102,12 @@
             "fieldPath": "assigneeId",
             "columnName": "assigneeId",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -175,12 +181,12 @@
     "views": [
       {
         "viewName": "EnrichedTaskEntity",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT taskentity.id AS idInt,\n        taskentity.name AS taskName,\n        taskentity.duration AS duration,\n        taskentity.frequency AS frequency,\n        taskentity.scheduledDate AS scheduledDate,\n        taskentity.urgency AS urgency,\n        roomentity.id AS roomIdInt,\n        roomentity.name AS roomName,\n        residententity.id AS assigneeIdInt,\n        residententity.name AS assigneeName\n        FROM taskentity\n        INNER JOIN roomentity on taskentity.roomId = roomentity.id\n        INNER JOIN residententity on taskentity.assigneeId = residententity.id"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT taskentity.id AS idInt,\n        taskentity.name AS taskName,\n        taskentity.duration AS duration,\n        taskentity.frequency AS frequency,\n        taskentity.scheduledDate AS scheduledDate,\n        taskentity.urgency AS urgency,\n        taskentity.state AS state,\n        roomentity.id AS roomIdInt,\n        roomentity.name AS roomName,\n        residententity.id AS assigneeIdInt,\n        residententity.name AS assigneeName\n        FROM taskentity\n        INNER JOIN roomentity on taskentity.roomId = roomentity.id\n        INNER JOIN residententity on taskentity.assigneeId = residententity.id"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3fe96e7d1d2a62dc0728a99a0f8445ad')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3279c00a5f168c18eca66010f0c073f4')"
     ]
   }
 }

@@ -28,7 +28,7 @@ class NavigationViewModel @Inject constructor(
     fun pop() {
         if (backStack.value.navKeys.size > 1) {
             backStack.update {
-                it.copy(navKeys = it.navKeys.apply { removeLastOrNull() })
+                it.copy(navKeys = it.navKeys.apply { removeAt(it.navKeys.lastIndex) })
             }
         }
     }
@@ -37,7 +37,7 @@ class NavigationViewModel @Inject constructor(
         if (backStack.value.navKeys.contains(navKey)) {
             while (backStack.value.navKeys.last() != navKey) {
                 backStack.update {
-                    it.copy(navKeys = it.navKeys.apply { removeLastOrNull() })
+                    it.copy(navKeys = it.navKeys.apply { removeAt(it.navKeys.lastIndex) })
                 }
             }
         }

@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import tech.apter.junit.jupiter.robolectric.RobolectricExtension
 import java.time.LocalDate
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
+import java.time.Duration
+import java.time.Duration.Companion.minutes
 
 @ExtendWith(RobolectricExtension::class)
 class CleanHomeRepositoryImplTest {

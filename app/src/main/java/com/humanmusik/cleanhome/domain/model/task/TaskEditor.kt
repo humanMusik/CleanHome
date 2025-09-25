@@ -2,6 +2,8 @@ package com.humanmusik.cleanhome.domain.model.task
 
 import com.humanmusik.cleanhome.data.repository.CreateTask
 import com.humanmusik.cleanhome.data.repository.CreateTask.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.DeleteTask
+import com.humanmusik.cleanhome.data.repository.DeleteTask.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId
@@ -13,12 +15,12 @@ import com.humanmusik.cleanhome.data.repository.UpdateTask.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
+import com.humanmusik.cleanhome.presentation.taskdetails.TaskEditParcelData
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import java.time.Duration
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 
 interface TaskEditor {
     suspend fun reassignTask(
@@ -30,6 +32,12 @@ interface TaskEditor {
         taskCreationParcelData: TaskCreationParcelData,
         todayDate: LocalDate,
     )
+
+    suspend fun editTask(
+        taskEditParcelData: TaskEditParcelData,
+    )
+
+    suspend fun deleteTask(taskId: Task.Id)
 }
 
 class TaskEditorImpl @Inject constructor(
@@ -48,8 +56,8 @@ class TaskEditorImpl @Inject constructor(
             endDateInclusive = getNewScheduledDate(
                 dateCompleted = dateCompleted,
                 taskFrequency = task.frequency!!,
-            ),
-        )
+            )
+        ) and TaskFilter.ByState(setOf(State.Active))
 
         val reAssignedTask = combine(
             flowOfTasks(filter),
@@ -99,6 +107,35 @@ class TaskEditorImpl @Inject constructor(
         createTask(newTask)
     }
 
+    override suspend fun editTask(taskEditParcelData: TaskEditParcelData) {
+        val updatedTask = Task(
+            id = taskEditParcelData.id,
+            name = taskEditParcelData.taskName,
+            roomId = taskEditParcelData.roomId,
+            duration = taskEditParcelData.duration,
+            frequency = taskEditParcelData.frequency,
+            scheduledDate = taskEditParcelData.scheduledDate,
+            urgency = taskEditParcelData.urgency,
+            assigneeId = taskEditParcelData.assigneeId,
+            state = State.Active,
+        )
+
+        updateTask(updatedTask)
+    }
+
+    override suspend fun deleteTask(taskId: Task.Id) {
+        val taskToDelete = flowOfTasks(
+            filter = TaskFilter.ById(setOf(taskId)),
+        )
+            .first()
+            .first()
+            .copy(
+                state = State.Inactive
+            )
+
+        updateTask(task = taskToDelete)
+    }
+
     private fun getNewAssignment(
         tasks: List<Task>,
         allResidents: List<Resident.Id>,
@@ -126,10 +163,10 @@ class TaskEditorImpl @Inject constructor(
     private fun List<Task>.mapOfResidentIdToTotalTaskDuration(allResidents: List<Resident.Id>): Map<Resident.Id, Duration> {
         val tasks = this.toMutableList()
         allResidents.forEach { resident ->
-            tasks.add(Task.build(assigneeId = resident, duration = Duration.ZERO))
+            tasks.add(Task.build(assigneeId = resident, duration = Duration.ZERO, state = State.Active))
         }
         return tasks.groupingBy { it.assigneeId!! }
-            .fold(0.minutes) { acc, task ->
+            .fold(Duration.ZERO) { acc, task ->
                 acc + task.duration!!
             }
     }
