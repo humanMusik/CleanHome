@@ -13,6 +13,7 @@ import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks.Companion.in
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.TaskLog
+import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorExceptions
 import com.humanmusik.cleanhome.presentation.FlowState
@@ -41,7 +42,7 @@ class TaskListViewModel @Inject constructor(
     )
 
     init {
-        flowOfEnrichedTasks(filter = EnrichedTaskFilter.All)
+        flowOfEnrichedTasks(filter = EnrichedTaskFilter.ByState(setOf(State.Active)))
             .asFlowState()
             .onSuccess { enrichedTask ->
                 state.update {
@@ -106,6 +107,10 @@ class TaskListViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+
+    fun onTaskSelected(
+        navigation: () -> Unit,
+    ) { navigation() }
 
     private fun getTodayLocalDate() = LocalDate.now()
 }

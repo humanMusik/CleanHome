@@ -5,11 +5,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 fun runTest(
     context: CoroutineContext = EmptyCoroutineContext,
-    timeout: kotlin.time.Duration = 10.seconds,
+    timeout: Duration = 10.seconds,
     testBody: suspend TestScope.() -> Unit,
 ) =
     kotlinx.coroutines.test.runTest(

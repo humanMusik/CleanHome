@@ -3,16 +3,12 @@ package com.humanmusik.cleanhome.data.entities
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.ForeignKey.Companion.SET_NULL
 import androidx.room.Ignore
-import androidx.room.Junction
 import androidx.room.PrimaryKey
-import androidx.room.Query
-import androidx.room.Relation
 import androidx.room.TypeConverters
 import com.humanmusik.cleanhome.data.DurationTypeConverter
 import com.humanmusik.cleanhome.data.LocalDateTypeConverter
@@ -20,12 +16,13 @@ import com.humanmusik.cleanhome.domain.enrichedTaskComparator
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
+import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.time.Duration
 import java.time.LocalDate
-import kotlin.time.Duration
 
 const val TASK_ENTITY_ROOM_ID = "roomId"
 const val TASK_ENTITY_ASSIGNEE_ID = "assigneeId"
@@ -65,7 +62,8 @@ data class TaskEntity(
     val scheduledDate: LocalDate,
     val urgency: Urgency,
     @ColumnInfo(TASK_ENTITY_ASSIGNEE_ID)
-    val assigneeId: Int,
+    val assigneeId: Int?,
+    val state: State,
 )
 
 @TypeConverters(
@@ -80,6 +78,7 @@ data class TaskEntity(
         taskentity.frequency AS frequency,
         taskentity.scheduledDate AS scheduledDate,
         taskentity.urgency AS urgency,
+        taskentity.state AS state,
         roomentity.id AS roomIdInt,
         roomentity.name AS roomName,
         residententity.id AS assigneeIdInt,
@@ -101,6 +100,7 @@ data class EnrichedTaskEntity(
     val roomName: String,
     val assigneeIdInt: Int,
     val assigneeName: String,
+    val state: State,
 ) : Comparable<EnrichedTaskEntity>, Parcelable {
     override fun compareTo(other: EnrichedTaskEntity): Int =
         enrichedTaskComparator.compare(this, other)

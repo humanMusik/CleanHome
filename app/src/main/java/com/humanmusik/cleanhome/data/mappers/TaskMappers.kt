@@ -14,7 +14,8 @@ fun TaskEntity.toTask() = Task(
     frequency = frequency,
     scheduledDate = scheduledDate,
     urgency = urgency,
-    assigneeId = Resident.Id(assigneeId),
+    assigneeId = assigneeId?.let { Resident.Id(assigneeId) },
+    state = state,
 )
 
 fun List<TaskEntity>.toTasks() = map { it.toTask() }
@@ -29,6 +30,7 @@ fun Task.toTaskEntity(): TaskEntity =
         scheduledDate = requireNotNull(scheduledDate) { "Task scheduledDate cannot be null" },
         urgency = requireNotNull(urgency) { "Task urgency cannot be null" },
         assigneeId = requireNotNull(assigneeId?.value) { "Task assigneeId cannot be null" },
+        state = requireNotNull(state) { "Task state cannot be null" }
     )
 
 fun EnrichedTaskEntity.toTask() =
@@ -41,4 +43,5 @@ fun EnrichedTaskEntity.toTask() =
         scheduledDate = scheduledDate,
         urgency = urgency,
         assigneeId = assigneeId,
+        state = state,
     )

@@ -4,11 +4,12 @@ import android.os.Parcelable
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
+import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
-import kotlin.time.Duration
+import java.time.Duration
 
 @Parcelize
 data class TaskCreationParcelData(
@@ -29,6 +30,7 @@ data class TaskCreationParcelData(
             urgency = requireNotNull(urgency) { "Task urgency cannot be null" },
             duration = requireNotNull(duration) { "Task duration cannot be null" },
             assigneeId = assigneeId,
+            state = State.Active,
         )
 }
 

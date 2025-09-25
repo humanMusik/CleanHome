@@ -24,8 +24,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
+import java.time.Duration
+import java.time.Duration.Companion.minutes
 
 class TaskListViewModelTest {
 

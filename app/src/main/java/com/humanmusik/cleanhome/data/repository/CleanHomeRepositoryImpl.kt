@@ -35,6 +35,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
     db: CleanHomeDatabase,
 ) : CreateTask,
     UpdateTask,
+    DeleteTask,
     FlowOfTasks,
     FlowOfAllResidents,
     FlowOfAllRooms,
@@ -58,6 +59,12 @@ class CleanHomeRepositoryImpl @Inject constructor(
         // cleared in the viewModelScope
         scope.launch {
             dao.updateTask(task.toTaskEntity())
+        }
+    }
+
+    override suspend fun deleteTask(taskId: Task.Id) {
+        scope.launch {
+
         }
     }
 
@@ -103,8 +110,8 @@ class CleanHomeRepositoryImpl @Inject constructor(
     override fun flowOfTasks(filter: TaskFilter): Flow<Set<Task>> {
         return allTasks.map { tasks ->
             tasks
-                .filter { enrichedTask ->
-                    filter.getFilterPredicate()(enrichedTask)
+                .filter { task ->
+                    filter.getFilterPredicate()(task)
                 }
                 .sorted()
                 .toSet()
@@ -135,6 +142,14 @@ class CleanHomeRepositoryImpl @Inject constructor(
 
     private fun TaskFilter.getFilterPredicate(): (Task) -> Boolean {
         return when (this) {
+            is TaskFilter.AllOf -> {
+                { task ->
+                    this.filters.all {
+                        it.getFilterPredicate()(task)
+                    }
+                }
+            }
+
             is TaskFilter.All -> {
                 { true }
             }
@@ -152,6 +167,10 @@ class CleanHomeRepositoryImpl @Inject constructor(
                     it.scheduledDate?.isBetween(this.startDateInclusive, this.endDateInclusive)
                         ?: false
                 }
+            }
+
+            is TaskFilter.ByState -> {
+                { this.states.contains(it.state) }
             }
         }
     }
@@ -174,6 +193,10 @@ class CleanHomeRepositoryImpl @Inject constructor(
                 {
                     it.scheduledDate.isBetween(this.startDateInclusive, this.endDateInclusive)
                 }
+            }
+
+            is EnrichedTaskFilter.ByState -> {
+                { this.states.contains(it.state) }
             }
         }
     }

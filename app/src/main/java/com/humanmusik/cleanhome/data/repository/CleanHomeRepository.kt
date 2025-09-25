@@ -28,6 +28,15 @@ fun interface UpdateTask {
     }
 }
 
+fun interface DeleteTask {
+    suspend fun deleteTask(taskId: Task.Id)
+
+    companion object {
+        suspend operator fun DeleteTask.invoke(taskId: Task.Id) =
+            deleteTask(taskId)
+    }
+}
+
 fun interface FlowOfTasks {
     fun flowOfTasks(filter: TaskFilter): Flow<Set<Task>>
 

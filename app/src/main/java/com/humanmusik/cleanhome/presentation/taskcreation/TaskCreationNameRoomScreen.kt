@@ -46,9 +46,8 @@ fun TaskCreationNameRoomScreen(
                 viewModel.onContinue(
                     taskName = taskName,
                     roomName = roomName,
-                ) { taskParcelData ->
-                    onContinueNavigation(taskParcelData)
-                }
+                    navigation = { taskParcelData -> onContinueNavigation(taskParcelData) },
+                )
             },
         )
     }

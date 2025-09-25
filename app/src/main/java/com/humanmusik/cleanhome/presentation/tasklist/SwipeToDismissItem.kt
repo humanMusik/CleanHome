@@ -3,6 +3,7 @@ package com.humanmusik.cleanhome.presentation.tasklist
 import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,7 +25,6 @@ fun SwipeToDismissItem(
     modifier: Modifier = Modifier,
     onSwipeStartToEnd: () -> Unit,
     onSwipeEndToStart: () -> Unit,
-    onClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val dismissState = rememberSwipeToDismissBoxState()

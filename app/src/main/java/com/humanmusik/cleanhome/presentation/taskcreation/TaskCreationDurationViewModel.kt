@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
-import kotlin.time.Duration
+import java.time.Duration
 
 @HiltViewModel(assistedFactory = TaskCreationDurationViewModel.Factory::class)
 class TaskCreationDurationViewModel @AssistedInject constructor(

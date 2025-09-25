@@ -3,6 +3,7 @@ package com.humanmusik.cleanhome.di
 import com.humanmusik.cleanhome.data.repository.CleanHomeRepositoryImpl
 import com.humanmusik.cleanhome.data.repository.CreateTask
 import com.humanmusik.cleanhome.data.repository.CreateTaskLog
+import com.humanmusik.cleanhome.data.repository.DeleteTask
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
@@ -34,6 +35,12 @@ abstract class RepositoryModule {
     abstract fun bindsCreateTask(
         cleanHomeRepository: CleanHomeRepositoryImpl,
     ): CreateTask
+
+    @Binds
+    @Singleton
+    abstract fun bindsDeleteTask(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): DeleteTask
 
     @Binds
     @Singleton

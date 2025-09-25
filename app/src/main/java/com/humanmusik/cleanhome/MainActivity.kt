@@ -14,14 +14,14 @@ import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.domain.model.task.Frequency
+import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.navigation.NavigationRoot
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.LocalDate
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -74,38 +74,42 @@ class MainActivity : ComponentActivity() {
             TaskEntity(
                 name = "Vacuum",
                 roomId = 3,
-                duration = 10.minutes,
+                duration = Duration.ofMinutes(10),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 3,
+                state = State.Active,
             ),
             TaskEntity(
                 name = "Clean toilet",
                 roomId = 2,
-                duration = 15.minutes,
+                duration = Duration.ofMinutes(15),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 2,
+                state = State.Active,
             ),
             TaskEntity(
                 name = "Tidy",
-                roomId = 4,
-                duration = 1.hours,
+                roomId = 1,
+                duration = Duration.ofHours(1),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 1,
+                state = State.Active,
             ),
             TaskEntity(
                 name = "Mop",
-                roomId = 2,
-                duration = 5.minutes,
+                roomId = 1,
+                duration = Duration.ofMinutes(5),
                 frequency = Frequency.Weekly,
                 scheduledDate = LocalDate.now(),
                 urgency = Urgency.NonUrgent,
                 assigneeId = 2,
+                state = State.Active,
             ),
         )
 
@@ -184,22 +188,26 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
 //            homeEntity.forEach { dao.insertHouse(it) }
-            dao.deleteAndInsertResidents(residentEntities)
-            dao.deleteAndInsertRooms(roomEntities)
-            dao.deleteAndInsertTasks(taskEntities)
+            dao.deleteAllResidents()
+            dao.deleteAllRooms()
+            dao.deleteAllTasks()
+
+            dao.insertAllResidents(residentEntities)
+            dao.insertAllRooms(roomEntities)
+            dao.insertAllTasks(taskEntities)
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 
-            val getAllTasks = dao.getAllTasks()
+//            val getAllTasks = dao.getAllTasks()
 //            val getHomeWithMetadata = dao.getHomeWithMetadata(1)
 //            val getAllRoomsWithMetadata = dao.getAllRoomsWithMetadata()
 //            val getAllResidentsWithMetadata = dao.getAllResidentsWithMetadata()
-            val getTasksForLeslie = dao.getTasksForResident(1)
+//            val getTasksForLeslie = dao.getTasksForResident(1)
 
 //            getAllRoomsWithMetadata.onEach(::println)
 //            getAllResidentsWithMetadata.onEach(::println)
 //            println(getHomeWithMetadata)
-            getTasksForLeslie.onEach(::println)
+//            getTasksForLeslie.onEach(::println)
         }
     }
 }

@@ -29,16 +29,17 @@ import com.humanmusik.cleanhome.presentation.onSuccess
 @Composable
 fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel(),
-    onAddTaskNavigator: () -> Unit,
-    onTaskSelectedNavigator: (Task.Id) -> Unit,
+    onAddTaskNavigation: () -> Unit,
+    onTaskSelectedNavigation: (Task.Id) -> Unit,
 ) {
-    Log.d("TaskListViewModel", viewModel.hashCode().toString())
     val state: FlowState<TaskListState> = viewModel.state.collectAsState().value
     TaskListContent(
         state = state,
         onComplete = viewModel::onCompleteTask,
-        onExamine = onTaskSelectedNavigator,
-        onAddTask = onAddTaskNavigator,
+        onTaskSelected = { taskId ->
+            viewModel.onTaskSelected(navigation = { onTaskSelectedNavigation(taskId) })
+        },
+        onAddTask = onAddTaskNavigation,
     )
 }
 
@@ -47,7 +48,7 @@ fun TaskListScreen(
 private fun TaskListContent(
     state: FlowState<TaskListState>,
     onComplete: (Context, EnrichedTaskEntity) -> Unit,
-    onExamine: (Task.Id) -> Unit,
+    onTaskSelected: (Task.Id) -> Unit,
     onAddTask: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -65,7 +66,6 @@ private fun TaskListContent(
         },
     ) { paddingValues ->
         state.onSuccess {
-            Log.d("Les", "${it.enrichedTaskEntities.size}")
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -78,11 +78,13 @@ private fun TaskListContent(
                     SwipeToDismissItem(
                         onSwipeStartToEnd = { /* TODO */ },
                         onSwipeEndToStart = { onComplete(context, enrichedTask) },
-                        onClick = { onExamine(enrichedTask.id) },
                     ) {
                         TaskCard(
                             enrichedTask = enrichedTask,
-                            onClick = {}
+                            onClick = {
+                                onTaskSelected(enrichedTask.id)
+                                Log.d("Les", "Task selected")
+                            },
                         )
                     }
                 }

@@ -6,7 +6,8 @@ import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.taskComparator
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
-import kotlin.time.Duration
+import java.time.Duration
+import kotlin.jvm.Throws
 
 @Parcelize
 data class Task(
@@ -18,6 +19,7 @@ data class Task(
     val scheduledDate: LocalDate?,
     val urgency: Urgency?,
     val assigneeId: Resident.Id?,
+    val state: State?,
 ) : Comparable<Task>, Parcelable {
 
     @JvmInline
@@ -37,6 +39,7 @@ data class Task(
             scheduledDate: LocalDate? = null,
             urgency: Urgency? = null,
             assigneeId: Resident.Id? = null,
+            state: State? = null,
         ) = Task(
             id = id,
             name = name,
@@ -46,6 +49,7 @@ data class Task(
             scheduledDate = scheduledDate,
             urgency = urgency,
             assigneeId = assigneeId,
+            state = state,
         )
     }
 }
@@ -63,6 +67,19 @@ enum class Frequency {
 enum class Urgency {
     Urgent,
     NonUrgent,
+    ;
+
+    fun isUrgent(): Boolean = this == Urgent
 }
 
-fun String.toFrequency(): Frequency? = Frequency.entries.firstOrNull { it.name == this }
+enum class State {
+    Active,
+    Inactive,
+    Unrecognised,
+}
+
+fun Boolean.toUrgency() = if (this) Urgency.Urgent else Urgency.NonUrgent
+
+@Throws(IllegalStateException::class)
+fun String.toFrequencyOrThrow(): Frequency =
+    Frequency.entries.firstOrNull { it.name == this } ?: throw IllegalStateException()
