@@ -34,6 +34,8 @@ kotlinxSerializationCore = "1.8.1"
 material3AdaptiveNav3 = "1.0.0-SNAPSHOT"
 jacksonSerialization = "2.19.0"
 androidDesugaring = "2.0.3"
+googleServices = "4.4.3"
+firebaseBom = "34.3.0"
 
 
 [libraries]
@@ -80,6 +82,8 @@ androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecy
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 jackson-serialization = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jacksonSerialization"}
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "androidDesugaring"}
+firebase-bom = { module = "com.google.firebase:firebase-bom", version .ref = "firebaseBom"}
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -91,3 +95,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }
 robolectric-extension = { id = "tech.apter.junit5.jupiter.robolectric-extension-gradle-plugin", version.ref = "robolectricExtension" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices"}

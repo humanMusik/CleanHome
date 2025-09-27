@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.robolectric.extension)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.google.services)
 }
 
 ksp {
@@ -93,8 +94,9 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
-    // DataStore
-    implementation(libs.androidx.datastore.core)
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
 
     // Room
     implementation(libs.androidx.room.runtime)
