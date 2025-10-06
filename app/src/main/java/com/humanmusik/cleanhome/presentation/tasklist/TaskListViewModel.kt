@@ -10,6 +10,8 @@ import com.humanmusik.cleanhome.data.repository.CreateTaskLog
 import com.humanmusik.cleanhome.data.repository.CreateTaskLog.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks
 import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.SyncTasks
+import com.humanmusik.cleanhome.data.repository.SyncTasks.Companion.invoke
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.TaskLog
@@ -27,6 +29,7 @@ import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -35,6 +38,7 @@ class TaskListViewModel @Inject constructor(
     flowOfEnrichedTasks: FlowOfEnrichedTasks,
     private val taskEditor: TaskEditor,
     private val createTaskLog: CreateTaskLog,
+    private val syncTasks: SyncTasks,
 ) : ViewModel() {
     val state: MutableSavedStateFlow<FlowState<TaskListState>> = savedStateFlow(
         savedStateBehaviour = doNotSaveState(),
@@ -42,6 +46,8 @@ class TaskListViewModel @Inject constructor(
     )
 
     init {
+        sync()
+
         flowOfEnrichedTasks(filter = EnrichedTaskFilter.ByState(setOf(State.Active)))
             .asFlowState()
             .onSuccess { enrichedTask ->
@@ -111,6 +117,12 @@ class TaskListViewModel @Inject constructor(
     fun onTaskSelected(
         navigation: () -> Unit,
     ) { navigation() }
+
+    private fun sync() {
+        viewModelScope.launch {
+            syncTasks()
+        }
+    }
 
     private fun getTodayLocalDate() = LocalDate.now()
 }

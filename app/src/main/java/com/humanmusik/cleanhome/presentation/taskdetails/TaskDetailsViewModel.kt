@@ -9,8 +9,8 @@ import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById
 import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById.Companion.invoke
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
-import com.humanmusik.cleanhome.domain.model.task.toFrequencyOrThrow
 import com.humanmusik.cleanhome.domain.model.task.toUrgency
 import com.humanmusik.cleanhome.navigation.TaskDetailsNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
@@ -149,9 +149,11 @@ class TaskDetailsViewModel @AssistedInject constructor(
                                     .value
                                     .toLong()
                             ).toLocalDate(),
-                            frequency = editableFields.findOrThrow { it.key == FieldKeys.frequencyField }
-                                .value
-                                .toFrequencyOrThrow(),
+                            frequency = Frequency
+                                .fromString(
+                                    editableFields.findOrThrow { it.key == FieldKeys.frequencyField }
+                                        .value,
+                                ),
                             duration = Duration.parse(
                                 editableFields.findOrThrow { it.key == FieldKeys.durationField }.value,
                             ),

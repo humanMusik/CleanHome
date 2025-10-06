@@ -12,7 +12,6 @@ import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.data.entities.TaskLogEntity
 import com.humanmusik.cleanhome.domain.model.ActionType
-import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -83,8 +82,8 @@ interface CleanHomeDao {
     @Query("SELECT * FROM enrichedtaskentity")
     fun flowOfEnrichedTasks(): Flow<List<EnrichedTaskEntity>>
 
-    @Query("SELECT * FROM enrichedtaskentity WHERE idInt=:taskIdInt")
-    fun flowOfEnrichedTaskById(taskIdInt: Int): Flow<EnrichedTaskEntity>
+    @Query("SELECT * FROM enrichedtaskentity WHERE idValue=:taskId")
+    fun flowOfEnrichedTaskById(taskId: String): Flow<EnrichedTaskEntity>
     //endregion
 
     //region TaskLog Daos
@@ -99,7 +98,7 @@ interface CleanHomeDao {
     suspend fun deleteAllTaskLogs()
 
     @Query("SELECT * from tasklogentity WHERE taskId=:taskId")
-    fun getLogsByTaskId(taskId: Int): Flow<List<TaskLogEntity>>
+    fun getLogsByTaskId(taskId: String): Flow<List<TaskLogEntity>>
 
     @Query("SELECT * from tasklogentity WHERE recordedAction=:actionType")
     fun getLogsByAction(actionType: ActionType): Flow<List<TaskLogEntity>>

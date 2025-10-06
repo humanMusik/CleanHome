@@ -1,10 +1,13 @@
 package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
+import com.humanmusik.cleanhome.data.api.task.TaskApi
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
+import com.humanmusik.cleanhome.data.mappers.toFirestoreTaskModel
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toResidents
 import com.humanmusik.cleanhome.data.mappers.toRoom
+import com.humanmusik.cleanhome.data.mappers.toTaskEntities
 import com.humanmusik.cleanhome.data.mappers.toTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogs
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -32,10 +36,11 @@ import javax.inject.Singleton
 @Singleton
 class CleanHomeRepositoryImpl @Inject constructor(
     @ApplicationScope private val scope: CoroutineScope,
+    private val taskApi: TaskApi,
     db: CleanHomeDatabase,
-) : CreateTask,
+) : SyncTasks,
+    CreateTask,
     UpdateTask,
-    DeleteTask,
     FlowOfTasks,
     FlowOfAllResidents,
     FlowOfAllRooms,
@@ -48,9 +53,16 @@ class CleanHomeRepositoryImpl @Inject constructor(
 
     private val dao = db.cleanHomeDao()
 
+    override suspend fun syncTasks() {
+        taskApi
+            .listTasks()
+            .map { dao.deleteAndInsertTasks(it.toTaskEntities()) }
+            .launchIn(scope)
+    }
+
     override suspend fun createTask(task: Task) {
         scope.launch {
-            dao.insertTask(task.toTaskEntity())
+            taskApi.uploadTask(task.toFirestoreTaskModel())
         }
     }
 
@@ -58,13 +70,7 @@ class CleanHomeRepositoryImpl @Inject constructor(
         // We want this to launch in application scope so that it doesn't cancel when the VM is
         // cleared in the viewModelScope
         scope.launch {
-            dao.updateTask(task.toTaskEntity())
-        }
-    }
-
-    override suspend fun deleteTask(taskId: Task.Id) {
-        scope.launch {
-
+            taskApi.editTask(task.toFirestoreTaskModel())
         }
     }
 

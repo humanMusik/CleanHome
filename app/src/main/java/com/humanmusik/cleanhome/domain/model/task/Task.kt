@@ -5,9 +5,8 @@ import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.taskComparator
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
 import java.time.Duration
-import kotlin.jvm.Throws
+import java.time.LocalDate
 
 @Parcelize
 data class Task(
@@ -24,7 +23,7 @@ data class Task(
 
     @JvmInline
     @Parcelize
-    value class Id(val value: Int) : Parcelable
+    value class Id(val value: String) : Parcelable
 
     override fun compareTo(other: Task): Int =
         taskComparator.compare(this, other)
@@ -61,7 +60,14 @@ enum class Frequency {
     Monthly,
     Quarterly,
     BiAnnually,
-    Annually,
+    Annually;
+
+    companion object {
+        @Throws(IllegalStateException::class)
+        fun fromString(string: String): Frequency =
+            Frequency.entries.firstOrNull { it.name == string } ?: throw IllegalStateException()
+    }
+
 }
 
 enum class Urgency {
@@ -75,11 +81,13 @@ enum class Urgency {
 enum class State {
     Active,
     Inactive,
-    Unrecognised,
+    Unrecognised;
+
+    companion object {
+        @Throws(IllegalStateException::class)
+        fun fromString(string: String): State =
+            State.entries.firstOrNull { it.name == string } ?: throw IllegalStateException()
+    }
 }
 
 fun Boolean.toUrgency() = if (this) Urgency.Urgent else Urgency.NonUrgent
-
-@Throws(IllegalStateException::class)
-fun String.toFrequencyOrThrow(): Frequency =
-    Frequency.entries.firstOrNull { it.name == this } ?: throw IllegalStateException()

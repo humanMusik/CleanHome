@@ -51,9 +51,9 @@ const val TASK_ENTITY_ID = "id"
     ]
 )
 data class TaskEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(TASK_ENTITY_ID)
-    val id: Int = 0,
+    val id: String,
     val name: String,
     @ColumnInfo(TASK_ENTITY_ROOM_ID)
     val roomId: Int,
@@ -72,7 +72,7 @@ data class TaskEntity(
 )
 @DatabaseView(
     """
-        SELECT taskentity.id AS idInt,
+        SELECT taskentity.id AS idValue,
         taskentity.name AS taskName,
         taskentity.duration AS duration,
         taskentity.frequency AS frequency,
@@ -90,7 +90,7 @@ data class TaskEntity(
 )
 @Parcelize
 data class EnrichedTaskEntity(
-    val idInt: Int,
+    val idValue: String,
     val taskName: String,
     val duration: Duration,
     val frequency: Frequency,
@@ -107,7 +107,7 @@ data class EnrichedTaskEntity(
 
     @IgnoredOnParcel
     @Ignore
-    val id: Task.Id = Task.Id(idInt)
+    val id: Task.Id = Task.Id(idValue)
 
     @IgnoredOnParcel
     @Ignore

@@ -10,6 +10,15 @@ import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.flow.Flow
 
+fun interface SyncTasks {
+    suspend fun syncTasks()
+
+    companion object {
+        suspend operator fun SyncTasks.invoke() =
+            syncTasks()
+    }
+}
+
 fun interface CreateTask {
     suspend fun createTask(task: Task)
 
@@ -25,15 +34,6 @@ fun interface UpdateTask {
     companion object {
         suspend operator fun UpdateTask.invoke(task: Task) =
             updateTask(task)
-    }
-}
-
-fun interface DeleteTask {
-    suspend fun deleteTask(taskId: Task.Id)
-
-    companion object {
-        suspend operator fun DeleteTask.invoke(taskId: Task.Id) =
-            deleteTask(taskId)
     }
 }
 

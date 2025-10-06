@@ -2,8 +2,6 @@ package com.humanmusik.cleanhome.domain.model.task
 
 import com.humanmusik.cleanhome.data.repository.CreateTask
 import com.humanmusik.cleanhome.data.repository.CreateTask.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.DeleteTask
-import com.humanmusik.cleanhome.data.repository.DeleteTask.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
 import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId
@@ -163,7 +161,13 @@ class TaskEditorImpl @Inject constructor(
     private fun List<Task>.mapOfResidentIdToTotalTaskDuration(allResidents: List<Resident.Id>): Map<Resident.Id, Duration> {
         val tasks = this.toMutableList()
         allResidents.forEach { resident ->
-            tasks.add(Task.build(assigneeId = resident, duration = Duration.ZERO, state = State.Active))
+            tasks.add(
+                Task.build(
+                    assigneeId = resident,
+                    duration = Duration.ZERO,
+                    state = State.Active
+                )
+            )
         }
         return tasks.groupingBy { it.assigneeId!! }
             .fold(Duration.ZERO) { acc, task ->

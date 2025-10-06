@@ -12,16 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
-import com.humanmusik.cleanhome.data.entities.TaskEntity
-import com.humanmusik.cleanhome.domain.model.task.Frequency
-import com.humanmusik.cleanhome.domain.model.task.State
-import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.navigation.NavigationRoot
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.Duration
-import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -70,48 +64,48 @@ class MainActivity : ComponentActivity() {
             ),
         )
 
-        val taskEntities = listOf(
-            TaskEntity(
-                name = "Vacuum",
-                roomId = 3,
-                duration = Duration.ofMinutes(10),
-                frequency = Frequency.Weekly,
-                scheduledDate = LocalDate.now(),
-                urgency = Urgency.NonUrgent,
-                assigneeId = 3,
-                state = State.Active,
-            ),
-            TaskEntity(
-                name = "Clean toilet",
-                roomId = 2,
-                duration = Duration.ofMinutes(15),
-                frequency = Frequency.Weekly,
-                scheduledDate = LocalDate.now(),
-                urgency = Urgency.NonUrgent,
-                assigneeId = 2,
-                state = State.Active,
-            ),
-            TaskEntity(
-                name = "Tidy",
-                roomId = 1,
-                duration = Duration.ofHours(1),
-                frequency = Frequency.Weekly,
-                scheduledDate = LocalDate.now(),
-                urgency = Urgency.NonUrgent,
-                assigneeId = 1,
-                state = State.Active,
-            ),
-            TaskEntity(
-                name = "Mop",
-                roomId = 1,
-                duration = Duration.ofMinutes(5),
-                frequency = Frequency.Weekly,
-                scheduledDate = LocalDate.now(),
-                urgency = Urgency.NonUrgent,
-                assigneeId = 2,
-                state = State.Active,
-            ),
-        )
+//        val taskEntities = listOf(
+//            TaskEntity(
+//                name = "Vacuum",
+//                roomId = 3,
+//                duration = Duration.ofMinutes(10),
+//                frequency = Frequency.Weekly,
+//                scheduledDate = LocalDate.now(),
+//                urgency = Urgency.NonUrgent,
+//                assigneeId = 3,
+//                state = State.Active,
+//            ),
+//            TaskEntity(
+//                name = "Clean toilet",
+//                roomId = 2,
+//                duration = Duration.ofMinutes(15),
+//                frequency = Frequency.Weekly,
+//                scheduledDate = LocalDate.now(),
+//                urgency = Urgency.NonUrgent,
+//                assigneeId = 2,
+//                state = State.Active,
+//            ),
+//            TaskEntity(
+//                name = "Tidy",
+//                roomId = 1,
+//                duration = Duration.ofHours(1),
+//                frequency = Frequency.Weekly,
+//                scheduledDate = LocalDate.now(),
+//                urgency = Urgency.NonUrgent,
+//                assigneeId = 1,
+//                state = State.Active,
+//            ),
+//            TaskEntity(
+//                name = "Mop",
+//                roomId = 1,
+//                duration = Duration.ofMinutes(5),
+//                frequency = Frequency.Weekly,
+//                scheduledDate = LocalDate.now(),
+//                urgency = Urgency.NonUrgent,
+//                assigneeId = 2,
+//                state = State.Active,
+//            ),
+//        )
 
 //        val tasks = listOf(
 //            Task(
@@ -188,13 +182,13 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
 //            homeEntity.forEach { dao.insertHouse(it) }
-            dao.deleteAllResidents()
-            dao.deleteAllRooms()
-            dao.deleteAllTasks()
-
+//            dao.deleteAllResidents()
+//            dao.deleteAllRooms()
+//            dao.deleteAllTasks()
+//
             dao.insertAllResidents(residentEntities)
             dao.insertAllRooms(roomEntities)
-            dao.insertAllTasks(taskEntities)
+//            dao.insertAllTasks(taskEntities)
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }
 
