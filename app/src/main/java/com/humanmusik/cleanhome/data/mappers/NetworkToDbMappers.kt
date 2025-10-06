@@ -1,6 +1,8 @@
 package com.humanmusik.cleanhome.data.mappers
 
+import com.humanmusik.cleanhome.data.api.room.Room
 import com.humanmusik.cleanhome.data.api.task.Task
+import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.State
@@ -12,7 +14,7 @@ import java.time.Instant
 fun Task.toTaskEntity() = TaskEntity(
     id = id ?: throw IllegalStateException(),
     name = name ?: throw IllegalStateException(),
-    roomId = roomId?.toInt() ?: throw IllegalStateException(),
+    roomId = roomId ?: throw IllegalStateException(),
     duration = duration?.let { Duration.parse(it) } ?: throw IllegalStateException(),
     frequency = frequency?.let { Frequency.fromString(it) } ?: throw IllegalStateException(),
     scheduledDate = scheduledDate?.let { Instant.ofEpochMilli(it.toLong()).toLocalDate() }
@@ -23,3 +25,10 @@ fun Task.toTaskEntity() = TaskEntity(
 )
 
 fun List<Task>.toTaskEntities() = map { it.toTaskEntity() }
+
+fun Room.toRoomEntity() = RoomEntity(
+    id = id ?: throw java.lang.IllegalStateException(),
+    name = name ?: throw IllegalStateException(),
+)
+
+fun List<Room>.toRoomEntities() = map { it.toRoomEntity() }

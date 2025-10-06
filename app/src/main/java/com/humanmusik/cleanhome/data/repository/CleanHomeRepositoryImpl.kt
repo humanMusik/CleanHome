@@ -1,14 +1,15 @@
 package com.humanmusik.cleanhome.data.repository
 
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
+import com.humanmusik.cleanhome.data.api.room.RoomApi
 import com.humanmusik.cleanhome.data.api.task.TaskApi
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toFirestoreTaskModel
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toResidents
 import com.humanmusik.cleanhome.data.mappers.toRoom
+import com.humanmusik.cleanhome.data.mappers.toRoomEntities
 import com.humanmusik.cleanhome.data.mappers.toTaskEntities
-import com.humanmusik.cleanhome.data.mappers.toTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogs
 import com.humanmusik.cleanhome.data.mappers.toTasks
@@ -37,13 +38,15 @@ import javax.inject.Singleton
 class CleanHomeRepositoryImpl @Inject constructor(
     @ApplicationScope private val scope: CoroutineScope,
     private val taskApi: TaskApi,
+    private val roomApi: RoomApi,
     db: CleanHomeDatabase,
 ) : SyncTasks,
     CreateTask,
     UpdateTask,
     FlowOfTasks,
-    FlowOfAllResidents,
+    SyncRooms,
     FlowOfAllRooms,
+    FlowOfAllResidents,
     CreateTaskLog,
     FlowOfTaskLogsByTaskId,
     FlowOfRoomById,
@@ -246,5 +249,12 @@ class CleanHomeRepositoryImpl @Inject constructor(
 
     override fun flowOfEnrichedTaskById(taskId: Task.Id): Flow<EnrichedTaskEntity> {
         return dao.flowOfEnrichedTaskById(taskId.value)
+    }
+
+    override suspend fun syncRooms() {
+        roomApi
+            .listRooms()
+            .map { dao.deleteAndInsertRooms(it.toRoomEntities()) }
+            .launchIn(scope)
     }
 }

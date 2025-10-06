@@ -56,7 +56,7 @@ data class TaskEntity(
     val id: String,
     val name: String,
     @ColumnInfo(TASK_ENTITY_ROOM_ID)
-    val roomId: Int,
+    val roomId: String,
     val duration: Duration,
     val frequency: Frequency,
     val scheduledDate: LocalDate,
@@ -79,7 +79,7 @@ data class TaskEntity(
         taskentity.scheduledDate AS scheduledDate,
         taskentity.urgency AS urgency,
         taskentity.state AS state,
-        roomentity.id AS roomIdInt,
+        roomentity.id AS roomIdValue,
         roomentity.name AS roomName,
         residententity.id AS assigneeIdInt,
         residententity.name AS assigneeName
@@ -96,7 +96,7 @@ data class EnrichedTaskEntity(
     val frequency: Frequency,
     val scheduledDate: LocalDate,
     val urgency: Urgency,
-    val roomIdInt: Int,
+    val roomIdValue: String,
     val roomName: String,
     val assigneeIdInt: Int,
     val assigneeName: String,
@@ -111,7 +111,7 @@ data class EnrichedTaskEntity(
 
     @IgnoredOnParcel
     @Ignore
-    val roomId: Room.Id = Room.Id(roomIdInt)
+    val roomId: Room.Id = Room.Id(roomIdValue)
 
     @IgnoredOnParcel
     @Ignore

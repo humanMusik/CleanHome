@@ -142,7 +142,7 @@ class TaskDetailsViewModel @AssistedInject constructor(
                                 room.name == editableFields.findOrThrow { it.key == FieldKeys.roomField }.value
                             }
                                 .id
-                                ?: Room.Id(0),
+                                ?: Room.Id("null"),
                             scheduledDate = Instant.ofEpochMilli(
                                 editableFields
                                     .findOrThrow { it.key == FieldKeys.dueDateField }

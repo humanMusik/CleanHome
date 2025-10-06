@@ -90,6 +90,15 @@ fun interface FlowOfTaskLogsByActionType {
     }
 }
 
+fun interface SyncRooms {
+    suspend fun syncRooms()
+
+    companion object {
+        suspend operator fun SyncRooms.invoke() =
+            syncRooms()
+    }
+}
+
 fun interface FlowOfResidentById {
     fun flowOfResidentById(residentId: Resident.Id): Flow<Resident>
 

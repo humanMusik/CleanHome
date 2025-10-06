@@ -9,6 +9,6 @@ fun RoomEntity.toRoom() = Room(
 )
 
 fun Room.toRoomEntity() = RoomEntity(
-    id = id?.value ?: 0,
+    id = requireNotNull(id?.value) { "Room Id cannot be null" },
     name = name,
 )

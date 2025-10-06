@@ -51,7 +51,7 @@ interface CleanHomeDao {
     fun flowOfAllRooms(): Flow<List<RoomEntity>>
 
     @Query("SELECT * FROM roomentity WHERE id=:roomId")
-    fun flowOfRoomById(roomId: Int): Flow<RoomEntity>
+    fun flowOfRoomById(roomId: String): Flow<RoomEntity>
 
     //endregion
 

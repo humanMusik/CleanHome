@@ -2,16 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "aa6fd84e1a33670f9870f955d9ac46f1",
+    "identityHash": "d95dd73be86bcf4d11efad2a2c0a7436",
     "entities": [
       {
         "tableName": "RoomEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -22,7 +22,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -54,7 +54,7 @@
       },
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `roomId` INTEGER NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER, `state` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `roomId` TEXT NOT NULL, `duration` TEXT NOT NULL, `frequency` TEXT NOT NULL, `scheduledDate` TEXT NOT NULL, `urgency` TEXT NOT NULL, `assigneeId` INTEGER, `state` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`roomId`) REFERENCES `RoomEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`assigneeId`) REFERENCES `ResidentEntity`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -71,7 +71,7 @@
           {
             "fieldPath": "roomId",
             "columnName": "roomId",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -181,12 +181,12 @@
     "views": [
       {
         "viewName": "EnrichedTaskEntity",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT taskentity.id AS idValue,\n        taskentity.name AS taskName,\n        taskentity.duration AS duration,\n        taskentity.frequency AS frequency,\n        taskentity.scheduledDate AS scheduledDate,\n        taskentity.urgency AS urgency,\n        taskentity.state AS state,\n        roomentity.id AS roomIdInt,\n        roomentity.name AS roomName,\n        residententity.id AS assigneeIdInt,\n        residententity.name AS assigneeName\n        FROM taskentity\n        INNER JOIN roomentity on taskentity.roomId = roomentity.id\n        INNER JOIN residententity on taskentity.assigneeId = residententity.id"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT taskentity.id AS idValue,\n        taskentity.name AS taskName,\n        taskentity.duration AS duration,\n        taskentity.frequency AS frequency,\n        taskentity.scheduledDate AS scheduledDate,\n        taskentity.urgency AS urgency,\n        taskentity.state AS state,\n        roomentity.id AS roomIdValue,\n        roomentity.name AS roomName,\n        residententity.id AS assigneeIdInt,\n        residententity.name AS assigneeName\n        FROM taskentity\n        INNER JOIN roomentity on taskentity.roomId = roomentity.id\n        INNER JOIN residententity on taskentity.assigneeId = residententity.id"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aa6fd84e1a33670f9870f955d9ac46f1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd95dd73be86bcf4d11efad2a2c0a7436')"
     ]
   }
 }

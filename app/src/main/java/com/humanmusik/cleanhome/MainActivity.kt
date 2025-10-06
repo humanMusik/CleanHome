@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
 
         val dao = CleanHomeDatabase.getDbInstance(this).cleanHomeDao()
 
+        // TODO: sync Rooms on app startup
 
         val residentEntities = listOf(
             ResidentEntity(
@@ -49,20 +50,20 @@ class MainActivity : ComponentActivity() {
             ),
         )
 
-        val roomEntities = listOf(
-            RoomEntity(
-                name = "JL bedroom",
-            ),
-            RoomEntity(
-                name = "Bathroom",
-            ),
-            RoomEntity(
-                name = "Cihan bedroom",
-            ),
-            RoomEntity(
-                name = "Living Room",
-            ),
-        )
+//        val roomEntities = listOf(
+//            RoomEntity(
+//                name = "JL bedroom",
+//            ),
+//            RoomEntity(
+//                name = "Bathroom",
+//            ),
+//            RoomEntity(
+//                name = "Cihan bedroom",
+//            ),
+//            RoomEntity(
+//                name = "Living Room",
+//            ),
+//        )
 
 //        val taskEntities = listOf(
 //            TaskEntity(
@@ -187,7 +188,7 @@ class MainActivity : ComponentActivity() {
 //            dao.deleteAllTasks()
 //
             dao.insertAllResidents(residentEntities)
-            dao.insertAllRooms(roomEntities)
+//            dao.insertAllRooms(roomEntities)
 //            dao.insertAllTasks(taskEntities)
 //            taskEntities.forEach { dao.insertTask(it) }
 //            residentRoomRelations.forEach { dao.insertResidentRoomCrossRef(it) }

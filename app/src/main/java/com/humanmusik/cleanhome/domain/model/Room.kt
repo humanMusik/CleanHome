@@ -10,5 +10,5 @@ data class Room(
 ) : Parcelable {
     @JvmInline
     @Parcelize
-    value class Id(val value: Int) : Parcelable
+    value class Id(val value: String) : Parcelable
 }
