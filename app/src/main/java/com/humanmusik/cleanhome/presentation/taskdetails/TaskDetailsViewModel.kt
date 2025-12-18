@@ -4,13 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
-import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms
-import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById.Companion.invoke
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
-import com.humanmusik.cleanhome.domain.model.task.toFrequencyOrThrow
 import com.humanmusik.cleanhome.domain.model.task.toUrgency
 import com.humanmusik.cleanhome.navigation.TaskDetailsNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
@@ -142,16 +142,18 @@ class TaskDetailsViewModel @AssistedInject constructor(
                                 room.name == editableFields.findOrThrow { it.key == FieldKeys.roomField }.value
                             }
                                 .id
-                                ?: Room.Id(0),
+                                ?: Room.Id("null"),
                             scheduledDate = Instant.ofEpochMilli(
                                 editableFields
                                     .findOrThrow { it.key == FieldKeys.dueDateField }
                                     .value
                                     .toLong()
                             ).toLocalDate(),
-                            frequency = editableFields.findOrThrow { it.key == FieldKeys.frequencyField }
-                                .value
-                                .toFrequencyOrThrow(),
+                            frequency = Frequency
+                                .fromString(
+                                    editableFields.findOrThrow { it.key == FieldKeys.frequencyField }
+                                        .value,
+                                ),
                             duration = Duration.parse(
                                 editableFields.findOrThrow { it.key == FieldKeys.durationField }.value,
                             ),

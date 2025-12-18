@@ -7,16 +7,29 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
+import com.humanmusik.cleanhome.data.entities.HomeEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.data.entities.TaskLogEntity
 import com.humanmusik.cleanhome.domain.model.ActionType
-import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CleanHomeDao {
+    //region Home Daos
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHome(homeEntity: HomeEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllHomes(homeEntities: List<HomeEntity>)
+
+    @Query("DELETE FROM homeentity")
+    suspend fun deleteAllHomes()
+
+    @Query("SELECT * from homeentity")
+    suspend fun getAllHomes(): List<HomeEntity>
+    //endregion
 
     //region Resident Daos
 
@@ -52,7 +65,7 @@ interface CleanHomeDao {
     fun flowOfAllRooms(): Flow<List<RoomEntity>>
 
     @Query("SELECT * FROM roomentity WHERE id=:roomId")
-    fun flowOfRoomById(roomId: Int): Flow<RoomEntity>
+    fun flowOfRoomById(roomId: String): Flow<RoomEntity>
 
     //endregion
 
@@ -83,8 +96,8 @@ interface CleanHomeDao {
     @Query("SELECT * FROM enrichedtaskentity")
     fun flowOfEnrichedTasks(): Flow<List<EnrichedTaskEntity>>
 
-    @Query("SELECT * FROM enrichedtaskentity WHERE idInt=:taskIdInt")
-    fun flowOfEnrichedTaskById(taskIdInt: Int): Flow<EnrichedTaskEntity>
+    @Query("SELECT * FROM enrichedtaskentity WHERE idValue=:taskId")
+    fun flowOfEnrichedTaskById(taskId: String): Flow<EnrichedTaskEntity>
     //endregion
 
     //region TaskLog Daos
@@ -99,7 +112,7 @@ interface CleanHomeDao {
     suspend fun deleteAllTaskLogs()
 
     @Query("SELECT * from tasklogentity WHERE taskId=:taskId")
-    fun getLogsByTaskId(taskId: Int): Flow<List<TaskLogEntity>>
+    fun getLogsByTaskId(taskId: String): Flow<List<TaskLogEntity>>
 
     @Query("SELECT * from tasklogentity WHERE recordedAction=:actionType")
     fun getLogsByAction(actionType: ActionType): Flow<List<TaskLogEntity>>
@@ -122,5 +135,11 @@ interface CleanHomeDao {
     suspend fun deleteAndInsertResidents(residents: List<ResidentEntity>) {
         deleteAllResidents()
         insertAllResidents(residents)
+    }
+
+    @Transaction
+    suspend fun deleteAndInsertHomes(homes: List<HomeEntity>) {
+        deleteAllHomes()
+        insertAllHomes(homes)
     }
 }

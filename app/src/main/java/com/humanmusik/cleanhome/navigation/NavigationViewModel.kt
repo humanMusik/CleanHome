@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.humanmusik.cleanhome.domain.model.authentication.AuthState
 import com.humanmusik.cleanhome.util.saveState
 import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ class NavigationViewModel @Inject constructor(
 ) : ViewModel() {
     val backStack = savedStateFlow(
         savedStateBehaviour = saveState(savedStateHandle),
-        initialState = BackStack(navKeys = mutableStateListOf(TaskListNavKey))
+        initialState = BackStack(navKeys = mutableStateListOf(AuthenticationNavKey.LoadingUp)),
     )
 
     fun push(navKey: CustomNavKey) {
@@ -43,9 +44,21 @@ class NavigationViewModel @Inject constructor(
         }
         println("popUntil ${backStack.value.navKeys}")
     }
-}
 
-fun <T> SnapshotStateList<T>.addAndReturn(element: T): SnapshotStateList<T> {
-    add(element)
-    return this
+    fun clearBackStack() {
+        backStack.update { BackStack(navKeys = mutableStateListOf()) }
+    }
+
+    fun insertInitialScreen(authState: AuthState) {
+        if (authState == AuthState.Authenticated) {
+            backStack.update { BackStack(navKeys = mutableStateListOf(HomeNavKey)) }
+        } else {
+            backStack.update { BackStack(navKeys = mutableStateListOf(AuthenticationNavKey.Login)) }
+        }
+    }
+
+    private fun <T> SnapshotStateList<T>.addAndReturn(element: T): SnapshotStateList<T> {
+        add(element)
+        return this
+    }
 }

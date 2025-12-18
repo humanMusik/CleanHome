@@ -2,6 +2,7 @@ package com.humanmusik.cleanhome.presentation
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -154,9 +155,14 @@ fun <T> FlowState.Companion.fromSuspendingFunc(
 ): Flow<FlowState<T>> {
     return flow {
         emit(FlowState.Loading())
+        Log.d("FlowState", "Loading")
         emit(FlowState.Success(value = block()))
+        Log.d("FlowState", "Success")
     }
-        .catch { throwable -> emit(FlowState.Failure(throwable)) }
+        .catch { throwable ->
+            emit(FlowState.Failure(throwable))
+            Log.d("FlowState", "Failure")
+        }
 }
 
 fun <T> (suspend () -> T).asFlowState(): Flow<FlowState<T>> {

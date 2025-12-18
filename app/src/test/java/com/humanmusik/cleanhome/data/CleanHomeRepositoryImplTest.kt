@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
-import com.humanmusik.cleanhome.data.repository.CleanHomeRepositoryImpl
+import com.humanmusik.cleanhome.data.repository.cleanhome.CleanHomeRepositoryImpl
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Frequency

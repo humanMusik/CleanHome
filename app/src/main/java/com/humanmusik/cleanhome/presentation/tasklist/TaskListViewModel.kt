@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTask
-import com.humanmusik.cleanhome.data.repository.CreateTaskLog
-import com.humanmusik.cleanhome.data.repository.CreateTaskLog.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTasks
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTasks.Companion.invoke
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.TaskLog
@@ -111,6 +111,12 @@ class TaskListViewModel @Inject constructor(
     fun onTaskSelected(
         navigation: () -> Unit,
     ) { navigation() }
+
+    private fun sync() {
+//        viewModelScope.launch {
+//            syncTasks()
+//        }
+    }
 
     private fun getTodayLocalDate() = LocalDate.now()
 }

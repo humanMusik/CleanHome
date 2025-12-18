@@ -22,7 +22,7 @@ fun List<TaskEntity>.toTasks() = map { it.toTask() }
 
 fun Task.toTaskEntity(): TaskEntity =
     TaskEntity(
-        id = id?.value ?: 0,
+        id = requireNotNull(id?.value) { "Task Id cannot be null" },
         name = requireNotNull(name) { "Task name cannot be null" },
         roomId = requireNotNull(roomId?.value) { "Task roomId cannot be null"},
         duration = requireNotNull(duration) { "Task duration cannot be null" },

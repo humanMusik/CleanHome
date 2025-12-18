@@ -51,12 +51,12 @@ const val TASK_ENTITY_ID = "id"
     ]
 )
 data class TaskEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(TASK_ENTITY_ID)
-    val id: Int = 0,
+    val id: String,
     val name: String,
     @ColumnInfo(TASK_ENTITY_ROOM_ID)
-    val roomId: Int,
+    val roomId: String,
     val duration: Duration,
     val frequency: Frequency,
     val scheduledDate: LocalDate,
@@ -72,14 +72,14 @@ data class TaskEntity(
 )
 @DatabaseView(
     """
-        SELECT taskentity.id AS idInt,
+        SELECT taskentity.id AS idValue,
         taskentity.name AS taskName,
         taskentity.duration AS duration,
         taskentity.frequency AS frequency,
         taskentity.scheduledDate AS scheduledDate,
         taskentity.urgency AS urgency,
         taskentity.state AS state,
-        roomentity.id AS roomIdInt,
+        roomentity.id AS roomIdValue,
         roomentity.name AS roomName,
         residententity.id AS assigneeIdInt,
         residententity.name AS assigneeName
@@ -90,13 +90,13 @@ data class TaskEntity(
 )
 @Parcelize
 data class EnrichedTaskEntity(
-    val idInt: Int,
+    val idValue: String,
     val taskName: String,
     val duration: Duration,
     val frequency: Frequency,
     val scheduledDate: LocalDate,
     val urgency: Urgency,
-    val roomIdInt: Int,
+    val roomIdValue: String,
     val roomName: String,
     val assigneeIdInt: Int,
     val assigneeName: String,
@@ -107,11 +107,11 @@ data class EnrichedTaskEntity(
 
     @IgnoredOnParcel
     @Ignore
-    val id: Task.Id = Task.Id(idInt)
+    val id: Task.Id = Task.Id(idValue)
 
     @IgnoredOnParcel
     @Ignore
-    val roomId: Room.Id = Room.Id(roomIdInt)
+    val roomId: Room.Id = Room.Id(roomIdValue)
 
     @IgnoredOnParcel
     @Ignore

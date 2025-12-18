@@ -1,17 +1,15 @@
 package com.humanmusik.cleanhome.domain.model.task
 
-import com.humanmusik.cleanhome.data.repository.CreateTask
-import com.humanmusik.cleanhome.data.repository.CreateTask.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.DeleteTask
-import com.humanmusik.cleanhome.data.repository.DeleteTask.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents
-import com.humanmusik.cleanhome.data.repository.FlowOfAllResidents.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId
-import com.humanmusik.cleanhome.data.repository.FlowOfTaskLogsByTaskId.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfTasks
-import com.humanmusik.cleanhome.data.repository.FlowOfTasks.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.UpdateTask
-import com.humanmusik.cleanhome.data.repository.UpdateTask.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTask
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTask.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllResidents
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllResidents.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTaskLogsByTaskId
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTaskLogsByTaskId.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTask
+import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTask.Companion.invoke
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
@@ -163,7 +161,13 @@ class TaskEditorImpl @Inject constructor(
     private fun List<Task>.mapOfResidentIdToTotalTaskDuration(allResidents: List<Resident.Id>): Map<Resident.Id, Duration> {
         val tasks = this.toMutableList()
         allResidents.forEach { resident ->
-            tasks.add(Task.build(assigneeId = resident, duration = Duration.ZERO, state = State.Active))
+            tasks.add(
+                Task.build(
+                    assigneeId = resident,
+                    duration = Duration.ZERO,
+                    state = State.Active
+                )
+            )
         }
         return tasks.groupingBy { it.assigneeId!! }
             .fold(Duration.ZERO) { acc, task ->

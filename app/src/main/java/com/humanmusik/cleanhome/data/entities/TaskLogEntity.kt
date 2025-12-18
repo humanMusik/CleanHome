@@ -14,7 +14,7 @@ import java.time.LocalDate
 data class TaskLogEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val taskId: Int,
+    val taskId: String,
     val date: LocalDate,
     val recordedAction: ActionType,
 )

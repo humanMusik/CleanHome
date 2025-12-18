@@ -6,7 +6,7 @@ import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.Urgency
-import com.humanmusik.cleanhome.data.repository.FlowOfTasks
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks
 import com.humanmusik.cleanhome.navigation.BackStackInstruction
 import com.humanmusik.cleanhome.navigation.BackStackInstructor
 import com.humanmusik.cleanhome.presentation.FlowState
