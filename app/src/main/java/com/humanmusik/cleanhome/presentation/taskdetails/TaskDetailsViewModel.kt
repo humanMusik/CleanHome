@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
-import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms
-import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTaskById.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById.Companion.invoke
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.TaskEditor

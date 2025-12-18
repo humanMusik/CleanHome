@@ -1,7 +1,7 @@
 package com.humanmusik.cleanhome.commandcentre.commands.testonly
 
-import com.humanmusik.cleanhome.data.repository.SyncTasks
-import com.humanmusik.cleanhome.data.repository.SyncTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncTasks
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncTasks.Companion.invoke
 
 class TasksUpdatedCommand(
     private val syncTasks: SyncTasks,

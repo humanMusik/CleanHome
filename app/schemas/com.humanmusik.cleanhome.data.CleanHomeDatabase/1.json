@@ -2,8 +2,32 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d95dd73be86bcf4d11efad2a2c0a7436",
+    "identityHash": "9ee01484c95dd0a3ce43c3bc35ae8ec7",
     "entities": [
+      {
+        "tableName": "HomeEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
       {
         "tableName": "RoomEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
@@ -186,7 +210,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd95dd73be86bcf4d11efad2a2c0a7436')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ee01484c95dd0a3ce43c3bc35ae8ec7')"
     ]
   }
 }

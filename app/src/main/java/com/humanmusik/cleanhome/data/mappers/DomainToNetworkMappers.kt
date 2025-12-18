@@ -1,10 +1,11 @@
 package com.humanmusik.cleanhome.data.mappers
 
 import com.humanmusik.cleanhome.domain.model.Room
+import com.humanmusik.cleanhome.domain.model.User
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.toEpochMillis
 
-fun Task.toFirestoreTaskModel() = com.humanmusik.cleanhome.data.api.task.Task(
+fun Task.toFirestoreTaskModel() = com.humanmusik.cleanhome.data.network.task.Task(
     id = id?.value,
     name = name,
     roomId = roomId?.value.toString(),
@@ -16,7 +17,15 @@ fun Task.toFirestoreTaskModel() = com.humanmusik.cleanhome.data.api.task.Task(
     state = state?.name,
 )
 
-fun Room.toFirestoreRoomModel() = com.humanmusik.cleanhome.data.api.room.Room(
+fun Room.toFirestoreRoomModel() = com.humanmusik.cleanhome.data.network.room.Room(
     id = id?.value,
     name = name,
 )
+
+fun User.toFirestoreUserModel() = com.humanmusik.cleanhome.data.network.user.User(
+    id = requireNotNull(id) { "userId cannot be null" },
+    firstName = firstName,
+    lastName = lastName,
+    homes = emptyList() // revisit,
+)
+

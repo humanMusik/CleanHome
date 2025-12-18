@@ -1,9 +1,11 @@
 package com.humanmusik.cleanhome.data.mappers
 
-import com.humanmusik.cleanhome.data.api.room.Room
-import com.humanmusik.cleanhome.data.api.task.Task
+import com.humanmusik.cleanhome.data.entities.HomeEntity
+import com.humanmusik.cleanhome.data.network.room.Room
+import com.humanmusik.cleanhome.data.network.task.Task
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
+import com.humanmusik.cleanhome.data.network.home.Home
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.toUrgency
@@ -27,8 +29,15 @@ fun Task.toTaskEntity() = TaskEntity(
 fun List<Task>.toTaskEntities() = map { it.toTaskEntity() }
 
 fun Room.toRoomEntity() = RoomEntity(
-    id = id ?: throw java.lang.IllegalStateException(),
+    id = id ?: throw IllegalStateException(),
     name = name ?: throw IllegalStateException(),
 )
 
 fun List<Room>.toRoomEntities() = map { it.toRoomEntity() }
+
+fun Home.toHomeEntity() = HomeEntity(
+    id = requireNotNull(id) { "Home Id cannot be null" },
+    name = requireNotNull(name) { "Home name cannot be null" },
+)
+
+fun List<Home>.toHomeEntities() = map { it.toHomeEntity() }

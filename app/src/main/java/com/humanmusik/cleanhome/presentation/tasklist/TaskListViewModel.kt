@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTask
-import com.humanmusik.cleanhome.data.repository.CreateTaskLog
-import com.humanmusik.cleanhome.data.repository.CreateTaskLog.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks
-import com.humanmusik.cleanhome.data.repository.FlowOfEnrichedTasks.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.SyncTasks
-import com.humanmusik.cleanhome.data.repository.SyncTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTasks
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTasks.Companion.invoke
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.TaskLog
@@ -29,7 +27,6 @@ import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -38,7 +35,6 @@ class TaskListViewModel @Inject constructor(
     flowOfEnrichedTasks: FlowOfEnrichedTasks,
     private val taskEditor: TaskEditor,
     private val createTaskLog: CreateTaskLog,
-    private val syncTasks: SyncTasks,
 ) : ViewModel() {
     val state: MutableSavedStateFlow<FlowState<TaskListState>> = savedStateFlow(
         savedStateBehaviour = doNotSaveState(),
@@ -46,8 +42,6 @@ class TaskListViewModel @Inject constructor(
     )
 
     init {
-        sync()
-
         flowOfEnrichedTasks(filter = EnrichedTaskFilter.ByState(setOf(State.Active)))
             .asFlowState()
             .onSuccess { enrichedTask ->
@@ -119,9 +113,9 @@ class TaskListViewModel @Inject constructor(
     ) { navigation() }
 
     private fun sync() {
-        viewModelScope.launch {
-            syncTasks()
-        }
+//        viewModelScope.launch {
+//            syncTasks()
+//        }
     }
 
     private fun getTodayLocalDate() = LocalDate.now()

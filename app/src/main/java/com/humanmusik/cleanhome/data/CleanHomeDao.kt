@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
+import com.humanmusik.cleanhome.data.entities.HomeEntity
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
@@ -16,6 +17,19 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CleanHomeDao {
+    //region Home Daos
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHome(homeEntity: HomeEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllHomes(homeEntities: List<HomeEntity>)
+
+    @Query("DELETE FROM homeentity")
+    suspend fun deleteAllHomes()
+
+    @Query("SELECT * from homeentity")
+    suspend fun getAllHomes(): List<HomeEntity>
+    //endregion
 
     //region Resident Daos
 
@@ -121,5 +135,11 @@ interface CleanHomeDao {
     suspend fun deleteAndInsertResidents(residents: List<ResidentEntity>) {
         deleteAllResidents()
         insertAllResidents(residents)
+    }
+
+    @Transaction
+    suspend fun deleteAndInsertHomes(homes: List<HomeEntity>) {
+        deleteAllHomes()
+        insertAllHomes(homes)
     }
 }

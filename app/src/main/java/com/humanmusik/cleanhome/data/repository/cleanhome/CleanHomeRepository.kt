@@ -1,20 +1,37 @@
-package com.humanmusik.cleanhome.data.repository
+package com.humanmusik.cleanhome.data.repository.cleanhome
 
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.TaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
+import com.humanmusik.cleanhome.domain.model.Home
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.TaskLog
 import com.humanmusik.cleanhome.domain.model.task.Task
 import kotlinx.coroutines.flow.Flow
 
-fun interface SyncTasks {
-    suspend fun syncTasks()
+fun interface SyncHomes {
+    suspend fun syncHomes()
 
     companion object {
-        suspend operator fun SyncTasks.invoke() =
+        suspend operator fun SyncHomes.invoke() = syncHomes()
+    }
+}
+
+fun interface GetAllHomes {
+    suspend fun getAllHomes(): List<Home>
+
+    companion object {
+        suspend operator fun GetAllHomes.invoke() = getAllHomes()
+    }
+}
+
+fun interface SyncTasks {
+    fun syncTasks()
+
+    companion object {
+        operator fun SyncTasks.invoke() =
             syncTasks()
     }
 }
@@ -91,10 +108,10 @@ fun interface FlowOfTaskLogsByActionType {
 }
 
 fun interface SyncRooms {
-    suspend fun syncRooms()
+    fun syncRooms()
 
     companion object {
-        suspend operator fun SyncRooms.invoke() =
+        operator fun SyncRooms.invoke() =
             syncRooms()
     }
 }

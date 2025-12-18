@@ -1,4 +1,4 @@
-package com.humanmusik.cleanhome.data.api.task
+package com.humanmusik.cleanhome.data.network.task
 
 import com.google.firebase.firestore.DocumentId
 

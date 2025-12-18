@@ -1,10 +1,12 @@
-package com.humanmusik.cleanhome.data.repository
+package com.humanmusik.cleanhome.data.repository.cleanhome
 
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
-import com.humanmusik.cleanhome.data.api.room.RoomApi
-import com.humanmusik.cleanhome.data.api.task.TaskApi
+import com.humanmusik.cleanhome.data.network.room.RoomApi
+import com.humanmusik.cleanhome.data.network.task.TaskApi
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toFirestoreTaskModel
+import com.humanmusik.cleanhome.data.mappers.toHomeEntities
+import com.humanmusik.cleanhome.data.mappers.toHomes
 import com.humanmusik.cleanhome.data.mappers.toResident
 import com.humanmusik.cleanhome.data.mappers.toResidents
 import com.humanmusik.cleanhome.data.mappers.toRoom
@@ -13,9 +15,14 @@ import com.humanmusik.cleanhome.data.mappers.toTaskEntities
 import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogs
 import com.humanmusik.cleanhome.data.mappers.toTasks
+import com.humanmusik.cleanhome.data.network.home.HomeApi
+import com.humanmusik.cleanhome.data.network.user.UserApi
+import com.humanmusik.cleanhome.data.repository.auth.GetUserId
+import com.humanmusik.cleanhome.data.repository.auth.GetUserId.Companion.invoke
 import com.humanmusik.cleanhome.di.ApplicationScope
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.TaskFilter
+import com.humanmusik.cleanhome.domain.model.Home
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.TaskLog
@@ -36,11 +43,16 @@ import javax.inject.Singleton
 
 @Singleton
 class CleanHomeRepositoryImpl @Inject constructor(
-    @ApplicationScope private val scope: CoroutineScope,
+    @param:ApplicationScope private val scope: CoroutineScope,
+    private val userApi: UserApi,
+    private val homeApi: HomeApi,
     private val taskApi: TaskApi,
     private val roomApi: RoomApi,
+    private val getUserId: GetUserId,
     db: CleanHomeDatabase,
-) : SyncTasks,
+) : SyncHomes,
+    GetAllHomes,
+    SyncTasks,
     CreateTask,
     UpdateTask,
     FlowOfTasks,
@@ -55,27 +67,6 @@ class CleanHomeRepositoryImpl @Inject constructor(
     FlowOfEnrichedTaskById {
 
     private val dao = db.cleanHomeDao()
-
-    override suspend fun syncTasks() {
-        taskApi
-            .listTasks()
-            .map { dao.deleteAndInsertTasks(it.toTaskEntities()) }
-            .launchIn(scope)
-    }
-
-    override suspend fun createTask(task: Task) {
-        scope.launch {
-            taskApi.uploadTask(task.toFirestoreTaskModel())
-        }
-    }
-
-    override suspend fun updateTask(task: Task) {
-        // We want this to launch in application scope so that it doesn't cancel when the VM is
-        // cleared in the viewModelScope
-        scope.launch {
-            taskApi.editTask(task.toFirestoreTaskModel())
-        }
-    }
 
     private val allTasks: Flow<List<Task>> = flow {
         dao.getAllTasks().map { it.toTasks() }
@@ -104,6 +95,52 @@ class CleanHomeRepositoryImpl @Inject constructor(
                 replay = 1,
             )
             .collect(this@flow)
+    }
+
+    override suspend fun syncHomes() {
+        scope.launch {
+            val homeEntities = userApi.listHomes(getUserId())
+                .map { homeId ->
+                    homeApi.getHome(Home.Id(homeId))
+                }
+                .toHomeEntities()
+
+            dao.deleteAndInsertHomes(homeEntities)
+        }
+    }
+
+    override suspend fun getAllHomes(): List<Home> {
+        return dao
+            .getAllHomes()
+            .toHomes()
+    }
+
+    override fun syncTasks() {
+        taskApi
+            .listTasks()
+            .map { dao.deleteAndInsertTasks(it.toTaskEntities()) }
+            .launchIn(scope)
+    }
+
+    override fun syncRooms() {
+        roomApi
+            .listRooms()
+            .map { dao.deleteAndInsertRooms(it.toRoomEntities()) }
+            .launchIn(scope)
+    }
+
+    override suspend fun createTask(task: Task) {
+        scope.launch {
+            taskApi.uploadTask(task.toFirestoreTaskModel())
+        }
+    }
+
+    override suspend fun updateTask(task: Task) {
+        // We want this to launch in application scope so that it doesn't cancel when the VM is
+        // cleared in the viewModelScope
+        scope.launch {
+            taskApi.editTask(task.toFirestoreTaskModel())
+        }
     }
 
     override fun flowOfAllResidents(): Flow<Set<Resident>> {
@@ -249,12 +286,5 @@ class CleanHomeRepositoryImpl @Inject constructor(
 
     override fun flowOfEnrichedTaskById(taskId: Task.Id): Flow<EnrichedTaskEntity> {
         return dao.flowOfEnrichedTaskById(taskId.value)
-    }
-
-    override suspend fun syncRooms() {
-        roomApi
-            .listRooms()
-            .map { dao.deleteAndInsertRooms(it.toRoomEntities()) }
-            .launchIn(scope)
     }
 }

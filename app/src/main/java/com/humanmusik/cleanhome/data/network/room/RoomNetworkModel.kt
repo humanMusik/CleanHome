@@ -1,4 +1,4 @@
-package com.humanmusik.cleanhome.data.api.room
+package com.humanmusik.cleanhome.data.network.room
 
 import com.google.firebase.firestore.DocumentId
 

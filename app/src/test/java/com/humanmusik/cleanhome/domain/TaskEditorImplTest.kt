@@ -1,12 +1,12 @@
 package com.humanmusik.cleanhome.domain
 
-import com.humanmusik.cleanhome.data.repository.CreateTask
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTask
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
 import com.humanmusik.cleanhome.domain.model.task.Urgency
-import com.humanmusik.cleanhome.data.repository.UpdateTask
+import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTask
 import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
 import com.humanmusik.cleanhome.utilstest.runTest
 import kotlinx.coroutines.flow.flowOf

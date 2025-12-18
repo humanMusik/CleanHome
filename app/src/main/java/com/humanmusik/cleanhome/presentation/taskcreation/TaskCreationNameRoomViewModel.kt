@@ -2,8 +2,8 @@ package com.humanmusik.cleanhome.presentation.taskcreation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms
-import com.humanmusik.cleanhome.data.repository.FlowOfAllRooms.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms
+import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms.Companion.invoke
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.getOrThrow
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationNameRoomState

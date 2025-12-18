@@ -1,7 +1,7 @@
 [versions]
-agp = "8.12.2"
+agp = "8.12.3"
 datastorePreferencesCore = "1.1.1"
-hiltAndroid = "2.51.1"
+hiltAndroid = "2.57.2"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.1.0"
 ksp = "2.1.0-1.0.29"
@@ -27,7 +27,7 @@ kotlinx-coroutines = "1.10.2"
 turbine = "1.1.0"
 robolectric = "4.14.1"
 robolectricExtension = "0.9.0"
-nav3Core = "1.0.0-alpha01"
+nav3Core = "1.0.0"
 lifecycleViewmodelNav3 = "1.0.0-alpha01"
 kotlinSerialization = "2.1.21"
 kotlinxSerializationCore = "1.8.1"
@@ -35,8 +35,10 @@ material3AdaptiveNav3 = "1.0.0-SNAPSHOT"
 jacksonSerialization = "2.19.0"
 androidDesugaring = "2.0.3"
 googleServices = "4.4.3"
-firebaseBom = "34.3.0"
-
+firebaseBom = "34.6.0"
+work = "2.10.5"
+startup = "1.2.0"
+play-services-tasks = "18.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -82,8 +84,12 @@ androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecy
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 jackson-serialization = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jacksonSerialization"}
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "androidDesugaring"}
-firebase-bom = { module = "com.google.firebase:firebase-bom", version .ref = "firebaseBom"}
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom"}
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = "startup" }
+play-services-tasks = { module = "com.google.android.gms:play-services-tasks", version.ref = "play-services-tasks" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

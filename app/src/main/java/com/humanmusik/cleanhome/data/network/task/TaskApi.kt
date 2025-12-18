@@ -1,9 +1,9 @@
-package com.humanmusik.cleanhome.data.api.task
+package com.humanmusik.cleanhome.data.network.task
 
 import android.util.Log
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.humanmusik.cleanhome.data.NetworkException
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -21,28 +21,28 @@ interface TaskApi {
 
 @Singleton
 class FirestoreTaskApi @Inject constructor(
-    firestore: FirebaseFirestore,
+    private val firestore: FirebaseFirestore,
 ) : TaskApi {
     val firestoreTasksCollectionRef = firestore.collection(TASKS_FIRESTORE_COLLECTION_ID)
 
     override fun listTasks(): Flow<List<Task>> {
         return callbackFlow {
-            val registration = firestoreTasksCollectionRef
-                .addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        cancel(
-                            "Error fetching tasks",
-                            NetworkException("Failed to fetch tasks from firestore")
-                        )
-                        return@addSnapshotListener
-                    }
+            var ref: CollectionReference? = null
 
-                    val tasks = snapshot?.documents?.mapNotNull { it.toObject(Task::class.java) }
-                        ?: emptyList()
-                    trySend(tasks)
-                }
+            try {
+                ref = firestore.collection(TASKS_FIRESTORE_COLLECTION_ID)
+            } catch (e: Throwable) {
+                close(e)
+            }
 
-            awaitClose { registration.remove() }
+            val registration = ref?.addSnapshotListener { snapshot, _ ->
+                if (snapshot == null) { return@addSnapshotListener }
+
+                val tasks = snapshot.documents.mapNotNull { it.toObject(Task::class.java) }
+                trySend(tasks)
+            }
+
+            awaitClose { registration?.remove() }
         }
     }
 

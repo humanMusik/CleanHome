@@ -88,6 +88,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.jackson.serialization)
+    implementation(libs.androidx.startup)
+    implementation(libs.play.services.tasks)
+
+    // WorkManager
+    implementation(libs.work.runtime.ktx)
 
     // Nav3
     implementation(libs.androidx.navigation3.runtime)
@@ -97,6 +102,7 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
 
     // Room
     implementation(libs.androidx.room.runtime)
