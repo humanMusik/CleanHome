@@ -10,15 +10,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import androidx.work.OneTimeWorkRequestBuilder
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
 import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.navigation.NavigationRoot
-import com.humanmusik.cleanhome.workers.TaskSyncWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.getValue
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -41,8 +38,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        val taskDataSyncRequest = OneTimeWorkRequestBuilder<TaskSyncWorker>()
 
         val dao = CleanHomeDatabase.getDbInstance(this).cleanHomeDao()
 

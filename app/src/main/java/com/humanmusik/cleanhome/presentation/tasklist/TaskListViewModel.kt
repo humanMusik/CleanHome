@@ -10,6 +10,10 @@ import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog
 import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTasks
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTasks.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncRooms
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncRooms.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncTasks
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncTasks.Companion.invoke
 import com.humanmusik.cleanhome.domain.EnrichedTaskFilter
 import com.humanmusik.cleanhome.domain.model.ActionType
 import com.humanmusik.cleanhome.domain.model.TaskLog
@@ -26,30 +30,34 @@ import com.humanmusik.cleanhome.util.doNotSaveState
 import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
+    private val syncTasks: SyncTasks,
+    private val syncRooms: SyncRooms,
     flowOfEnrichedTasks: FlowOfEnrichedTasks,
     private val taskEditor: TaskEditor,
     private val createTaskLog: CreateTaskLog,
 ) : ViewModel() {
-    val state: MutableSavedStateFlow<FlowState<TaskListState>> = savedStateFlow(
+    val state: MutableSavedStateFlow<TaskListState> = savedStateFlow(
         savedStateBehaviour = doNotSaveState(),
-        initialState = FlowState.Loading(),
+        initialState = TaskListState(
+            enrichedTaskEntities = FlowState.Loading(),
+        ),
     )
 
     init {
+        viewModelScope.launch { sync() }
+
         flowOfEnrichedTasks(filter = EnrichedTaskFilter.ByState(setOf(State.Active)))
             .asFlowState()
-            .onSuccess { enrichedTask ->
-                state.update {
-                    FlowState.Success(
-                        TaskListState(enrichedTaskEntities = enrichedTask.toList()),
-                    )
-                }
+            .onEach { flowState ->
+                state.update { it.copy(enrichedTaskEntities = flowState) }
             }
             .launchIn(viewModelScope)
     }
@@ -59,11 +67,11 @@ class TaskListViewModel @Inject constructor(
         enrichedTask: EnrichedTaskEntity,
     ) {
         // Optimistically remove completed task
-        state.value.onSuccess {
-            val updatedTasks = it.enrichedTaskEntities.toMutableList().apply { this.remove(enrichedTask) }.toList()
+        state.value.enrichedTaskEntities.onSuccess {
+            val updatedTasks = it.toMutableList().apply { this.remove(enrichedTask) }.toList()
 
-            state.update {
-                FlowState.Success(TaskListState(enrichedTaskEntities = updatedTasks))
+            state.update { state ->
+                state.copy(enrichedTaskEntities = FlowState.Success(updatedTasks))
             }
         }
 
@@ -90,11 +98,11 @@ class TaskListViewModel @Inject constructor(
             .onFailure { throwable ->
                 when (throwable) {
                     is TaskEditorExceptions.AlreadyCompletedToday -> {
-                        state.value.onSuccess {
-                            val updatedTasks = it.enrichedTaskEntities.toMutableList().apply { this.add(enrichedTask) }.toList()
+                        state.value.enrichedTaskEntities.onSuccess {
+                            val updatedTasks = it.toMutableList().apply { this.add(enrichedTask) }.toList()
 
-                            state.update {
-                                FlowState.Success(TaskListState(enrichedTaskEntities = updatedTasks))
+                            state.update { state ->
+                                state.copy(enrichedTaskEntities = FlowState.Success(updatedTasks))
                             }
                         }
                         Toast.makeText(context, "Task has already been completed today!", Toast.LENGTH_SHORT).show()
@@ -113,9 +121,8 @@ class TaskListViewModel @Inject constructor(
     ) { navigation() }
 
     private fun sync() {
-//        viewModelScope.launch {
-//            syncTasks()
-//        }
+        syncRooms.invoke()
+        syncTasks.invoke()
     }
 
     private fun getTodayLocalDate() = LocalDate.now()

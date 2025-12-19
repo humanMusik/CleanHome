@@ -3,6 +3,7 @@ package com.humanmusik.cleanhome.data.network.room
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.humanmusik.cleanhome.data.network.task.Task
+import com.humanmusik.cleanhome.domain.model.Home
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -15,7 +16,7 @@ private const val ROOMS_FIRESTORE_COLLECTION_ID = "rooms"
 // to grab the home id. 
 
 interface RoomApi {
-    fun listRooms(): Flow<List<Room>>
+    fun listRooms(homeId: Home.Id): Flow<List<Room>>
     fun uploadRoom()
     fun editRoom()
 }
@@ -24,14 +25,12 @@ interface RoomApi {
 class FirestoreRoomApi @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) : RoomApi {
-    val firestoreRoomsCollectionRef = firestore.collection(ROOMS_FIRESTORE_COLLECTION_ID)
-
-    override fun listRooms(): Flow<List<Room>> {
+    override fun listRooms(homeId: Home.Id): Flow<List<Room>> {
         return callbackFlow {
             var ref: CollectionReference? = null
 
             try {
-                ref = firestore.collection(ROOMS_FIRESTORE_COLLECTION_ID)
+                ref = firestore.collection(getRoomFirestoreCollectionRef(homeId))
             } catch (e: Throwable) {
                 close(e)
             }
@@ -53,5 +52,9 @@ class FirestoreRoomApi @Inject constructor(
 
     override fun editRoom() {
         TODO("Not yet implemented")
+    }
+
+    companion object {
+        private fun getRoomFirestoreCollectionRef(homeId: Home.Id) = "home/${homeId.value}/rooms"
     }
 }
