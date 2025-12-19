@@ -16,7 +16,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -31,16 +30,28 @@ import com.humanmusik.cleanhome.presentation.onLoading
 import com.humanmusik.cleanhome.presentation.onSuccess
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onHomeSelectedNavigation: () -> Unit,
+) {
     val state by viewModel.state.collectAsState()
 
-    HomeContent(state = state)
+    HomeContent(
+        state = state,
+        onHomeSelected = { homeId ->
+            viewModel.onHomeSelected(
+                homeId = homeId,
+                navigation = onHomeSelectedNavigation,
+            )
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeContent(
     state: HomeState,
+    onHomeSelected: (Home.Id) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -59,6 +70,7 @@ private fun HomeContent(
                 HomeSuccessContent(
                     scaffoldPadding = paddingValues,
                     homes = homes,
+                    onHomeSelected = onHomeSelected,
                 )
             }
     }
@@ -67,7 +79,8 @@ private fun HomeContent(
 @Composable
 private fun HomeSuccessContent(
     scaffoldPadding: PaddingValues,
-    homes: List<Home>
+    homes: List<Home>,
+    onHomeSelected: (Home.Id) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -80,7 +93,7 @@ private fun HomeSuccessContent(
         ) { home ->
             HomeCard(
                 home = home,
-                onClick = { }
+                onClick = { onHomeSelected(home.id) }
             )
         }
     }

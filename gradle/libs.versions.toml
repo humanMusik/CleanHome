@@ -39,6 +39,9 @@ firebaseBom = "34.6.0"
 work = "2.10.5"
 startup = "1.2.0"
 play-services-tasks = "18.4.0"
+datastorePref = "1.2.0"
+protobufSerialization = "0.9.6"
+googleProtobuf = "4.33.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -90,6 +93,9 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = "startup" }
 play-services-tasks = { module = "com.google.android.gms:play-services-tasks", version.ref = "play-services-tasks" }
+datastore-pref = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePref" }
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePref" }
+google-protobuf = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "googleProtobuf" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -102,3 +108,4 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 robolectric-extension = { id = "tech.apter.junit5.jupiter.robolectric-extension-gradle-plugin", version.ref = "robolectricExtension" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices"}
+protobuf-serialization = { id = "com.google.protobuf", version.ref = "protobufSerialization" }

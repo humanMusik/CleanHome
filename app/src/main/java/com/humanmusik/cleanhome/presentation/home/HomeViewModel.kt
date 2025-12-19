@@ -6,6 +6,9 @@ import com.humanmusik.cleanhome.data.repository.cleanhome.GetAllHomes
 import com.humanmusik.cleanhome.data.repository.cleanhome.GetAllHomes.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.cleanhome.SyncHomes
 import com.humanmusik.cleanhome.data.repository.cleanhome.SyncHomes.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.preferences.SetHomeIdPreference
+import com.humanmusik.cleanhome.data.repository.preferences.SetHomeIdPreference.Companion.invoke
+import com.humanmusik.cleanhome.domain.model.Home
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
 import com.humanmusik.cleanhome.util.doNotSaveState
@@ -21,6 +24,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val syncHomes: SyncHomes,
     private val getAllHomes: GetAllHomes,
+    private val setHomeIdPreference: SetHomeIdPreference,
 ) : ViewModel() {
     val state = savedStateFlow(
         savedStateBehaviour = doNotSaveState(),
@@ -43,6 +47,16 @@ class HomeViewModel @Inject constructor(
                     }
                 }
                 .launchIn(viewModelScope)
+        }
+    }
+
+    fun onHomeSelected(
+        homeId: Home.Id,
+        navigation: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            setHomeIdPreference(homeId)
+            navigation()
         }
     }
 }

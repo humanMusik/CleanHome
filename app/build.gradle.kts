@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.robolectric.extension)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.protobuf.serialization)
 }
 
 ksp {
@@ -118,6 +119,11 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
 
+    // DataStore
+    implementation(libs.datastore.pref)
+    implementation(libs.datastore)
+//    implementation(libs.google.protobuf)
+
     // Unit Tests
     implementation(libs.truth)
     implementation(libs.kotlinx.coroutines.test)
@@ -130,4 +136,20 @@ dependencies {
     testImplementation(libs.roboelectric)
 
     coreLibraryDesugaring(libs.android.desugaring)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.32.1"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+                create("kotlin")
+            }
+        }
+    }
 }

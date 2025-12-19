@@ -79,7 +79,9 @@ fun NavigationRoot(
             }
 
             entry<HomeNavKey> {
-                HomeScreen()
+                HomeScreen(
+                    onHomeSelectedNavigation = { viewModel.push(TaskListNavKey) }
+                )
             }
 
             entry<TaskListNavKey> {
