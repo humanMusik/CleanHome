@@ -11,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
-import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.navigation.NavigationRoot
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -40,20 +39,6 @@ class MainActivity : ComponentActivity() {
         }
 
         val dao = CleanHomeDatabase.getDbInstance(this).cleanHomeDao()
-
-        // TODO: sync Rooms on app startup
-
-        val residentEntities = listOf(
-            ResidentEntity(
-                name = "Leslie",
-            ),
-            ResidentEntity(
-                name = "Jenny",
-            ),
-            ResidentEntity(
-                name = "Cihan",
-            ),
-        )
 
 //        val roomEntities = listOf(
 //            RoomEntity(
@@ -192,7 +177,6 @@ class MainActivity : ComponentActivity() {
 //            dao.deleteAllRooms()
 //            dao.deleteAllTasks()
 //
-            dao.insertAllResidents(residentEntities)
 //            dao.insertAllRooms(roomEntities)
 //            dao.insertAllTasks(taskEntities)
 //            taskEntities.forEach { dao.insertTask(it) }

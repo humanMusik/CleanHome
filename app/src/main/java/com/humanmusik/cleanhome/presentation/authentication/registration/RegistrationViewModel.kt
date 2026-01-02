@@ -1,15 +1,19 @@
 package com.humanmusik.cleanhome.presentation.authentication.registration
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.humanmusik.cleanhome.data.repository.auth.AuthRepository
 import com.humanmusik.cleanhome.domain.model.User
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
 import com.humanmusik.cleanhome.presentation.isLoading
-import com.humanmusik.cleanhome.presentation.onLoading
+import com.humanmusik.cleanhome.presentation.onFailure
 import com.humanmusik.cleanhome.presentation.onSuccess
+import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialogParams
+import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialogState
 import com.humanmusik.cleanhome.util.doNotSaveState
 import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +43,8 @@ class RegistrationViewModel @Inject constructor(
             emailError = false,
             registerButtonEnabled = false,
             userCreationState = FlowState.Idle(),
+            errorDialog = AlertDialogState.Hide,
+            emailIsInvalid = false,
         )
     )
 
@@ -57,9 +63,38 @@ class RegistrationViewModel @Inject constructor(
                         password = state.value.password
                     )
                 }
-                .onEach { result -> state.update { it.copy(userCreationState = result) } }
-                .onLoading { checkToEnableRegisterButton() }
+                .onEach { result ->
+                    state.update { it.copy(userCreationState = result) }
+                    checkToEnableRegisterButton()
+                }
                 .onSuccess { navigation() }
+                .onFailure { throwable ->
+                    state.update {
+                        when (throwable) {
+                            is FirebaseAuthUserCollisionException -> {
+                                it.copy(
+                                    errorDialog = AlertDialogState.Show(
+                                        params = AlertDialogParams(
+                                            key = userExistsDialogKey,
+                                            dialogText = "Email already exists.",
+                                            positiveButtonText = "OK",
+                                            negativeButtonText = null,
+                                        ),
+                                    ),
+                                    emailError = true,
+                                )
+                            }
+
+                            else -> {
+                                it.copy(
+                                    errorDialog = AlertDialogState.Show(
+                                        params = AlertDialogParams.somethingWentWrong,
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                }
                 .launchIn(viewModelScope)
         }
     }
@@ -110,14 +145,26 @@ class RegistrationViewModel @Inject constructor(
     fun onEmailExistsAcknowledged() {
         state.update {
             it.copy(
-                email = "",
                 userCreationState = FlowState.Idle(),
+                registerButtonEnabled = false,
+                errorDialog = AlertDialogState.Hide,
             )
         }
     }
 
-    fun onRegistrationErrorCancelled() {
-        state.update { it.copy(userCreationState = FlowState.Idle()) }
+    fun onSomethingWentWrongDismissed() {
+        state.update {
+            it.copy(
+                userCreationState = FlowState.Idle(),
+                errorDialog = AlertDialogState.Hide,
+            )
+        }
+    }
+
+    fun dismissDialog() {
+        state.update { state ->
+            state.copy(errorDialog = AlertDialogState.Hide)
+        }
     }
 
     private fun checkToEnableRegisterButton() {

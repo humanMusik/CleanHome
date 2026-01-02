@@ -10,7 +10,7 @@ import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById.Companion.invoke
 import com.humanmusik.cleanhome.domain.model.Room
 import com.humanmusik.cleanhome.domain.model.task.Frequency
-import com.humanmusik.cleanhome.domain.model.task.TaskEditor
+import com.humanmusik.cleanhome.domain.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.toUrgency
 import com.humanmusik.cleanhome.navigation.TaskDetailsNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
@@ -45,7 +45,7 @@ import java.time.Instant
 class TaskDetailsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val navKey: TaskDetailsNavKey,
-    private val flowOfEnrichedTaskById: FlowOfEnrichedTaskById,
+    flowOfEnrichedTaskById: FlowOfEnrichedTaskById,
     private val flowOfAllRooms: FlowOfAllRooms,
     private val taskEditor: TaskEditor,
 ) : ViewModel() {
@@ -59,12 +59,9 @@ class TaskDetailsViewModel @AssistedInject constructor(
         ),
     )
 
-    val flowOfEnrichedTask = flow {
-        flowOfEnrichedTaskById(navKey.taskId)
-            .distinctUntilChanged()
-            .shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
-            .collect(this@flow)
-    }
+    val flowOfEnrichedTask = flowOfEnrichedTaskById(navKey.taskId)
+        .distinctUntilChanged()
+        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
     val flowOfRooms = flow {
         flowOfAllRooms()
@@ -162,6 +159,7 @@ class TaskDetailsViewModel @AssistedInject constructor(
                                 .toBoolean()
                                 .toUrgency(),
                             assigneeId = flowOfEnrichedTask.first().assigneeId,
+                            lastCompletedDate = flowOfEnrichedTask.first().lastCompletedDate,
                         )
                     )
                 }
@@ -174,7 +172,7 @@ class TaskDetailsViewModel @AssistedInject constructor(
 
     fun onDelete(navigation: () -> Unit) {
         FlowState.fromSuspendingFunc {
-            taskEditor.deleteTask(navKey.taskId)
+            taskEditor.deactivateTask(navKey.taskId)
         }
             .onSuccess { navigation() }
             .onFailure { /* TODO: Error dialog */ }

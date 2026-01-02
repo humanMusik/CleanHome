@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.work.WorkManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.humanmusik.cleanhome.data.CleanHomeDatabase
@@ -43,6 +44,11 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(appContext: Application): WorkManager =
+        WorkManager.getInstance(context = appContext)
 
     @Module
     @InstallIn(SingletonComponent::class)

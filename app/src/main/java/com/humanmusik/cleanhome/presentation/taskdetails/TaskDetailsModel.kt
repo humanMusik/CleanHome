@@ -80,6 +80,7 @@ data class TaskEditParcelData(
     val duration: Duration,
     val urgency: Urgency,
     val assigneeId: Resident.Id,
+    val lastCompletedDate: LocalDate?,
 ) : Parcelable
 
 private val editableFieldComparator: Comparator<EditableField> = compareBy({ it.key.index })

@@ -5,7 +5,10 @@ import com.humanmusik.cleanhome.data.repository.auth.FirebaseAuthRepository
 import com.humanmusik.cleanhome.data.repository.auth.GetUserId
 import com.humanmusik.cleanhome.data.repository.cleanhome.CleanHomeRepositoryImpl
 import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTask
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskInDb
 import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskLog
+import com.humanmusik.cleanhome.data.repository.cleanhome.DeleteTask
+import com.humanmusik.cleanhome.data.repository.cleanhome.DeleteTaskInDb
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllResidents
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllRooms
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfEnrichedTaskById
@@ -16,11 +19,13 @@ import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTaskLogsByTaskId
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks
 import com.humanmusik.cleanhome.data.repository.cleanhome.GetAllHomes
 import com.humanmusik.cleanhome.data.repository.cleanhome.SyncHomes
+import com.humanmusik.cleanhome.data.repository.cleanhome.SyncResidents
 import com.humanmusik.cleanhome.data.repository.cleanhome.SyncRooms
 import com.humanmusik.cleanhome.data.repository.cleanhome.SyncTasks
 import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTask
-import com.humanmusik.cleanhome.domain.model.task.TaskEditor
-import com.humanmusik.cleanhome.domain.model.task.TaskEditorImpl
+import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTaskInDb
+import com.humanmusik.cleanhome.domain.TaskEditor
+import com.humanmusik.cleanhome.domain.TaskEditorImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -74,9 +79,39 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
+    abstract fun bindUpdateTaskInDb(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): UpdateTaskInDb
+
+    @Binds
+    @Singleton
     abstract fun bindsCreateTask(
         cleanHomeRepository: CleanHomeRepositoryImpl,
     ): CreateTask
+
+    @Binds
+    @Singleton
+    abstract fun bindsCreateTaskInDb(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): CreateTaskInDb
+
+    @Binds
+    @Singleton
+    abstract fun bindsDeleteTask(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): DeleteTask
+
+    @Binds
+    @Singleton
+    abstract fun bindsDeleteTaskInDb(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): DeleteTaskInDb
+
+    @Binds
+    @Singleton
+    abstract fun bindsSyncResidents(
+        cleanHomeRepository: CleanHomeRepositoryImpl,
+    ): SyncResidents
 
     @Binds
     @Singleton
@@ -89,12 +124,6 @@ abstract class RepositoryModule {
     abstract fun bindFlowOfAllResidents(
         cleanHomeRepository: CleanHomeRepositoryImpl,
     ): FlowOfAllResidents
-
-    @Binds
-    @Singleton
-    abstract fun bindTaskEditor(
-        taskEditor: TaskEditorImpl,
-    ): TaskEditor
 
     @Binds
     @Singleton

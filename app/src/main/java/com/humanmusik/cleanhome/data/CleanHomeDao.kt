@@ -46,7 +46,7 @@ interface CleanHomeDao {
     fun flowOfAllResidents(): Flow<List<ResidentEntity>>
 
     @Query("SELECT * FROM residententity WHERE id=:residentId")
-    fun flowOfResidentById(residentId: Int): Flow<ResidentEntity>
+    fun flowOfResidentById(residentId: String): Flow<ResidentEntity>
 
     //endregion
 
@@ -79,6 +79,9 @@ interface CleanHomeDao {
 
     @Update
     suspend fun updateTask(taskEntity: TaskEntity)
+
+    @Query("DELETE FROM taskentity WHERE id=:taskId")
+    suspend fun deleteTask(taskId: String)
 
     @Query("DELETE FROM taskentity")
     suspend fun deleteAllTasks()

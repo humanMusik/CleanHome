@@ -4,7 +4,6 @@ import androidx.navigation3.runtime.NavBackStack
 import com.humanmusik.cleanhome.domain.model.Resident
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
-import com.humanmusik.cleanhome.domain.model.task.TaskEditor
 import com.humanmusik.cleanhome.domain.model.task.Urgency
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks
 import com.humanmusik.cleanhome.navigation.BackStackInstruction
@@ -14,10 +13,10 @@ import com.humanmusik.cleanhome.presentation.getOrNull
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListState
 import com.humanmusik.cleanhome.presentation.tasklist.TaskListViewModel
-import com.humanmusik.cleanhome.utilstest.assertIsEqualTo
-import com.humanmusik.cleanhome.utilstest.assertIsInstanceOf
-import com.humanmusik.cleanhome.utilstest.runCancellingTest
-import com.humanmusik.cleanhome.utilstest.test
+import com.humanmusik.cleanhome.testutils.assertIsEqualTo
+import com.humanmusik.cleanhome.testutils.assertIsInstanceOf
+import com.humanmusik.cleanhome.testutils.runCancellingTest
+import com.humanmusik.cleanhome.testutils.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope

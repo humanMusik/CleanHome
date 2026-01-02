@@ -1,4 +1,4 @@
-package com.humanmusik.cleanhome.utilstest
+package com.humanmusik.cleanhome.testutils
 
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test

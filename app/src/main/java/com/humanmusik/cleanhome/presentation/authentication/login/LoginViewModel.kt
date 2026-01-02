@@ -8,7 +8,6 @@ import com.humanmusik.cleanhome.domain.model.authentication.AuthException
 import com.humanmusik.cleanhome.domain.model.authentication.AuthState
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
-import com.humanmusik.cleanhome.presentation.isLoading
 import com.humanmusik.cleanhome.presentation.onFailure
 import com.humanmusik.cleanhome.presentation.onLoading
 import com.humanmusik.cleanhome.presentation.onSuccess
@@ -25,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-): ViewModel() {
+) : ViewModel() {
     private var currentJob: Job? = null
 
     val state: MutableSavedStateFlow<LoginState> = savedStateFlow(
@@ -44,24 +43,27 @@ class LoginViewModel @Inject constructor(
     fun onLoginWithEmailAndPassword(navigation: () -> Unit) {
         currentJob?.cancel()
 
-        currentJob = viewModelScope.launch {
-            FlowState
-                .fromSuspendingFunc {
-                    authRepository.signInWithEmailAndPassword(state.value.email, state.value.password)
-                }
-                .onLoading { state.update { it.copy(authState = AuthState.Loading) } }
-                .onSuccess {
-                    state.update { it.copy(authState = AuthState.Authenticated) }
-                    navigation()
-                }
-                .onFailure { throwable ->
-                    state.update { it.copy(authState = AuthState.Error(throwable as AuthException)) }
-                }
-                .launchIn(viewModelScope)
-        }
+        currentJob = FlowState
+            .fromSuspendingFunc {
+                authRepository.signInWithEmailAndPassword(
+                    state.value.email,
+                    state.value.password
+                )
+            }
+            .onLoading { state.update { it.copy(authState = AuthState.Loading) } }
+            .onSuccess {
+                state.update { it.copy(authState = AuthState.Authenticated) }
+                navigation()
+            }
+            .onFailure { throwable ->
+                state.update { it.copy(authState = AuthState.Error(throwable as AuthException)) }
+            }
+            .launchIn(viewModelScope)
     }
 
-    fun onSignUpPressed(navigation: () -> Unit) { navigation() }
+    fun onSignUpPressed(navigation: () -> Unit) {
+        navigation()
+    }
 
     fun onEmailValueChanged(newValue: String) {
         state.update {

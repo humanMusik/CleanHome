@@ -28,10 +28,10 @@ fun interface GetAllHomes {
 }
 
 fun interface SyncTasks {
-    fun syncTasks()
+    suspend fun syncTasks()
 
     companion object {
-        operator fun SyncTasks.invoke() =
+        suspend operator fun SyncTasks.invoke() =
             syncTasks()
     }
 }
@@ -45,12 +45,57 @@ fun interface CreateTask {
     }
 }
 
+fun interface CreateTaskInDb {
+    suspend fun createTaskInDb(task: Task)
+
+    companion object {
+        suspend operator fun CreateTaskInDb.invoke(task: Task) =
+            createTaskInDb(task)
+    }
+}
+
 fun interface UpdateTask {
     suspend fun updateTask(task: Task)
 
     companion object {
         suspend operator fun UpdateTask.invoke(task: Task) =
             updateTask(task)
+    }
+}
+
+fun interface UpdateTaskInDb {
+    suspend fun updateTaskInDb(task: Task)
+
+    companion object {
+        suspend operator fun UpdateTaskInDb.invoke(task: Task) =
+            updateTaskInDb(task)
+    }
+}
+
+fun interface DeleteTask {
+    suspend fun deleteTask(taskId: Task.Id)
+
+    companion object {
+        suspend operator fun DeleteTask.invoke(taskId: Task.Id) =
+            deleteTask(taskId)
+    }
+}
+
+fun interface DeleteTaskInDb {
+    suspend fun deleteTaskInDb(taskId: Task.Id)
+
+    companion object {
+        suspend operator fun DeleteTaskInDb.invoke(taskId: Task.Id) =
+            deleteTaskInDb(taskId)
+    }
+}
+
+fun interface SyncResidents {
+    suspend fun syncResidents()
+
+    companion object {
+        suspend operator fun SyncResidents.invoke() =
+            syncResidents()
     }
 }
 

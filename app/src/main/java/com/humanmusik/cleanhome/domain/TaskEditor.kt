@@ -1,91 +1,157 @@
-package com.humanmusik.cleanhome.domain.model.task
+package com.humanmusik.cleanhome.domain
 
+import android.util.Log
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTask
 import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTask.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskInDb
+import com.humanmusik.cleanhome.data.repository.cleanhome.CreateTaskInDb.Companion.invoke
+import com.humanmusik.cleanhome.data.repository.cleanhome.DeleteTaskInDb
+import com.humanmusik.cleanhome.data.repository.cleanhome.DeleteTaskInDb.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllResidents
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfAllResidents.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTaskLogsByTaskId
-import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTaskLogsByTaskId.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks
 import com.humanmusik.cleanhome.data.repository.cleanhome.FlowOfTasks.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTask
 import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTask.Companion.invoke
-import com.humanmusik.cleanhome.domain.TaskFilter
+import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTaskInDb
+import com.humanmusik.cleanhome.data.repository.cleanhome.UpdateTaskInDb.Companion.invoke
 import com.humanmusik.cleanhome.domain.model.Resident
+import com.humanmusik.cleanhome.domain.model.task.Frequency
+import com.humanmusik.cleanhome.domain.model.task.State
+import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.presentation.taskcreation.model.TaskCreationParcelData
 import com.humanmusik.cleanhome.presentation.taskdetails.TaskEditParcelData
+import com.humanmusik.cleanhome.workers.FinalizeTaskReassignmentWorker
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import java.time.Duration
 import java.time.LocalDate
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 interface TaskEditor {
-    suspend fun reassignTask(
-        task: Task,
-        dateCompleted: LocalDate,
+    suspend fun reassignTask(task: Task): Task
+
+    suspend fun undoTaskReassignment(
+        originalTaskId: Task.Id,
+        newTaskId: Task.Id
     )
 
     suspend fun assignTask(
         taskCreationParcelData: TaskCreationParcelData,
-        todayDate: LocalDate,
     )
 
     suspend fun editTask(
         taskEditParcelData: TaskEditParcelData,
     )
 
-    suspend fun deleteTask(taskId: Task.Id)
+    suspend fun deactivateTask(taskId: Task.Id)
 }
 
 class TaskEditorImpl @Inject constructor(
     private val flowOfTasks: FlowOfTasks,
     private val flowOfAllResidents: FlowOfAllResidents,
     private val updateTask: UpdateTask,
+    private val updateTaskInDb: UpdateTaskInDb,
     private val createTask: CreateTask,
-    private val flowOfLogsByTaskId: FlowOfTaskLogsByTaskId,
+    private val createTaskInDb: CreateTaskInDb,
+    private val deleteTaskInDb: DeleteTaskInDb,
+    private val workManager: WorkManager,
 ) : TaskEditor {
-    override suspend fun reassignTask(
-        task: Task,
-        dateCompleted: LocalDate,
-    ) {
+    override suspend fun reassignTask(task: Task): Task {
+        val todaysDate = LocalDate.now()
+
+        Log.d("Lezz", "reassignTask lastCompletedDate ${task.lastCompletedDate}")
+        if (task.lastCompletedDate == todaysDate) throw TaskEditorExceptions.AlreadyCompletedToday()
+
+        // 1. Move task to a Reversible state so it can be optimistically removed from UI
+        updateTaskInDb(task.copy(state = State.Reversible))
+
+        // 2. New properties for reassigned task
         val filter = TaskFilter.ByScheduledDate(
-            startDateInclusive = dateCompleted,
+            startDateInclusive = todaysDate,
             endDateInclusive = getNewScheduledDate(
-                dateCompleted = dateCompleted,
+                dateCompleted = todaysDate,
                 taskFrequency = task.frequency!!,
             )
         ) and TaskFilter.ByState(setOf(State.Active))
 
-        val reAssignedTask = combine(
+        val newTask = combine(
             flowOfTasks(filter),
             flowOfAllResidents(),
-            flowOfLogsByTaskId(requireNotNull(task.id)),
-        ) { tasksBetweenDateCompletedAndNewDate, allResidents, logs ->
-            if (logs.any { it.wasCompletedOn(dateCompleted) }) throw TaskEditorExceptions.AlreadyCompletedToday()
-
-            task.copy(
+        ) { tasksBetweenDateCompletedAndNewDate, allResidents ->
+            Task(
+                id = Task.Id.generateNewId(),
+                name = task.name,
+                roomId = task.roomId,
+                duration = task.duration,
+                frequency = task.frequency,
                 scheduledDate = getNewScheduledDate(
-                    dateCompleted = dateCompleted,
+                    dateCompleted = todaysDate,
                     taskFrequency = task.frequency,
                 ),
+                urgency = task.urgency,
                 assigneeId = getNewAssignment(
                     tasks = tasksBetweenDateCompletedAndNewDate.toList(),
                     allResidents = allResidents.map { requireNotNull(it.id) }
                 ),
+                state = State.Active,
+                lastCompletedDate = todaysDate,
             )
         }
             .first()
 
-        updateTask(reAssignedTask)
+        // 3. Create task in db
+        createTaskInDb(newTask)
+        Log.d("Lezz", "reassignTask createTaskInDb $newTask")
+
+        // 4. Schedule a delayed worker to finalize the change in Firestore.
+        // This is the key step to prevent an immediate sync.
+        val workRequestTag =
+            task.id?.let { FinalizeTaskReassignmentWorker.workRequestTag(originalTaskId = it) }
+                ?: throw IllegalStateException("Task id cannot be null")
+
+        val finalizeWorkRequest = OneTimeWorkRequestBuilder<FinalizeTaskReassignmentWorker>()
+            .setInitialDelay(10, TimeUnit.SECONDS) // A 10-second window to "Undo"
+            .addTag(workRequestTag)
+            .setInputData(
+                workDataOf(
+                    "ORIGINAL_TASK_ID" to task.id.value,
+                    "NEW_TASK_ID" to newTask.id?.value,
+                )
+            )
+            .build()
+
+        workManager.enqueue(finalizeWorkRequest)
+
+        return newTask
+    }
+
+    override suspend fun undoTaskReassignment(
+        originalTaskId: Task.Id,
+        newTaskId: Task.Id,
+    ) {
+        val workRequestTag = FinalizeTaskReassignmentWorker.workRequestTag(originalTaskId)
+
+        workManager.cancelAllWorkByTag(workRequestTag)
+
+        val originalTask =
+            flowOfTasks(filter = TaskFilter.ById(setOf(originalTaskId))).first().first()
+
+        updateTaskInDb(originalTask.copy(state = State.Active))
+        deleteTaskInDb(newTaskId)
     }
 
     override suspend fun assignTask(
         taskCreationParcelData: TaskCreationParcelData,
-        todayDate: LocalDate,
     ) {
+        val todaysDate = LocalDate.now()
+
         val filter = TaskFilter.ByScheduledDate(
-            startDateInclusive = todayDate,
+            startDateInclusive = todaysDate,
             endDateInclusive = taskCreationParcelData.date!!,
         )
 
@@ -116,12 +182,13 @@ class TaskEditorImpl @Inject constructor(
             urgency = taskEditParcelData.urgency,
             assigneeId = taskEditParcelData.assigneeId,
             state = State.Active,
+            lastCompletedDate = taskEditParcelData.lastCompletedDate,
         )
 
         updateTask(updatedTask)
     }
 
-    override suspend fun deleteTask(taskId: Task.Id) {
+    override suspend fun deactivateTask(taskId: Task.Id) {
         val taskToDelete = flowOfTasks(
             filter = TaskFilter.ById(setOf(taskId)),
         )

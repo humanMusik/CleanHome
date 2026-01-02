@@ -1,46 +1,42 @@
 package com.humanmusik.cleanhome.presentation.authentication.registration
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.authentication.EmailTextField
 import com.humanmusik.cleanhome.presentation.authentication.PasswordTextField
 import com.humanmusik.cleanhome.presentation.isLoading
-import com.humanmusik.cleanhome.presentation.onFailure
+import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialog
+import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialogParams
+import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialogState
 
 @Composable
 fun RegistrationScreen(
@@ -56,9 +52,9 @@ fun RegistrationScreen(
         onEmailValueChanged = viewModel::onEmailValueChanged,
         onPasswordValueChanged = viewModel::onPasswordValueChanged,
         onRegisterPressed = { viewModel.onRegisterPressed(onRegisterNavigation) },
-        onEmailExistsAcknowledged = viewModel::onEmailExistsAcknowledged,
-        onRegistrationErrorCancelled = viewModel::onRegistrationErrorCancelled,
         onTogglePasswordVisibility = viewModel::onTogglePasswordVisibility,
+        onEmailExistsAcknowledged = viewModel::onEmailExistsAcknowledged,
+        onSomethingWentWrongDismissed = viewModel::onSomethingWentWrongDismissed,
     )
 }
 
@@ -70,38 +66,42 @@ private fun RegistrationContent(
     onEmailValueChanged: (String) -> Unit,
     onPasswordValueChanged: (String) -> Unit,
     onRegisterPressed: () -> Unit,
-    onEmailExistsAcknowledged: () -> Unit,
-    onRegistrationErrorCancelled: () -> Unit,
     onTogglePasswordVisibility: () -> Unit,
+    onEmailExistsAcknowledged: () -> Unit,
+    onSomethingWentWrongDismissed: () -> Unit,
 ) {
-    state.userCreationState.onFailure { throwable ->
-        when (throwable) {
-            is FirebaseAuthUserCollisionException -> {
-                RegistrationErrorDialog(
-                    dialogText = "Email already exists.",
-                    positiveButtonText = "OK",
-                    negativeButton = { },
-                    onPositiveButtonPressed = onEmailExistsAcknowledged,
-                    onNegativeButtonPressed = { },
-                )
-            }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+//    val scope = rememberCoroutineScope()
 
-            else -> {
-                RegistrationErrorDialog(
-                    dialogText = "Something went wrong.",
-                    positiveButtonText = "Try Again",
-                    negativeButton = { onNegativeButtonPressed ->
-                        TextButton(
-                            onClick = onNegativeButtonPressed,
-                        ) {
-                            Text("Cancel")
-                        }
-                    },
-                    onPositiveButtonPressed = onRegisterPressed,
-                    onNegativeButtonPressed = onRegistrationErrorCancelled,
-                )
+    if (state.errorDialog is AlertDialogState.Show) {
+        AlertDialog(
+            params = state.errorDialog.params,
+            onPositiveButtonPressed = {
+                when (state.errorDialog.params.key) {
+                    userExistsDialogKey -> {
+                        onEmailExistsAcknowledged()
+                        if (state.emailError) focusRequester.requestFocus()
+                    }
+                    AlertDialogParams.somethingWentWrongKey -> {
+                        onRegisterPressed()
+                    }
+                    else -> {}
+                }
+            },
+            onNegativeButtonPressed = {
+                when (state.errorDialog.params.key) {
+                    userExistsDialogKey -> {
+                        onEmailExistsAcknowledged()
+                        if (state.emailError) focusRequester.requestFocus()
+                    }
+                    AlertDialogParams.somethingWentWrongKey -> {
+                        onSomethingWentWrongDismissed()
+                    }
+                    else -> {}
+                }
             }
-        }
+        )
     }
 
     Column(
@@ -120,18 +120,21 @@ private fun RegistrationContent(
             EmailTextField(
                 textFieldValue = state.email,
                 isError = state.emailError,
+                focusRequester = focusRequester,
                 onEmailChanged = onEmailValueChanged,
             )
 
             FirstNameTextField(
                 textFieldValue = state.firstName,
                 isError = state.firstNameError,
+                focusManager = focusManager,
                 onFirstNameChanged = onFirstNameValueChanged,
             )
 
             LastNameTextField(
                 textFieldValue = state.lastName,
                 isError = state.lastNameError,
+                focusManager = focusManager,
                 onLastNameChanged = onLastNameValueChanged,
             )
 
@@ -141,6 +144,7 @@ private fun RegistrationContent(
                 isPasswordVisible = state.isPasswordVisible,
                 isError = state.passwordError,
                 onTogglePasswordVisibility = onTogglePasswordVisibility,
+                onKeyboardDone = onRegisterPressed,
             )
 
             RegisterButton(
@@ -156,6 +160,7 @@ private fun RegistrationContent(
 private fun FirstNameTextField(
     textFieldValue: String,
     isError: Boolean,
+    focusManager: FocusManager,
     onFirstNameChanged: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -174,7 +179,15 @@ private fun FirstNameTextField(
                     )
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
@@ -185,6 +198,7 @@ private fun FirstNameTextField(
 private fun LastNameTextField(
     textFieldValue: String,
     isError: Boolean,
+    focusManager: FocusManager,
     onLastNameChanged: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -203,7 +217,15 @@ private fun LastNameTextField(
                     )
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
@@ -230,50 +252,6 @@ private fun RegisterButton(
             )
         } else {
             Text("Register")
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun RegistrationErrorDialog(
-    dialogText: String,
-    positiveButtonText: String,
-    negativeButton: @Composable RowScope.(() -> Unit) -> Unit,
-    onPositiveButtonPressed: () -> Unit,
-    onNegativeButtonPressed: () -> Unit,
-) {
-    BasicAlertDialog(
-        onDismissRequest = onNegativeButtonPressed,
-    ) {
-        Surface(
-            modifier = Modifier
-                .defaultMinSize(
-                    minWidth = 100.dp,
-                    minHeight = 100.dp,
-                ),
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = AlertDialogDefaults.TonalElevation,
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(dialogText)
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier.align(Alignment.End),
-                ) {
-                    TextButton(
-                        onClick = onPositiveButtonPressed,
-                    ) {
-                        Text(positiveButtonText)
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    negativeButton(onNegativeButtonPressed)
-                }
-            }
         }
     }
 }

@@ -1,11 +1,13 @@
 package com.humanmusik.cleanhome.data.mappers
 
 import com.humanmusik.cleanhome.data.entities.HomeEntity
-import com.humanmusik.cleanhome.data.network.room.Room
-import com.humanmusik.cleanhome.data.network.task.Task
+import com.humanmusik.cleanhome.data.entities.ResidentEntity
 import com.humanmusik.cleanhome.data.entities.RoomEntity
 import com.humanmusik.cleanhome.data.entities.TaskEntity
 import com.humanmusik.cleanhome.data.network.home.Home
+import com.humanmusik.cleanhome.data.network.resident.Resident
+import com.humanmusik.cleanhome.data.network.room.Room
+import com.humanmusik.cleanhome.data.network.task.Task
 import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.State
 import com.humanmusik.cleanhome.domain.model.task.toUrgency
@@ -22,8 +24,12 @@ fun Task.toTaskEntity() = TaskEntity(
     scheduledDate = scheduledDate?.let { Instant.ofEpochMilli(it.toLong()).toLocalDate() }
         ?: throw IllegalStateException(),
     urgency = urgent?.toUrgency() ?: throw IllegalStateException(),
-    assigneeId = assigneeId?.toInt() ?: throw IllegalStateException(),
+    assigneeId = assigneeId ?: throw IllegalStateException(),
     state = state?.let { State.fromString(it) } ?: throw IllegalStateException(),
+    lastCompletedDate = lastCompletedDate?.let {
+        if (it == "null") null
+        else Instant.ofEpochMilli(it.toLong()).toLocalDate()
+    },
 )
 
 fun List<Task>.toTaskEntities() = map { it.toTaskEntity() }
@@ -41,3 +47,10 @@ fun Home.toHomeEntity() = HomeEntity(
 )
 
 fun List<Home>.toHomeEntities() = map { it.toHomeEntity() }
+
+fun Resident.toResidentEntity() = ResidentEntity(
+    id = userId ?: throw IllegalStateException(),
+    name = name ?: throw IllegalStateException(),
+)
+
+fun List<Resident>.toResidentEntities() = map { it.toResidentEntity() }

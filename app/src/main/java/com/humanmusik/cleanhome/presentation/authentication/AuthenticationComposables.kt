@@ -1,11 +1,10 @@
 package com.humanmusik.cleanhome.presentation.authentication
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,7 +13,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -25,10 +30,15 @@ import com.example.cleanhome.R
 internal fun EmailTextField(
     textFieldValue: String,
     isError: Boolean,
+    focusRequester: FocusRequester,
+    focusManager: FocusManager = LocalFocusManager.current,
     onEmailChanged: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
             value = textFieldValue,
             onValueChange = { onEmailChanged(it) },
             label = { Text("Email") },
@@ -43,8 +53,15 @@ internal fun EmailTextField(
                 }
             },
             placeholder = { Text("Enter your email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             singleLine = true,
         )
     }
@@ -55,8 +72,10 @@ internal fun PasswordTextField(
     textFieldValue: String,
     isPasswordVisible: Boolean,
     isError: Boolean,
+    focusManager: FocusManager = LocalFocusManager.current,
     onPasswordChanged: (String) -> Unit,
     onTogglePasswordVisibility: () -> Unit,
+    onKeyboardDone: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -75,7 +94,16 @@ internal fun PasswordTextField(
                     )
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+                ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                    onKeyboardDone()
+                }
+            ),
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = onTogglePasswordVisibility) {

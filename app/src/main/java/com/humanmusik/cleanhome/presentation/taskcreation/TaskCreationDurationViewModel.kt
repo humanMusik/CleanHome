@@ -2,7 +2,7 @@ package com.humanmusik.cleanhome.presentation.taskcreation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.humanmusik.cleanhome.domain.model.task.TaskEditor
+import com.humanmusik.cleanhome.domain.TaskEditor
 import com.humanmusik.cleanhome.navigation.TaskCreationNavKey
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
@@ -39,15 +39,12 @@ class TaskCreationDurationViewModel @AssistedInject constructor(
         FlowState.fromSuspendingFunc {
             taskEditor.assignTask(
                 taskCreationParcelData = updatedTaskParcelData,
-                todayDate = getTodayLocalDate(),
             )
         }
             .onEach { state.update { it } }
             .onSuccess { navigation() }
             .launchIn(viewModelScope)
     }
-
-    private fun getTodayLocalDate() = LocalDate.now()
 
     @AssistedFactory
     interface Factory {

@@ -17,8 +17,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +55,8 @@ fun LoginContent(
     onSignUpPressed: () -> Unit,
     onTogglePasswordVisibility: () -> Unit,
 ) {
+    val emailFocusRequester = remember { FocusRequester() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,6 +73,7 @@ fun LoginContent(
             EmailTextField(
                 textFieldValue = state.email,
                 isError = state.emailError,
+                focusRequester = emailFocusRequester,
                 onEmailChanged = onEmailValueChanged,
             )
 
@@ -78,6 +83,7 @@ fun LoginContent(
                 onPasswordChanged = onPasswordValueChanged,
                 isPasswordVisible = state.isPasswordVisible,
                 onTogglePasswordVisibility = onTogglePasswordVisibility,
+                onKeyboardDone = onLoginWithEmailAndPassword,
             )
 
             LoginButton(

@@ -2,6 +2,8 @@ package com.humanmusik.cleanhome.di
 
 import com.humanmusik.cleanhome.data.network.home.FirestoreHomeApi
 import com.humanmusik.cleanhome.data.network.home.HomeApi
+import com.humanmusik.cleanhome.data.network.resident.FirestoreResidentApi
+import com.humanmusik.cleanhome.data.network.resident.ResidentApi
 import com.humanmusik.cleanhome.data.network.room.FirestoreRoomApi
 import com.humanmusik.cleanhome.data.network.room.RoomApi
 import com.humanmusik.cleanhome.data.network.task.FirestoreTaskApi
@@ -40,4 +42,10 @@ abstract class ApiModule {
     abstract fun bindsHomeApi(
         firestoreHomeApi: FirestoreHomeApi,
     ): HomeApi
+
+    @Binds
+    @Singleton
+    abstract fun bindsResidentApi(
+        firestoreResidentApi: FirestoreResidentApi,
+    ): ResidentApi
 }

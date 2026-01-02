@@ -2,7 +2,10 @@ package com.humanmusik.cleanhome.presentation.authentication.registration
 
 import android.os.Parcelable
 import com.humanmusik.cleanhome.presentation.FlowState
+import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialogState
 import kotlinx.parcelize.Parcelize
+
+internal const val userExistsDialogKey = "user-exists"
 
 @Parcelize
 data class RegistrationState(
@@ -17,4 +20,6 @@ data class RegistrationState(
     val passwordError: Boolean,
     val registerButtonEnabled: Boolean,
     val userCreationState: FlowState<Unit>,
+    val errorDialog: AlertDialogState,
+    val emailIsInvalid: Boolean,
 ) : Parcelable

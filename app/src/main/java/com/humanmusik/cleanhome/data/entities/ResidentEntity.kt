@@ -11,7 +11,7 @@ const val RESIDENT_ENTITY_ID = "id"
 
 @Entity
 data class ResidentEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(RESIDENT_ENTITY_ID) val id: Int = 0,
+    @PrimaryKey
+    @ColumnInfo(RESIDENT_ENTITY_ID) val id: String,
     val name: String,
 )

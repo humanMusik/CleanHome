@@ -42,6 +42,7 @@ play-services-tasks = "18.4.0"
 datastorePref = "1.2.0"
 protobufSerialization = "0.9.6"
 googleProtobuf = "4.33.2"
+hilt = "1.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,7 +50,9 @@ androidx-datastore-core = { module = "androidx.datastore:datastore-core", versio
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt" }
+hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt" }
 junit4-core = { group = "junit", name = "junit", version.ref = "junit4" }
 junit5-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
 junit5-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
@@ -106,6 +109,6 @@ google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hil
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }
 robolectric-extension = { id = "tech.apter.junit5.jupiter.robolectric-extension-gradle-plugin", version.ref = "robolectricExtension" }
-jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices"}
 protobuf-serialization = { id = "com.google.protobuf", version.ref = "protobufSerialization" }

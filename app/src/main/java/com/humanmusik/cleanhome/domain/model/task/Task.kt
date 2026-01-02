@@ -7,6 +7,7 @@ import com.humanmusik.cleanhome.domain.taskComparator
 import kotlinx.parcelize.Parcelize
 import java.time.Duration
 import java.time.LocalDate
+import java.util.UUID
 
 @Parcelize
 data class Task(
@@ -19,11 +20,16 @@ data class Task(
     val urgency: Urgency?,
     val assigneeId: Resident.Id?,
     val state: State?,
+    val lastCompletedDate: LocalDate?,
 ) : Comparable<Task>, Parcelable {
 
     @JvmInline
     @Parcelize
-    value class Id(val value: String) : Parcelable
+    value class Id(val value: String) : Parcelable {
+        companion object {
+            fun generateNewId() = Id(value = UUID.randomUUID().toString())
+        }
+    }
 
     override fun compareTo(other: Task): Int =
         taskComparator.compare(this, other)
@@ -39,6 +45,7 @@ data class Task(
             urgency: Urgency? = null,
             assigneeId: Resident.Id? = null,
             state: State? = null,
+            lastCompletedDate: LocalDate? = null,
         ) = Task(
             id = id,
             name = name,
@@ -49,6 +56,7 @@ data class Task(
             urgency = urgency,
             assigneeId = assigneeId,
             state = state,
+            lastCompletedDate = lastCompletedDate,
         )
     }
 }
@@ -65,7 +73,7 @@ enum class Frequency {
     companion object {
         @Throws(IllegalStateException::class)
         fun fromString(string: String): Frequency =
-            Frequency.entries.firstOrNull { it.name == string } ?: throw IllegalStateException()
+            entries.firstOrNull { it.name == string } ?: throw IllegalStateException()
     }
 
 }
@@ -80,13 +88,14 @@ enum class Urgency {
 
 enum class State {
     Active,
+    Reversible,
     Inactive,
     Unrecognised;
 
     companion object {
         @Throws(IllegalStateException::class)
         fun fromString(string: String): State =
-            State.entries.firstOrNull { it.name == string } ?: throw IllegalStateException()
+            entries.firstOrNull { it.name == string } ?: throw IllegalStateException()
     }
 }
 

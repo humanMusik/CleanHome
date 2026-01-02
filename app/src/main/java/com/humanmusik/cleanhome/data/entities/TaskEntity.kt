@@ -38,7 +38,7 @@ const val TASK_ENTITY_ID = "id"
             entity = RoomEntity::class,
             parentColumns = [ROOM_ENTITY_ID],
             childColumns = [TASK_ENTITY_ROOM_ID],
-            onDelete = CASCADE,
+            onDelete = SET_NULL,
             onUpdate = CASCADE,
         ),
         ForeignKey(
@@ -56,14 +56,15 @@ data class TaskEntity(
     val id: String,
     val name: String,
     @ColumnInfo(TASK_ENTITY_ROOM_ID)
-    val roomId: String,
+    val roomId: String?,
     val duration: Duration,
     val frequency: Frequency,
     val scheduledDate: LocalDate,
     val urgency: Urgency,
     @ColumnInfo(TASK_ENTITY_ASSIGNEE_ID)
-    val assigneeId: Int?,
+    val assigneeId: String?,
     val state: State,
+    val lastCompletedDate: LocalDate?,
 )
 
 @TypeConverters(
@@ -79,9 +80,10 @@ data class TaskEntity(
         taskentity.scheduledDate AS scheduledDate,
         taskentity.urgency AS urgency,
         taskentity.state AS state,
+        taskentity.lastCompletedDate AS lastCompletedDate,
         roomentity.id AS roomIdValue,
         roomentity.name AS roomName,
-        residententity.id AS assigneeIdInt,
+        residententity.id AS assigneeIdValue,
         residententity.name AS assigneeName
         FROM taskentity
         INNER JOIN roomentity on taskentity.roomId = roomentity.id
@@ -98,9 +100,10 @@ data class EnrichedTaskEntity(
     val urgency: Urgency,
     val roomIdValue: String,
     val roomName: String,
-    val assigneeIdInt: Int,
+    val assigneeIdValue: String,
     val assigneeName: String,
     val state: State,
+    val lastCompletedDate: LocalDate?,
 ) : Comparable<EnrichedTaskEntity>, Parcelable {
     override fun compareTo(other: EnrichedTaskEntity): Int =
         enrichedTaskComparator.compare(this, other)
@@ -115,5 +118,5 @@ data class EnrichedTaskEntity(
 
     @IgnoredOnParcel
     @Ignore
-    val assigneeId: Resident.Id = Resident.Id(assigneeIdInt)
+    val assigneeId: Resident.Id = Resident.Id(assigneeIdValue)
 }

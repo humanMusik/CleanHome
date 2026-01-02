@@ -12,6 +12,6 @@ fun List<ResidentEntity>.toResidents() =
     map { it.toResident() }
 
 fun Resident.toResidentEntity() = ResidentEntity(
-    id = id?.value ?: 0,
+    id = id.value,
     name = name,
 )

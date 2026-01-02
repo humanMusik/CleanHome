@@ -1,6 +1,5 @@
-package com.humanmusik.cleanhome.utilstest
+package com.humanmusik.cleanhome.testutils
 
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import kotlin.reflect.KClass
 

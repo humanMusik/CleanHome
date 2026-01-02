@@ -12,4 +12,5 @@ data class Task(
     val urgent: Boolean? = null,
     val assigneeId: String? = null,
     val state: String? = null,
+    val lastCompletedDate: String? = null,
 )

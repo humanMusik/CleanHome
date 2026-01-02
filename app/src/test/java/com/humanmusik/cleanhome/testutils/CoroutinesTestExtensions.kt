@@ -1,8 +1,9 @@
-package com.humanmusik.cleanhome.utilstest
+package com.humanmusik.cleanhome.testutils
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
@@ -13,7 +14,7 @@ fun runTest(
     timeout: Duration = 10.seconds,
     testBody: suspend TestScope.() -> Unit,
 ) =
-    kotlinx.coroutines.test.runTest(
+    runTest(
         context = context,
         timeout = timeout,
         testBody = testBody,

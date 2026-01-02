@@ -6,7 +6,7 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 import com.humanmusik.cleanhome.util.toEpochMillis
 
 fun Task.toFirestoreTaskModel() = com.humanmusik.cleanhome.data.network.task.Task(
-    id = id?.value,
+    id = id?.value ?: Task.Id.generateNewId().value,
     name = name,
     roomId = roomId?.value.toString(),
     duration = duration.toString(),
@@ -15,6 +15,7 @@ fun Task.toFirestoreTaskModel() = com.humanmusik.cleanhome.data.network.task.Tas
     urgent = urgency?.isUrgent(),
     assigneeId = assigneeId?.value.toString(),
     state = state?.name,
+    lastCompletedDate = lastCompletedDate?.toEpochMillis().toString(),
 )
 
 fun Room.toFirestoreRoomModel() = com.humanmusik.cleanhome.data.network.room.Room(

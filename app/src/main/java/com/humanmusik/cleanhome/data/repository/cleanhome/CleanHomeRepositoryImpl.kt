@@ -6,14 +6,17 @@ import com.humanmusik.cleanhome.data.mappers.toFirestoreTaskModel
 import com.humanmusik.cleanhome.data.mappers.toHomeEntities
 import com.humanmusik.cleanhome.data.mappers.toHomes
 import com.humanmusik.cleanhome.data.mappers.toResident
+import com.humanmusik.cleanhome.data.mappers.toResidentEntities
 import com.humanmusik.cleanhome.data.mappers.toResidents
 import com.humanmusik.cleanhome.data.mappers.toRoom
 import com.humanmusik.cleanhome.data.mappers.toRoomEntities
 import com.humanmusik.cleanhome.data.mappers.toTaskEntities
+import com.humanmusik.cleanhome.data.mappers.toTaskEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogEntity
 import com.humanmusik.cleanhome.data.mappers.toTaskLogs
 import com.humanmusik.cleanhome.data.mappers.toTasks
 import com.humanmusik.cleanhome.data.network.home.HomeApi
+import com.humanmusik.cleanhome.data.network.resident.ResidentApi
 import com.humanmusik.cleanhome.data.network.room.RoomApi
 import com.humanmusik.cleanhome.data.network.task.TaskApi
 import com.humanmusik.cleanhome.data.network.user.UserApi
@@ -33,7 +36,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -50,16 +52,22 @@ class CleanHomeRepositoryImpl @Inject constructor(
     private val homeApi: HomeApi,
     private val taskApi: TaskApi,
     private val roomApi: RoomApi,
+    private val residentApi: ResidentApi,
     private val getUserId: GetUserId,
-    private val getSelectedHomeId: GetSelectedHomeId,
+    getSelectedHomeId: GetSelectedHomeId,
     db: CleanHomeDatabase,
 ) : SyncHomes,
     GetAllHomes,
     SyncTasks,
     CreateTask,
+    CreateTaskInDb,
     UpdateTask,
-    FlowOfTasks,
+    UpdateTaskInDb,
+    DeleteTask,
+    DeleteTaskInDb,
     SyncRooms,
+    SyncResidents,
+    FlowOfTasks,
     FlowOfAllRooms,
     FlowOfAllResidents,
     CreateTaskLog,
@@ -71,8 +79,9 @@ class CleanHomeRepositoryImpl @Inject constructor(
 
     private val dao = db.cleanHomeDao()
 
-    private val allTasks: Flow<List<Task>> = flow {
-        dao.getAllTasks().map { it.toTasks() }
+    private val allTasks: Flow<List<Task>> =
+        dao
+            .getAllTasks().map { it.toTasks() }
             .distinctUntilChanged()
             .shareIn(
                 scope = scope,
@@ -82,10 +91,10 @@ class CleanHomeRepositoryImpl @Inject constructor(
                 ),
                 replay = 1,
             )
-            .collect(this@flow)
-    }
 
-    private val allEnrichedTasks: Flow<List<EnrichedTaskEntity>> = flow {
+    // Why collect a shared flow into a flow builder (which is cold..) ?
+
+    private val allEnrichedTasks: Flow<List<EnrichedTaskEntity>> =
         dao
             .flowOfEnrichedTasks()
             .distinctUntilChanged()
@@ -97,8 +106,17 @@ class CleanHomeRepositoryImpl @Inject constructor(
                 ),
                 replay = 1,
             )
-            .collect(this@flow)
-    }
+
+    private val selectedHomeId: Flow<Home.Id?> =
+        getSelectedHomeId()
+            .shareIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(
+                    stopTimeoutMillis = 0,
+                    replayExpirationMillis = 0,
+                ),
+                replay = 1,
+            )
 
     override suspend fun syncHomes() {
         scope.launch {
@@ -118,40 +136,82 @@ class CleanHomeRepositoryImpl @Inject constructor(
             .toHomes()
     }
 
-    override fun syncTasks() {
-        scope.launch {
-            val homeId = getSelectedHomeId()
-
-            taskApi
-                .listTasks(homeId)
-                .map { dao.deleteAndInsertTasks(it.toTaskEntities()) }
-                .launchIn(scope)
-        }
+    override suspend fun syncTasks() {
+        selectedHomeId
+            .map { homeId ->
+                homeId?.let { homeId ->
+                    val tasks = taskApi.listTasks(homeId)
+                    dao.deleteAndInsertTasks(tasks.toTaskEntities())
+                }
+            }
+            .launchIn(scope)
     }
 
     override fun syncRooms() {
-        scope.launch {
-            val homeId = getSelectedHomeId()
-            roomApi
-                .listRooms(homeId)
-                .map { dao.deleteAndInsertRooms(it.toRoomEntities()) }
-                .launchIn(scope)
-        }
+        selectedHomeId
+            .map { homeId ->
+                homeId?.let { homeId ->
+                    roomApi
+                        .listRooms(homeId)
+                        .map { dao.deleteAndInsertRooms(it.toRoomEntities()) }
+                        .launchIn(scope)
+                }
+            }
+            .launchIn(scope)
     }
 
     override suspend fun createTask(task: Task) {
         scope.launch {
-            val homeId = getSelectedHomeId()
+            selectedHomeId
+                .map { homeId ->
+                    homeId?.let { homeId ->
+                        taskApi.uploadTask(homeId, task.toFirestoreTaskModel())
+                    }
+                }
+                .launchIn(scope)
 
-            taskApi.uploadTask(homeId, task.toFirestoreTaskModel())
+            syncTasks()
         }
+    }
+
+    override suspend fun createTaskInDb(task: Task) {
+        dao.insertTask(task.toTaskEntity())
     }
 
     override suspend fun updateTask(task: Task) {
         scope.launch {
-            val homeId = getSelectedHomeId()
-            taskApi.editTask(homeId, task.toFirestoreTaskModel())
+            selectedHomeId
+                .map { homeId ->
+                    homeId?.let { homeId ->
+                        taskApi.editTask(homeId, task.toFirestoreTaskModel())
+                    }
+                }
+                .launchIn(scope)
+
+            syncTasks()
         }
+    }
+
+    override suspend fun updateTaskInDb(task: Task) {
+        dao.updateTask(task.toTaskEntity())
+    }
+
+    override suspend fun deleteTask(taskId: Task.Id) {
+        scope.launch {
+            selectedHomeId
+                .map { homeId ->
+                    homeId?.let { homeId ->
+                        taskApi.deleteTask(homeId, taskId.value)
+                    }
+                }
+                .launchIn(scope)
+
+            syncTasks()
+        }
+    }
+
+    override suspend fun deleteTaskInDb(taskId: Task.Id) {
+        dao.deleteTask(taskId.value)
     }
 
     override fun flowOfAllResidents(): Flow<Set<Resident>> {
@@ -162,6 +222,17 @@ class CleanHomeRepositoryImpl @Inject constructor(
                     .toResidents()
                     .toSet()
             }
+    }
+
+    override suspend fun syncResidents() {
+        selectedHomeId
+            .map { homeId ->
+                homeId?.let { homeId ->
+                    val residents = residentApi.listResidents(homeId)
+                    dao.deleteAndInsertResidents(residents.toResidentEntities())
+                }
+            }
+            .launchIn(scope)
     }
 
     override fun flowOfTasks(filter: TaskFilter): Flow<Set<Task>> {

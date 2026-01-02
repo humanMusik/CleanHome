@@ -31,6 +31,7 @@ data class TaskCreationParcelData(
             duration = requireNotNull(duration) { "Task duration cannot be null" },
             assigneeId = assigneeId,
             state = State.Active,
+            lastCompletedDate = null,
         )
 }
 

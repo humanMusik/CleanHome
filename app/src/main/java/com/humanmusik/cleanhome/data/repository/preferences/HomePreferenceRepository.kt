@@ -6,17 +6,23 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.humanmusik.cleanhome.domain.model.Home
+import com.humanmusik.cleanhome.workers.SyncDataWorker
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 fun interface GetSelectedHomeId {
-    suspend fun getSelectedHomeId(): Home.Id
+    fun getSelectedHomeId(): Flow<Home.Id?>
 
     companion object {
-        suspend operator fun GetSelectedHomeId.invoke() = getSelectedHomeId()
+        operator fun GetSelectedHomeId.invoke() = getSelectedHomeId()
     }
 }
 
@@ -31,10 +37,11 @@ fun interface SetHomeIdPreference {
 
 class HomePreferenceRepository @Inject constructor(
     private val homePreferenceDatastore: DataStore<Preferences>,
+    private val workManager: WorkManager,
 ) : GetSelectedHomeId,
     SetHomeIdPreference {
-    override suspend fun getSelectedHomeId(): Home.Id {
-        val preference = homePreferenceDatastore
+    override fun getSelectedHomeId(): Flow<Home.Id?> {
+        return homePreferenceDatastore
             .data
             .catch { exception ->
                 if (exception is IOException) {
@@ -44,11 +51,9 @@ class HomePreferenceRepository @Inject constructor(
                 }
             }
             .map { preference ->
-                preference[KEY]
+                preference[KEY]?.let { Home.Id(it) }
             }
-            .firstOrNull() ?: throw IllegalStateException("Unable to determine the selected homeId")
-
-        return Home.Id(preference)
+            .distinctUntilChanged()
     }
 
     override suspend fun setHomeIdPreference(homeId: Home.Id) {
@@ -56,6 +61,15 @@ class HomePreferenceRepository @Inject constructor(
             .edit { preference ->
                 preference[KEY] = homeId.value
             }
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<SyncDataWorker>()
+            .setConstraints(constraints).build()
+
+        workManager.enqueue(syncRequest)
     }
 
     companion object {

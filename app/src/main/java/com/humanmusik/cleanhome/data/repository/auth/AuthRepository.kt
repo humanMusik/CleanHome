@@ -1,5 +1,11 @@
 package com.humanmusik.cleanhome.data.repository.auth
 
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.humanmusik.cleanhome.data.mappers.toFirestoreUserModel
@@ -10,11 +16,13 @@ import com.humanmusik.cleanhome.domain.model.authentication.AuthException
 import com.humanmusik.cleanhome.domain.model.authentication.AuthState
 import com.humanmusik.cleanhome.domain.model.authentication.FirebaseCreateUserException
 import com.humanmusik.cleanhome.domain.model.authentication.FirebaseSignInException
+import com.humanmusik.cleanhome.workers.SyncDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 fun interface CheckUserSession {
@@ -45,6 +53,7 @@ class FirebaseAuthRepository @Inject constructor(
     @param:ApplicationScope private val scope: CoroutineScope,
     val firebaseAuth: FirebaseAuth,
     val userApi: UserApi,
+    val workManager: WorkManager,
 ) : AuthRepository,
     CheckUserSession,
     GetUserId {
@@ -73,7 +82,7 @@ class FirebaseAuthRepository @Inject constructor(
     }
 
     override fun getUserId(): GetUserId.UserId {
-        val userId = firebaseAuth.currentUser?.uid ?: throw AuthException("Unauthenticated")
+        val userId = firebaseAuth.currentUser?.uid ?: throw AuthException("Unauthenticated") // TODO: need to catch this and return to Login
         return GetUserId.UserId(userId)
     }
 
@@ -82,6 +91,15 @@ class FirebaseAuthRepository @Inject constructor(
             firebaseAuth
                 .signInWithEmailAndPassword(email, password)
                 .await()
+
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val syncRequest = OneTimeWorkRequestBuilder<SyncDataWorker>()
+                .setConstraints(constraints).build()
+
+            workManager.enqueue(syncRequest)
         } catch (e: Throwable) {
             throw FirebaseSignInException(
                 e.message ?: "Sign in failed without exception message",

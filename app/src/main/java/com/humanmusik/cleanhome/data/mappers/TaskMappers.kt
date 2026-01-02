@@ -9,13 +9,14 @@ import com.humanmusik.cleanhome.domain.model.task.Task
 fun TaskEntity.toTask() = Task(
     id = Task.Id(id),
     name = name,
-    roomId = Room.Id(roomId),
+    roomId = roomId?.let { Room.Id(roomId) },
     duration = duration,
     frequency = frequency,
     scheduledDate = scheduledDate,
     urgency = urgency,
     assigneeId = assigneeId?.let { Resident.Id(assigneeId) },
     state = state,
+    lastCompletedDate = lastCompletedDate,
 )
 
 fun List<TaskEntity>.toTasks() = map { it.toTask() }
@@ -24,13 +25,14 @@ fun Task.toTaskEntity(): TaskEntity =
     TaskEntity(
         id = requireNotNull(id?.value) { "Task Id cannot be null" },
         name = requireNotNull(name) { "Task name cannot be null" },
-        roomId = requireNotNull(roomId?.value) { "Task roomId cannot be null"},
+        roomId = requireNotNull(roomId?.value) { "Task roomId cannot be null" },
         duration = requireNotNull(duration) { "Task duration cannot be null" },
         frequency = requireNotNull(frequency) { "Task frequency cannot be null" },
         scheduledDate = requireNotNull(scheduledDate) { "Task scheduledDate cannot be null" },
         urgency = requireNotNull(urgency) { "Task urgency cannot be null" },
         assigneeId = requireNotNull(assigneeId?.value) { "Task assigneeId cannot be null" },
-        state = requireNotNull(state) { "Task state cannot be null" }
+        state = requireNotNull(state) { "Task state cannot be null" },
+        lastCompletedDate = lastCompletedDate,
     )
 
 fun EnrichedTaskEntity.toTask() =
@@ -44,4 +46,5 @@ fun EnrichedTaskEntity.toTask() =
         urgency = urgency,
         assigneeId = assigneeId,
         state = state,
+        lastCompletedDate = lastCompletedDate,
     )

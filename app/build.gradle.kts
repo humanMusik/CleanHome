@@ -80,7 +80,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.core)
-    implementation(libs.javax.inject)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -94,6 +93,9 @@ dependencies {
 
     // WorkManager
     implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
 
     // Nav3
     implementation(libs.androidx.navigation3.runtime)

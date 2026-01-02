@@ -1,16 +1,17 @@
 package com.humanmusik.cleanhome.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.humanmusik.cleanhome.data.repository.cleanhome.GetAllHomes
 import com.humanmusik.cleanhome.data.repository.cleanhome.GetAllHomes.Companion.invoke
-import com.humanmusik.cleanhome.data.repository.cleanhome.SyncHomes
-import com.humanmusik.cleanhome.data.repository.cleanhome.SyncHomes.Companion.invoke
 import com.humanmusik.cleanhome.data.repository.preferences.SetHomeIdPreference
 import com.humanmusik.cleanhome.data.repository.preferences.SetHomeIdPreference.Companion.invoke
 import com.humanmusik.cleanhome.domain.model.Home
 import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.fromSuspendingFunc
+import com.humanmusik.cleanhome.presentation.getOrNull
+import com.humanmusik.cleanhome.presentation.onFailure
 import com.humanmusik.cleanhome.util.doNotSaveState
 import com.humanmusik.cleanhome.util.savedStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val syncHomes: SyncHomes,
     private val getAllHomes: GetAllHomes,
     private val setHomeIdPreference: SetHomeIdPreference,
 ) : ViewModel() {
@@ -33,19 +33,20 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            syncHomes()
-
             FlowState
                 .fromSuspendingFunc {
                     getAllHomes()
                 }
                 .onEach { flowState ->
+                    Log.d("Lezz", "homeVM getAllHomes() flowState: $flowState")
                     state.update { state ->
                         state.copy(
                             homes = flowState
                         )
                     }
+                    Log.d("Lezz", "home state: ${state.value.homes.getOrNull()?.size}")
                 }
+                .onFailure { Log.d("Lezz", "getAllHomes() failed") }
                 .launchIn(viewModelScope)
         }
     }
