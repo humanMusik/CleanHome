@@ -23,13 +23,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.humanmusik.cleanhome.data.entities.EnrichedTaskEntity
+import com.humanmusik.cleanhome.domain.model.task.Frequency
 import com.humanmusik.cleanhome.domain.model.task.Task
+import com.humanmusik.cleanhome.domain.model.task.Urgency
+import com.humanmusik.cleanhome.presentation.FlowState
 import com.humanmusik.cleanhome.presentation.onSuccess
 import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialog
 import com.humanmusik.cleanhome.presentation.utils.composables.AlertDialogState
+import java.time.Duration
+import java.time.LocalDate
 
 @Composable
 fun TaskListScreen(
@@ -110,7 +116,9 @@ private fun TaskListContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = "CleanHome") },
+                title = {
+                    Text(text = "Tasks")
+                },
                 actions = {
                     IconButton(onClick = onAddTask) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Task")
@@ -118,22 +126,26 @@ private fun TaskListContent(
                 },
             )
         },
-    ) { paddingValues ->
+    ) { scaffoldPadding ->
         state.enrichedTaskEntities.onSuccess {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(scaffoldPadding)
+                    .padding(horizontal = 8.dp),
                 contentPadding = PaddingValues(vertical = 12.dp),
             ) {
                 items(
                     items = it,
                 ) { enrichedTask ->
+                    val cardPadding = PaddingValues(vertical = 4.dp)
+
                     SwipeToDismissItem(
-                        onSwipeStartToEnd = { /* TODO */ },
+                        modifier = Modifier.padding(cardPadding),
                         onSwipeEndToStart = { onComplete(enrichedTask) },
                     ) {
                         TaskCard(
+                            modifier = Modifier.padding(cardPadding),
                             enrichedTask = enrichedTask,
                             onClick = { onTaskSelected(enrichedTask.id) },
                         )
@@ -143,3 +155,71 @@ private fun TaskListContent(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun Preview_TaskListContent() {
+    val mockTasks = listOf(
+        EnrichedTaskEntity(
+            idValue = "task-1",
+            taskName = "Vacuum Living Room",
+            duration = Duration.ofMinutes(30),
+            frequency = Frequency.Weekly,
+            scheduledDate = LocalDate.now(),
+            urgency = Urgency.Urgent,
+            roomIdValue = "room-1",
+            roomName = "Living Room",
+            assigneeIdValue = "user-1",
+            assigneeName = "Leslie",
+            state = com.humanmusik.cleanhome.domain.model.task.State.Active,
+            lastCompletedDate = null
+        ),
+        EnrichedTaskEntity(
+            idValue = "task-2",
+            taskName = "Wipe Kitchen Counters",
+            duration = Duration.ofMinutes(10),
+            frequency = Frequency.Daily,
+            scheduledDate = LocalDate.now().plusDays(1),
+            urgency = Urgency.Urgent,
+            roomIdValue = "room-2",
+            roomName = "Kitchen",
+            assigneeIdValue = "user-2",
+            assigneeName = "John",
+            state = com.humanmusik.cleanhome.domain.model.task.State.Active,
+            lastCompletedDate = LocalDate.now().minusDays(1)
+        ),
+        EnrichedTaskEntity(
+            idValue = "task-3",
+            taskName = "Clean Bathroom Mirror",
+            duration = Duration.ofMinutes(5),
+            frequency = Frequency.Fortnightly,
+            scheduledDate = LocalDate.now().minusDays(3),
+            urgency = Urgency.NonUrgent,
+            roomIdValue = "room-3",
+            roomName = "Bathroom",
+            assigneeIdValue = "user-1",
+            assigneeName = "Leslie",
+            state = com.humanmusik.cleanhome.domain.model.task.State.Active,
+            lastCompletedDate = null
+        )
+    )
+
+    val mockState = TaskListState(
+        enrichedTaskEntities = FlowState.Success(mockTasks),
+        errorDialog = AlertDialogState.Hide,
+        taskCompletionToast = TaskCompletionToastState.Hidden,
+        taskToBeCompleted = null
+    )
+
+    TaskListContent(
+        state = mockState,
+        onComplete = {},
+        onTaskSelected = {},
+        onAddTask = {},
+        onRetryTaskLoad = {},
+        onUndoTask = { _, _ -> },
+        dismissTaskCompletionToast = {},
+        dismissErrorDialog = {}
+    )
+}
+
